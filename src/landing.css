@@ -1,0 +1,289 @@
+/* ===== HERO SECTION ===== */
+.landing-hero {
+  text-align: center;
+  position: relative;
+}
+
+.landing-hero .logo-container {
+  animation: fadeIn-down 0.5s ease-in-out;
+  cursor: pointer;
+  text-align: left;
+}
+
+.landing-hero .logo-image {
+  width: clamp(60px, 10vw, 169px);
+  min-width: 60px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+.landing-hero .logo-image:hover {
+  transform: scale(1.15) rotate(5deg);
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+}
+
+/* Pressed state - scale down when clicked/held */
+.landing-hero .logo-image.pressed {
+  transform: scale(0.9) rotate(1deg);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: transform 0.05s ease-out, filter 0.05s ease-out;
+}
+
+/* Pressed state takes priority over hover */
+.landing-hero .logo-image.pressed:hover {
+  transform: scale(0.9) rotate(1deg);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.landing-hero .logo-title {
+  width: clamp(60px, 10vw, 169px);
+  max-width: 250px;
+  min-width: 160px;
+  object-fit: contain;
+
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+
+  font-size: clamp(32px, 5vw, 64px);
+  line-height: clamp(28px, 4.5vw, 60px);
+
+  background: linear-gradient(180deg, #E55C34 0%, #FA8230 36.54%, #e45d86 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  user-select: none;
+  cursor: pointer;
+}
+
+.landing-hero .logo-title span {
+  background: linear-gradient(180deg, #E55C34 0%, #FA8230 36.54%, #e45d86 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Apply gradient to BallotPilot text */
+.landing-hero h2 .logo-title {
+  background: linear-gradient(180deg, #E55C34 0%, #FA8230 36.54%, #e45d86 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+}
+
+
+
+/* ===== FEATURE SECTION ===== */
+.landing-feature {
+  margin: 1rem 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.landing-feature:hover {
+  transform: translateY(-4px);
+}
+
+
+
+/* ===== PROFILE IMAGES ===== */
+.profile-image {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  border: 5px solid #d1d5db; /* Gray-300 border */
+}
+
+.dark .profile-image {
+  border-color: #4b5563; /* Gray-600 for dark mode */
+}
+
+
+
+/* ===== SOCIAL LINKS ===== */
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.dark .social-link {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .social-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+
+/* ===== LIQUID PARALLAX EFFECTS ===== */
+.liquid-parallax-element,
+.liquid-floating-element {
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.liquid-parallax-element {
+  transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.liquid-floating-element {
+  transition: transform 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: subtle-pulse 4s ease-in-out infinite;
+}
+
+
+
+/* ===== DECORATIVE ELEMENTS ===== */
+.decorative-element {
+  border-radius: 50%;
+  backdrop-filter: blur(1px);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.decorative-element:hover {
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+/* Different intensity levels for varied movement */
+.intensity-low { --intensity: 0.3; }
+.intensity-medium { --intensity: 0.6; }
+.intensity-high { --intensity: 1.0; }
+.intensity-ultra { --intensity: 1.5; }
+
+/* Enhanced decorative styles for different elements */
+.decorative-yellow {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+.decorative-orange {
+  background: linear-gradient(135deg, #fb923c, #ea580c);
+}
+
+.decorative-pink {
+  background: linear-gradient(135deg, #f472b6, #ec4899);
+}
+
+.decorative-cyan {
+  background: linear-gradient(135deg, #22d3ee, #0891b2);
+}
+
+.decorative-green {
+  background: linear-gradient(135deg, #4ade80, #16a34a);
+}
+
+.decorative-purple {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+}
+
+.decorative-red {
+  background: linear-gradient(135deg, #f87171, #dc2626);
+}
+
+.decorative-indigo {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+}
+
+
+
+/* ===== ANIMATIONS ===== */
+.animate-bounce-click {
+  animation: bounce-click 0.6s ease-in-out;
+}
+
+/* If bouncing and hovering, end in hover state */
+.animate-bounce-click:hover {
+  animation: bounce-click-to-hover 0.6s ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+/* Bounce animation for logo click */
+@keyframes bounce-click {
+  0% { 
+    transform: scale(1) rotate(0deg); 
+  }
+  25% { 
+    transform: scale(1.2) rotate(-5deg); 
+  }
+  50% { 
+    transform: scale(1.3) rotate(5deg); 
+  }
+  75% { 
+    transform: scale(1.1) rotate(-2deg); 
+  }
+  100% { 
+    transform: scale(1) rotate(0deg); 
+  }
+}
+
+/* Bounce animation that ends in hover state */
+@keyframes bounce-click-to-hover {
+  0% { 
+    transform: scale(1) rotate(0deg); 
+  }
+  25% { 
+    transform: scale(1.2) rotate(-5deg); 
+  }
+  50% { 
+    transform: scale(1.3) rotate(5deg); 
+  }
+  75% { 
+    transform: scale(1.1) rotate(-2deg); 
+  }
+  100% { 
+    transform: scale(1.15) rotate(5deg); /* End in hover state */
+  }
+}
+
+/* Subtle pulse animation */
+@keyframes subtle-pulse {
+  0%, 100% { 
+    opacity: 0.8;
+    filter: brightness(1);
+  }
+  50% { 
+    opacity: 1;
+    filter: brightness(1.1);
+  }
+}
+
+/* Gradient shimmer effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.decorative-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
