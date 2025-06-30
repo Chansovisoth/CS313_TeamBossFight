@@ -20,7 +20,7 @@ const MainLanding = () => {
   const navigate = useNavigate();
   const [logoClicked, setLogoClicked] = useState(false);
 
-  // ===== AUTHENTICATION HANDLERS ===== GAY//
+  // ===== AUTHENTICATION HANDLERS =====//
   // const handleGetStarted = () => {
   //   navigate("/auth");
   // };
