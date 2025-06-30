@@ -5,6 +5,7 @@ import { Vote, Users, BarChart3, Shield, ChevronRight, ArrowRight, Github, Linke
 import { startConfettiCelebration } from "@/lib/Confetti";
 import { LiquidFloatingElement, LiquidPillElement, LiquidCircleElement } from "@/lib/LiquidParallax";
 
+
 // ===== COMPONENTS ===== //
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ const MainLanding = () => {
   const navigate = useNavigate();
   const [logoClicked, setLogoClicked] = useState(false);
 
-  // ===== AUTHENTICATION HANDLERS ===== //
+  // ===== AUTHENTICATION HANDLERS ===== GAY//
   // const handleGetStarted = () => {
   //   navigate("/auth");
   // };
