@@ -8,6 +8,7 @@ import { LiquidFloatingElement, LiquidPillElement, LiquidCircleElement } from "@
 // ===== COMPONENTS ===== //
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
 // ===== STYLES ===== //
 import "../index.css";
@@ -18,6 +19,7 @@ import "../landing.css";
 const MainLanding = () => {
   const navigate = useNavigate();
   const [logoClicked, setLogoClicked] = useState(false);
+  const [sliderValue, setSliderValue] = useState([50]);
 
   // ===== AUTHENTICATION HANDLERS ===== //
   // const handleGetStarted = () => {
@@ -52,6 +54,20 @@ const MainLanding = () => {
   // ===== RENDER ===== //
   return (
     <main className="flex-grow">
+
+      {/* ===== DEMO SLIDER ===== */}
+      <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md my-8">
+        <h3 className="text-lg font-semibold mb-4 text-center text-gray-800">Demo Slider</h3>
+        <Slider 
+          value={sliderValue} 
+          max={100} 
+          step={5}
+          onValueChange={setSliderValue}
+          className="mb-4"
+        />
+        <p className="text-center text-gray-600 mt-4">Value: {sliderValue[0]}</p>
+      </div>
+
       {/* ===== HERO SECTION ===== */}
       <section className="landing-hero bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white py-20 px-4 sm:px-12 md:px-20 lg:px-20 xl:px-50 2xl:px-80 relative overflow-hidden">
         {/* Liquid Parallax Decorative Elements */}
@@ -447,3 +463,4 @@ const MainLanding = () => {
 };
 
 export default MainLanding;
+
