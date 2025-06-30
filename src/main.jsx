@@ -15,6 +15,7 @@ import "./index.css";
 
 // ===== PAGES ===== //
 import App from "./App";
+import MainLandingOLD from "./pages/MainLandingOLD";
 import MainLanding from "./pages/MainLanding";
 // import Authentication from "./pages/Authentication";
 
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Routes>
             <Route path="/" element={<App />}>
 
+              <Route path="/old" element={<MainLandingOLD />} />
               <Route path="/" element={<MainLanding />} />
 
               {/* <Route
