@@ -20,6 +20,7 @@ import MainLandingOLD from "./pages/MainLandingOLD";
 import MainLanding from "./pages/MainLanding";
 import MainBadges from "./pages/MainBadges";
 import MainAbout from "./pages/MainAbout";
+import Login from "./pages/Login";
 // import Authentication from "./pages/Authentication";
 
 
@@ -41,6 +42,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
             <Route path="/about" element={<App />}>
               <Route index element={<MainLanding />} />
+            </Route>
+
+            <Route path="/login" element={<App />}>
+              <Route index element={<Login />} />
             </Route>
 
             {/* Old Landing Page */}

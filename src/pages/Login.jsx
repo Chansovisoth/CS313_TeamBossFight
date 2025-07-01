@@ -186,7 +186,7 @@ const MainLanding = () => {
               />
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-              Welcome to <span className="logo-title">Team Boss Fight</span>
+              Welcome to <span className="logo-title">Gay</span>
             </h2>
             <p className="text-xl md:text-2xl opacity-90 leading-relaxed max-w-3xl mx-auto">
               The modern polling platform that makes creating, sharing, and analyzing polls effortless. 
