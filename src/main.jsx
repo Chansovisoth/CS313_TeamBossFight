@@ -20,9 +20,12 @@ import MainLandingOLD from "./pages/MainLandingOLD";
 import MainLanding from "./pages/MainLanding";
 import MainBadges from "./pages/MainBadges";
 import MainAbout from "./pages/MainAbout";
-import Login from "./pages/Login";
-// import Authentication from "./pages/Authentication";
 
+import Authentication from "./pages/Authentication";
+
+// Host
+
+import HostAuthentication from "./pages/Host/Authentication";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -44,8 +47,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<MainLanding />} />
             </Route>
 
-            <Route path="/login" element={<App />}>
-              <Route index element={<Login />} />
+            <Route path="/auth" element={<App />}>
+              <Route index element={<Authentication />} />
+            </Route>
+
+
+            {/* Host Authentication */}
+            <Route path="/host/auth" element={<App />}>
+              <Route index element={<HostAuthentication />} />
             </Route>
 
             {/* Old Landing Page */}
