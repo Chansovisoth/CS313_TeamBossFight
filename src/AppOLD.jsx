@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 // ===== LAYOUTS ===== //
-import Nav from "@/layouts/Nav";
-import Footer from "@/layouts/Footer";
+import Nav from "@/layouts/NavOLD";
+import Footer from "@/layouts/FooterOLD";
 
 // ===== COMPONENTS ===== //
 import { MessageDisplay } from "./components/MessageDisplay";
@@ -13,7 +13,7 @@ import { MessageDisplay } from "./components/MessageDisplay";
 
 
 
-export default function App() {
+export default function AppOLD() {
   const navigate = useNavigate();
   
   // ===== AUTHENTICATION INTERCEPTORS ===== //
@@ -23,7 +23,7 @@ export default function App() {
   // }, [auth, navigate]);
 
   return (
-    <div className="flex flex-col min-h-screen w-full">
+    <div className="flex flex-col min-h-screen bg-muted">
       {/* ===== NAVBAR ===== */}
       <Nav />
 
@@ -31,7 +31,7 @@ export default function App() {
       <MessageDisplay />
 
       {/* ===== PAGE CONTENT (Outlet for route rendering) ===== */}
-      <main className="flex-1 w-full">
+      <main className="flex-1">
         <Outlet />
       </main>
 

@@ -125,12 +125,23 @@
 
   body {
     @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+  
+  /* ADDED BY CHANSOVISOTH */
+  html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+  
+  #root {
+    width: 100%;
+    min-height: 100vh;
   }
 }
-
-
-
-
 
 /* ===== ===== ===== ===== ===== CUSTOM CSS (EDIT HERE) ===== ===== ===== ===== ===== */
 
@@ -315,7 +326,7 @@ button {
 
 
 
-
+/* ===== ===== ===== ===== ===== NEW CSS ABOVE THIS ONLY!!! (Keep all animations down below) ===== ===== ===== ===== ===== */
 
 /* ===== ANIMATIONS ===== */
 .hover-button-animate-icon-float:hover .animate-icon-float {
