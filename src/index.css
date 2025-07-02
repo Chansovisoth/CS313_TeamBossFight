@@ -166,7 +166,7 @@
 }
 
 .logo-title {
-  width: clamp(60px, 10vw, 169px);
+  width: clamp(60px, 10vw);
   max-width: 250px;
   min-width: 160px;
   /* smaller min-width */

@@ -131,9 +131,9 @@ const MainBadges = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16 px-4">
-        <div className="max-w-7xl mx-auto">
+      {/* ===== Header Section ===== */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8 px-4">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">My Badges</h1>
             <p className="text-xl opacity-90 mb-6">
@@ -141,7 +141,7 @@ const MainBadges = () => {
             </p>
 
             {/* Stats */}
-            <div className="flex flex-wrap justify-center gap-6 mt-8">
+            <div className="flex flex-wrap justify-center gap-6 mt-0">
               <div className="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3">
                 <div className="text-2xl font-bold">{earnedBadges.length}</div>
                 <div className="text-sm opacity-80">Badges Earned</div>

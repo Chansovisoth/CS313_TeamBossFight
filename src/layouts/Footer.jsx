@@ -23,7 +23,7 @@ const Footer = () => {
                     <img
                         className="footer-logo-image w-10 sm:w-12 md:w-16 h-auto object-contain shrink-0"
                         src="/src/assets/Swords.png"
-                        alt="Ballot Pilot"
+                        alt="Team Boss Fight"
                     />
                     {/* <h1 className="footer-logo-title text-center sm:text-left" data-text="Ballot Pilot">
                         Ballot<br />Pilot
@@ -49,7 +49,7 @@ const Footer = () => {
 
                 {/* Copyright */}
                 <div className="text-sm text-gray-400 flex justify-center md:justify-end">
-                    © {currentYear} BallotPilot. All rights reserved.
+                    © {currentYear} UniRaid. All rights reserved.
                 </div>
             </div>
             
