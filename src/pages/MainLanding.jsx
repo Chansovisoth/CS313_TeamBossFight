@@ -5,10 +5,10 @@ import { Vote, Users, BarChart3, Shield, ChevronRight, ArrowRight, Github, Linke
 import { startConfettiCelebration } from "@/lib/Confetti";
 import { LiquidFloatingElement, LiquidPillElement, LiquidCircleElement } from "@/lib/LiquidParallax";
 
-
 // ===== COMPONENTS ===== //
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import EventCarousel from "@/layouts/EventCarousel";
 
 // ===== STYLES ===== //
 import "../index.css";
@@ -186,41 +186,9 @@ const MainLanding = () => {
 
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <div className="mb-8">
-            {/* Event Banner Placeholder */}
-            <div className="event-banner-container mb-8">
-              <div className="bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-8 max-w-4xl mx-auto">
-                <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white">
-                  Open House 2025
-                </h1>
-                <p className="text-xl md:text-2xl text-white/90 font-medium">
-                  Interactive Boss Battle Experience
-                </p>
-              </div>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-              Ready for an Epic Adventure?
-            </h2>
-            <p className="text-xl md:text-2xl opacity-90 leading-relaxed max-w-3xl mx-auto">
-              Join forces with other participants and put your knowledge to the test! Answer questions, deal damage, and work together to defeat powerful bosses. Show your skills and compete for glory!
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            {/* <Button 
-              onClick={handleGetStarted}
-              size="lg"
-              className=" bg-white text-blue-600 hover:bg-gray-100 hover:text-blue-700 px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
-              Get Started <ArrowRight className="ml-2 w-5 h-5" />
-            </Button> */}
-            <Button 
-              onClick={handleLearnMore}
-              variant="outline" 
-              size="lg"
-              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold transition-all duration-300 bg-transparent"
-            >
-              Join Event <ChevronRight className="ml-2 w-5 h-5" />
-            </Button>
+            {/* Event Carousel */}
+            <EventCarousel />
+
           </div>
         </div>
       </section>
