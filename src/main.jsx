@@ -26,6 +26,8 @@ import Authentication from "./pages/Authentication";
 // Host
 
 import HostAuthentication from "./pages/Host/Authentication";
+import MainQR from "./pages/MainQR";
+import BossBattle from "./pages/BossBattle";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -39,12 +41,20 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<MainLanding />} />
             </Route>
 
+            <Route path="/qr" element={<App />}>
+              <Route index element={<MainQR />} />
+            </Route>
+
+            <Route path="/boss-battle" element={<App />}>
+              <Route index element={<BossBattle />} />
+            </Route>
+
             <Route path="/badges" element={<App />}>
               <Route index element={<MainBadges />} />
             </Route>
 
             <Route path="/about" element={<App />}>
-              <Route index element={<MainLanding />} />
+              <Route index element={<MainAbout />} />
             </Route>
 
             <Route path="/auth" element={<App />}>

@@ -126,11 +126,11 @@ const Nav = () => {
         <div className="logo-container flex items-center gap-2 sm:gap-4 min-w-0">
           <img
             className="logo-image w-10 sm:w-12 md:w-16 h-auto object-contain shrink-0"
-            src="/Fox.png"
+            src="/src/assets/Swords.png"
             alt="Team Boss Fight"
           />
           <h1 className="logo-title text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight tracking-tight">
-            Team
+            UniRAID
             <br />
             <span className="text-primary">BossFight</span>
           </h1>

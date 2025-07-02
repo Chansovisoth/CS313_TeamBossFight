@@ -1,7 +1,7 @@
 // ===== LIBRARIES ===== //
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Vote, Users, BarChart3, Shield, ChevronRight, ArrowRight, Github, Linkedin, Mail } from "lucide-react";
+import { Vote, Users, BarChart3, Shield, ChevronRight, ArrowRight, Github, Linkedin, Mail, QrCode } from "lucide-react";
 import { startConfettiCelebration } from "@/lib/Confetti";
 import { LiquidFloatingElement, LiquidPillElement, LiquidCircleElement } from "@/lib/LiquidParallax";
 
@@ -9,7 +9,6 @@ import { LiquidFloatingElement, LiquidPillElement, LiquidCircleElement } from "@
 // ===== COMPONENTS ===== //
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 
 // ===== STYLES ===== //
 import "../index.css";
@@ -20,7 +19,6 @@ import "../landing.css";
 const MainLanding = () => {
   const navigate = useNavigate();
   const [logoClicked, setLogoClicked] = useState(false);
-  const [sliderValue, setSliderValue] = useState([50]);
 
   // ===== AUTHENTICATION HANDLERS =====//
   // const handleGetStarted = () => {
@@ -33,6 +31,10 @@ const MainLanding = () => {
     document.getElementById("features")?.scrollIntoView({ 
       behavior: "smooth" 
     });
+  };
+
+  const handleQRCodeClick = () => {
+    navigate("/qr");
   };
 
   const handleLogoClick = async () => {
@@ -55,6 +57,15 @@ const MainLanding = () => {
   // ===== RENDER ===== //
   return (
     <main className="flex-grow">
+
+      {/* Floating QR Code Button */}
+      <Button
+        onClick={handleQRCodeClick}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 border-0 p-2"
+        size="lg"
+      >
+        <QrCode className="w-full h-full text-white scale-250" />
+      </Button>
 
       {/* ===== HERO SECTION ===== */}
       <section className="landing-hero bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white py-20 px-4 sm:px-12 md:px-20 lg:px-20 xl:px-50 2xl:px-80 relative overflow-hidden">
@@ -175,22 +186,22 @@ const MainLanding = () => {
 
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <div className="mb-8">
-            {/* Logo Section - Fox only */}
-            <div className="logo-container flex items-center justify-center min-w-0 mb-6">
-              <img
-                className={`logo-image ${logoClicked ? 'animate-bounce-click' : ''}`}
-                src="/Fox.png"
-                alt="Ballot Pilot"
-                onClick={handleLogoClick}
-                style={{ cursor: 'pointer' }}
-              />
+            {/* Event Banner Placeholder */}
+            <div className="event-banner-container mb-8">
+              <div className="bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-8 max-w-4xl mx-auto">
+                <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white">
+                  Open House 2025
+                </h1>
+                <p className="text-xl md:text-2xl text-white/90 font-medium">
+                  Interactive Boss Battle Experience
+                </p>
+              </div>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-              Welcome to <span className="logo-title">Team Boss Fight</span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+              Ready for an Epic Adventure?
             </h2>
             <p className="text-xl md:text-2xl opacity-90 leading-relaxed max-w-3xl mx-auto">
-              The modern polling platform that makes creating, sharing, and analyzing polls effortless. 
-              Get real-time insights and engage your audience like never before.
+              Join forces with other participants and put your knowledge to the test! Answer questions, deal damage, and work together to defeat powerful bosses. Show your skills and compete for glory!
             </p>
           </div>
           
@@ -208,7 +219,7 @@ const MainLanding = () => {
               size="lg"
               className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold transition-all duration-300 bg-transparent"
             >
-              Learn More <ChevronRight className="ml-2 w-5 h-5" />
+              Join Event <ChevronRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
         </div>
@@ -219,10 +230,10 @@ const MainLanding = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-              Why Choose BallotPilot?
+              How Does It Work?
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Powerful features designed to make polling simple, secure, and insightful.
+              Three simple steps to join the ultimate team-based boss battle experience.
             </p>
           </div>
 
@@ -230,12 +241,12 @@ const MainLanding = () => {
             <Card className="landing-feature text-center p-6 hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
                 <Users className="w-12 h-12 mx-auto mb-4 text-blue-600" />
-                <CardTitle className="text-xl mb-2">Easy Poll Creation</CardTitle>
+                <CardTitle className="text-xl mb-2">1. Scan & Join</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 dark:text-gray-300">
-                  Create beautiful, engaging polls in minutes with our intuitive interface. 
-                  Multiple question types and customization options available.
+                  Simply scan the QR code displayed at the event to instantly join a boss battle. 
+                  No app downloads or complicated setup required!
                 </CardDescription>
               </CardContent>
             </Card>
@@ -243,12 +254,12 @@ const MainLanding = () => {
             <Card className="landing-feature text-center p-6 hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
                 <BarChart3 className="w-12 h-12 mx-auto mb-4 text-purple-600" />
-                <CardTitle className="text-xl mb-2">Real-time Analytics</CardTitle>
+                <CardTitle className="text-xl mb-2">2. Answer & Attack</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 dark:text-gray-300">
-                  Watch your results come in live with detailed analytics and beautiful 
-                  visualizations. Export data for further analysis.
+                  Answer multiple-choice questions correctly to deal damage to the boss. 
+                  The faster you answer, the more damage you deal to help your team win!
                 </CardDescription>
               </CardContent>
             </Card>
@@ -256,183 +267,29 @@ const MainLanding = () => {
             <Card className="landing-feature text-center p-6 hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
                 <Shield className="w-12 h-12 mx-auto mb-4 text-green-600" />
-                <CardTitle className="text-xl mb-2">Secure & Private</CardTitle>
+                <CardTitle className="text-xl mb-2">3. Win & Collect</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-gray-600 dark:text-gray-300">
-                  Your data is protected with enterprise-grade security. 
-                  Anonymous voting options and privacy controls included.
+                  Work with your randomly assigned team to defeat bosses and earn exclusive badges. 
+                  Compete on leaderboards and become the ultimate boss fighter!
                 </CardDescription>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
-      <Slider defaultValue={[33]} max={100} step={1} />
-      {/* ===== ABOUT SECTION ===== */}
-      <section id="about" className="py-20 px-4 sm:px-12 md:px-20 lg:px-20 xl:px-50 2xl:px-80 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-950">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-              About Our Team
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Meet the talented individuals who brought BallotPilot to life through their dedication and expertise.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-8">
-            {/* First row - 3 cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-              <Card className="landing-feature text-center p-6 hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <img 
-                    src="/src/assets/About_Chansovisoth.jpg" 
-                    alt="Chansovisoth Wattanak"
-                    className="profile-image mx-auto mb-4"
-                  />
-                  <CardTitle className="text-lg mb-1">Chansovisoth Wattanak</CardTitle>
-                  <CardDescription className="text-blue-600 dark:text-blue-400 font-semibold mb-3">
-                    Frontend Developer
-                  </CardDescription>
-                  <div className="flex justify-center gap-3">
-                    <a href="https://github.com/Chansovisoth" className="social-link text-gray-600 hover:text-blue-600 transition-colors">
-                      <Github className="w-4 h-4" />
-                    </a>
-                    <a href="https://www.linkedin.com/in/Chansovisoth" className="social-link text-gray-600 hover:text-blue-600 transition-colors">
-                      <Linkedin className="w-4 h-4" />
-                    </a>
-                    <a href="https://mail.google.com/mail/u/0/?fs=1&to=cwattanak@paragoniu.edu.kh&tf=cm" className="social-link text-gray-600 hover:text-blue-600 transition-colors">
-                      <Mail className="w-4 h-4" />
-                    </a>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card className="landing-feature text-center p-6 hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <img 
-                    src="/src/assets/About_Chanreach.jpg" 
-                    alt="Chanreach Try"
-                    className="profile-image mx-auto mb-4"
-                  />
-                  <CardTitle className="text-lg mb-1">Chanreach Try</CardTitle>
-                  <CardDescription className="text-green-600 dark:text-green-400 font-semibold mb-3">
-                    Backend Developer
-                  </CardDescription>
-                  <div className="flex justify-center gap-3">
-                    <a href="https://github.com/ChanreachTry" className="social-link text-gray-600 hover:text-green-600 transition-colors">
-                      <Github className="w-4 h-4" />
-                    </a>
-                    {/* <a href="#" className="social-link text-gray-600 hover:text-green-600 transition-colors">
-                      <Linkedin className="w-4 h-4" />
-                    </a> */}
-                    <a href="https://mail.google.com/mail/u/0/?fs=1&to=ctry1@paragoniu.edu.kh&tf=cm" className="social-link text-gray-600 hover:text-green-600 transition-colors">
-                      <Mail className="w-4 h-4" />
-                    </a>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card className="landing-feature text-center p-6 hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <img 
-                    src="/src/assets/About_Rithy.jpg" 
-                    alt="Rithy Chan"
-                    className="profile-image mx-auto mb-4"
-                  />
-                  <CardTitle className="text-lg mb-1">Rithy Chan</CardTitle>
-                  <CardDescription className="text-purple-600 dark:text-purple-400 font-semibold mb-3">
-                    Backend Developer
-                  </CardDescription>
-                  <div className="flex justify-center gap-3">
-                    <a href="https://github.com/Rithy404" className="social-link text-gray-600 hover:text-purple-600 transition-colors">
-                      <Github className="w-4 h-4" />
-                    </a>
-                    <a href="https://www.linkedin.com/in/rithy-chan-67314033b/" className="social-link text-gray-600 hover:text-purple-600 transition-colors">
-                      <Linkedin className="w-4 h-4" />
-                    </a>
-                    <a href="https://mail.google.com/mail/u/0/?fs=1&to=rchan2@paragoniu.edu.kh&tf=cm" className="social-link text-gray-600 hover:text-purple-600 transition-colors">
-                      <Mail className="w-4 h-4" />
-                    </a>
-                  </div>
-                </CardHeader>
-              </Card>
-            </div>
-
-            {/* Second row - 2 cards centered */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl mx-auto">
-              <Card className="landing-feature text-center p-6 hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <img 
-                    src="/src/assets/About_Sodavith.jpg" 
-                    alt="Sodavith Nuon"
-                    className="profile-image mx-auto mb-4"
-                  />
-                  <CardTitle className="text-lg mb-1">Sodavith Nuon</CardTitle>
-                  <CardDescription className="text-orange-600 dark:text-orange-400 font-semibold mb-3">
-                    UI/UX Designer
-                  </CardDescription>
-                  <div className="flex justify-center gap-3">
-                    <a href="https://github.com/SodavithNuon" className="social-link text-gray-600 hover:text-orange-600 transition-colors">
-                      <Github className="w-4 h-4" />
-                    </a>
-                    {/* <a href="#" className="social-link text-gray-600 hover:text-orange-600 transition-colors">
-                      <Linkedin className="w-4 h-4" />
-                    </a> */}
-                    <a href="https://mail.google.com/mail/u/0/?fs=1&to=snuon@paragoniu.edu.kh&tf=cm" className="social-link text-gray-600 hover:text-orange-600 transition-colors">
-                      <Mail className="w-4 h-4" />
-                    </a>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card className="landing-feature text-center p-6 hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <img 
-                    src="/src/assets/About_Sovitep.jpg" 
-                    alt="Sovitep Chea"
-                    className="profile-image mx-auto mb-4"
-                  />
-                  <CardTitle className="text-lg mb-1">Sovitep Chea</CardTitle>
-                  <CardDescription className="text-cyan-600 dark:text-cyan-400 font-semibold mb-3">
-                    UI/UX Designer
-                  </CardDescription>
-                  <div className="flex justify-center gap-3">
-                    <a href="https://github.com/Sovitep" className="social-link text-gray-600 hover:text-cyan-600 transition-colors">
-                      <Github className="w-4 h-4" />
-                    </a>
-                    {/* <a href="#" className="social-link text-gray-600 hover:text-cyan-600 transition-colors">
-                      <Linkedin className="w-4 h-4" />
-                    </a> */}
-                    <a href="https://mail.google.com/mail/u/0/?fs=1&to=schea8@paragoniu.edu.kh&tf=cm" className="social-link text-gray-600 hover:text-cyan-600 transition-colors">
-                      <Mail className="w-4 h-4" />
-                    </a>
-                  </div>
-                </CardHeader>
-              </Card>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              This project was developed as part of our Advanced Database course (CS 394). 
-              Each team member contributed their unique skills to create a comprehensive polling platform 
-              that combines modern frontend technologies, robust backend architecture, and intuitive user experience design.
-            </p>
-          </div>
-        </div>
-      </section>
+    
 
       {/* ===== CTA SECTION ===== */}
       <section className="py-20 px-4 sm:px-12 md:px-20 lg:px-20 xl:px-50 2xl:px-80 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white">
-            Ready to Start Polling?
+            Ready to Battle?
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join thousands of users who trust BallotPilot for their polling needs. 
-            Create your first poll today and see the difference.
+            Look for the QR codes at the event and scan one to join your first boss battle. 
+            Team up, answer questions, and become a legend!
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

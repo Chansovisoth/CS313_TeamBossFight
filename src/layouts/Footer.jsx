@@ -22,7 +22,7 @@ const Footer = () => {
 
                     <img
                         className="footer-logo-image w-10 sm:w-12 md:w-16 h-auto object-contain shrink-0"
-                        src="/Fox.png"
+                        src="/src/assets/Swords.png"
                         alt="Ballot Pilot"
                     />
                     {/* <h1 className="footer-logo-title text-center sm:text-left" data-text="Ballot Pilot">
@@ -54,7 +54,7 @@ const Footer = () => {
             </div>
             
             {/* University Credit */}
-            <div className="text-center mt-8 pt-6">
+            <div className="text-center mt-2 pt-0">
               <p className="text-xs text-gray-400">
                 Developed as part of CS 313 - Software Engineering Final Project
               </p>
