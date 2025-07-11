@@ -5,15 +5,14 @@ import { Vote, Users, BarChart3, Shield, ChevronRight, ArrowRight, Github, Linke
 import { startConfettiCelebration } from "@/lib/Confetti";
 import { LiquidFloatingElement, LiquidPillElement, LiquidCircleElement } from "@/lib/LiquidParallax";
 
-
 // ===== COMPONENTS ===== //
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 // import { Slider } from "@/components/ui/slider";
 
 // ===== STYLES ===== //
-import "../index.css";
-import "../landing.css";
+import "@/index.css";
+import "@/home.css";
 
 
 

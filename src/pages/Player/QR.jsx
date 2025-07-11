@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 
 // ===== STYLES ===== //
-import "../index.css";
+import "@/index.css";
 
 const MainQR = () => {
   const navigate = useNavigate();
