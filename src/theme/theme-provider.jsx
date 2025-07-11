@@ -8,7 +8,7 @@ export function ThemeProvider({ children }) {
   const [colorScheme, setColorScheme] = useState(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("colorScheme") || "light";
+    const saved = localStorage.getItem("colorScheme") || "dark";
     setColorScheme(saved);
   }, []);
 

@@ -51,7 +51,7 @@ const Home = () => {
         className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 backdrop-blur-sm border-2 border-white/20 shadow-2xl p-2 sm:p-3"
         size="lg"
       >
-        <QrCode className="w-full h-full scale-250 text-foreground" />
+        <QrCode className="w-full h-full scale-250 text-white" />
       </Button>
 
       {/* ===== HERO SECTION ===== */}
@@ -76,10 +76,10 @@ const Home = () => {
                   className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain drop-shadow-lg"
                 />
               </div>
-              <h1 className="hero-text-gradient text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-4 sm:mb-6 hero-text-gradient leading-tight">
+              <h1 className="hero-text-gradient text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-0 hero-text-gradient leading-tight">
                 UniRAID
               </h1>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-purple-200 max-w-4xl mx-auto leading-normal px-2">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-purple-200 max-w-4xl mx-auto leading-normal px-2">
                 Answer questions, deal damage, claim victory!
               </p>
             </div>
@@ -116,15 +116,15 @@ const Home = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-2xl mx-auto px-2">
               <div className="text-center p-3 sm:p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
                 <div className="text-2xl sm:text-3xl font-bold mb-1">50</div>
-                <div className="text-xs sm:text-sm text-blue-200">Battles Fought</div>
+                <div className="text-xs sm:text-sm text-purple-200">Battles Fought</div>
               </div>
               <div className="text-center p-3 sm:p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
                 <div className="text-2xl sm:text-3xl font-bold mb-1">3</div>
-                <div className="text-xs sm:text-sm text-blue-200">Epic Bosses</div>
+                <div className="text-xs sm:text-sm text-purple-200">Epic Bosses</div>
               </div>
               <div className="text-center p-3 sm:p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
-                <div className="text-2xl sm:text-3xl font-bold mb-1">5000+</div>
-                <div className="text-xs sm:text-sm text-blue-200">Unique Players</div>
+                <div className="text-2xl sm:text-3xl font-bold mb-1">123</div>
+                <div className="text-xs sm:text-sm text-purple-200">Unique Players</div>
               </div>
             </div>
           </div>

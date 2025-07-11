@@ -10,6 +10,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 // ===== COMPONENTS ===== //
 import { MessageDisplay } from "./components/MessageDisplay";
+import PageTitle from "@/layouts/PageTitle";
 // import { useAuth } from "./context/useAuth";
 // import { setupInterceptors } from "./api";
 
@@ -34,7 +35,8 @@ export default function App() {
           {/* ===== SIDEBAR TOGGLE & MESSAGE DISPLAY ===== */}
           <div className="flex items-center gap-4 p-4 border-b">
             <SidebarTrigger />
-            <MessageDisplay />
+            <PageTitle />
+            {/* <MessageDisplay /> */}
           </div>
 
           {/* ===== PAGE CONTENT (Outlet for route rendering) ===== */}

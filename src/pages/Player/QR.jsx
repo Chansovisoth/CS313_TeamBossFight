@@ -228,7 +228,7 @@ const QR = () => {
             <Button
               onClick={captureImage}
               disabled={isProcessing}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              className="purple-gradient text-white"
             >
               <Camera className="w-4 h-4 mr-2" />
               {isProcessing ? "Processing..." : "Capture"}
@@ -278,7 +278,7 @@ const QR = () => {
       )}
 
       {/* Regular View */}
-      <main className="flex-grow min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
+      <main className="flex-grow min-h-screen bg-gradient-to-br purple-gradient">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
