@@ -32,6 +32,8 @@ import HostBossesCreate from "./pages/Host/Bosses/Create";
 import HostBossesEdit from "./pages/Host/Bosses/Edit";
 
 import HostEventsView from "./pages/Host/Events/View";
+import HostEventsAssignBoss from "./pages/Host/Events/AssignBoss";
+import HostEventsBossTemplate from "./pages/Host/Events/BossTemplate";
 
 
 import MainQR from "./pages/MainQR";
@@ -76,14 +78,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </Route>
 
             {/* Host Bosses/Create */}
-            <Route path="/host/bosses/create" element={<App />}>
+            <Route path="/host/bosses/create" element={<AppOP />}>
               <Route index element={<HostBossesCreate />} />
             </Route>
-
-            {/* Host Bosses/Edit */}
-            {/* <Route path="/host/bosses/edit" element={<App />}>
-              <Route index element={<HostBossesEdit />} />
-            </Route> */}
             
             {/* Host Bosses Edit */}
             <Route path="/host/bosses/edit" element={<AppOP />}>
@@ -98,6 +95,16 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             {/* Host Events View */}
             <Route path="/host/events/view" element={<AppOP />}>
               <Route index element={<HostEventsView />} />
+            </Route>
+
+            {/* Host Events Assign Boss */}
+            <Route path="/host/events/assign_boss" element={<AppOP />}>
+              <Route index element={<HostEventsAssignBoss />} />
+            </Route>
+
+            {/* Host Events Boss Template */}
+            <Route path="/host/events/boss_template" element={<AppOP />}>
+              <Route index element={<HostEventsBossTemplate />} />
             </Route>
 
             {/* Old Landing Page */}
