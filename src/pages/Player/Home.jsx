@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import EventCarousel from "@/layouts/EventCarousel";
 
 // ===== STYLES ===== //
-import "../index.css";
-import "../landing.css";
+import "@/index.css";
+import "@/home.css";
 
 
 

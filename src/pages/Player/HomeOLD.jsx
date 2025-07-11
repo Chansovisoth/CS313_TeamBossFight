@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 // import { Slider } from "@/components/ui/slider";
 
 // ===== STYLES ===== //
-import "../index.css";
-import "../landing.css";
+import "@/index.css";
+import "@/home.css";
 
 
 

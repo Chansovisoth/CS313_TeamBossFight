@@ -13,29 +13,25 @@ import { MessageProvider } from "./context/MessageProvider";
 // ===== STYLES ===== //
 import "./index.css";
 
-// ===== PAGES ===== //
+// ===== PLAYER PAGES ===== //
 import App from "./App";
 import AppOP from "./AppOP";
 import AppOLD from "./AppOLD";
-import MainLandingOLD from "./pages/MainLandingOLD";
-import MainLanding from "./pages/MainLanding";
-import MainBadges from "./pages/MainBadges";
-import MainAbout from "./pages/MainAbout";
-
-import Authentication from "./pages/Authentication";
+import PlayerHomeOLD from "./pages/Player/HomeOLD";
+import PlayerHome from "./pages/Player/Home";
+import PlayerBadges from "./pages/Player/Badges";
+import PlayerAbout from "./pages/Player/About";
+import PlayerAuthentication from "./pages/Player/Authentication";
 
 // ===== HOST PAGES ===== //
-
 import HostAuthentication from "./pages/Host/Authentication";
 import HostBossesView from "./pages/Host/Bosses/View";
 import HostBossesCreate from "./pages/Host/Bosses/Create";
 import HostBossesEdit from "./pages/Host/Bosses/Edit";
 
 import HostEventsView from "./pages/Host/Events/View";
-
-
-import MainQR from "./pages/MainQR";
-import BossBattle from "./pages/BossBattle";
+import PlayerQR from "./pages/Player/QR";
+import PlayerBossBattle from "./pages/Player/BossBattle";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -44,32 +40,32 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <MessageProvider>
           <Routes>
-            {/* Landing Page */}
+            {/* ===== PLAYER ROUTES ===== */}
             <Route path="/" element={<App />}>
-              <Route index element={<MainLanding />} />
+              <Route index element={<PlayerHome />} />
             </Route>
 
             <Route path="/qr" element={<App />}>
-              <Route index element={<MainQR />} />
+              <Route index element={<PlayerQR />} />
             </Route>
 
             <Route path="/boss-battle" element={<App />}>
-              <Route index element={<BossBattle />} />
+              <Route index element={<PlayerBossBattle />} />
             </Route>
 
             <Route path="/badges" element={<App />}>
-              <Route index element={<MainBadges />} />
+              <Route index element={<PlayerBadges />} />
             </Route>
 
             <Route path="/about" element={<App />}>
-              <Route index element={<MainAbout />} />
+              <Route index element={<PlayerAbout />} />
             </Route>
 
             <Route path="/auth" element={<App />}>
-              <Route index element={<Authentication />} />
+              <Route index element={<PlayerAuthentication />} />
             </Route>
 
-
+            {/* ===== HOST ROUTES ===== */}
             {/* Host Authentication */}
             <Route path="/host/auth" element={<App />}>
               <Route index element={<HostAuthentication />} />
@@ -100,9 +96,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<HostEventsView />} />
             </Route>
 
-            {/* Old Landing Page */}
+            {/* Old Home Page */}
             <Route path="/old" element={<AppOLD />}>
-              <Route index element={<MainLandingOLD />} />
+              <Route index element={<PlayerHomeOLD />} />
             </Route>
 
             {/* 404 Error Route */}
