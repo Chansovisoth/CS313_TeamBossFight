@@ -22,6 +22,8 @@ import PlayerHome from "./pages/Player/Home";
 import PlayerBadges from "./pages/Player/Badges";
 import PlayerAbout from "./pages/Player/About";
 import PlayerAuthentication from "./pages/Player/Authentication";
+import PlayerQR from "./pages/Player/QR";
+import PlayerBossBattle from "./pages/Player/BossBattle";
 
 // ===== HOST PAGES ===== //
 import HostAuthentication from "./pages/Host/Authentication";
@@ -30,8 +32,10 @@ import HostBossesCreate from "./pages/Host/Bosses/Create";
 import HostBossesEdit from "./pages/Host/Bosses/Edit";
 
 import HostEventsView from "./pages/Host/Events/View";
-import PlayerQR from "./pages/Player/QR";
-import PlayerBossBattle from "./pages/Player/BossBattle";
+import HostEventsAssignBoss from "./pages/Host/Events/AssignBoss";
+import HostEventsBossTemplate from "./pages/Host/Events/BossTemplate";
+
+
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
