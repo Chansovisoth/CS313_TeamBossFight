@@ -15,6 +15,7 @@ import "./index.css";
 
 // ===== PAGES ===== //
 import App from "./App";
+import AppOP from "./AppOP";
 import AppOLD from "./AppOLD";
 import MainLandingOLD from "./pages/MainLandingOLD";
 import MainLanding from "./pages/MainLanding";
@@ -26,6 +27,7 @@ import Authentication from "./pages/Authentication";
 // ===== HOST PAGES ===== //
 
 import HostAuthentication from "./pages/Host/Authentication";
+import HostBossesView from "./pages/Host/Bosses/View";
 import HostBossesCreate from "./pages/Host/Bosses/Create";
 import HostBossesEdit from "./pages/Host/Bosses/Edit";
 
@@ -77,10 +79,19 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </Route>
 
             {/* Host Bosses/Edit */}
-            <Route path="/host/bosses/edit" element={<App />}>
+            {/* <Route path="/host/bosses/edit" element={<App />}>
+              <Route index element={<HostBossesEdit />} />
+            </Route> */}
+            
+            {/* Host Bosses Edit */}
+            <Route path="/host/bosses/edit" element={<AppOP />}>
               <Route index element={<HostBossesEdit />} />
             </Route>
-            
+
+            {/* Host Bosses View */}
+            <Route path="/host/bosses/view" element={<AppOP />}>
+              <Route index element={<HostBossesView />} />
+            </Route>
 
             {/* Old Landing Page */}
             <Route path="/old" element={<AppOLD />}>

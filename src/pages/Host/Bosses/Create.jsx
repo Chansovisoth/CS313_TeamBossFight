@@ -1,10 +1,37 @@
-import React from 'react';
-import { Upload, Menu } from 'lucide-react';
+import React, { useState } from 'react';
+import { Upload, Menu, X, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 const CreateBoss = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState(['CS', 'MIS']); // Pre-selected for demo
+
+  const availableCategories = [
+    'ARC',
+    'BUS', 
+    'CE',
+    'CS',
+    'MIS',
+    'Life is good'
+  ];
+
+  const handleCategorySelect = (category) => {
+    if (!selectedCategories.includes(category)) {
+      setSelectedCategories([...selectedCategories, category]);
+    }
+    setIsDropdownOpen(false);
+  };
+
+  const handleCategoryRemove = (categoryToRemove) => {
+    setSelectedCategories(selectedCategories.filter(cat => cat !== categoryToRemove));
+  };
+
+  const unselectedCategories = availableCategories.filter(
+    cat => !selectedCategories.includes(cat)
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-md mx-auto">
@@ -51,21 +78,59 @@ const CreateBoss = () => {
               </div>
             </div>
 
-            {/* Category */}
+            {/* Category with Multi-Select Display */}
             <div>
-              <Label htmlFor="category" className="text-sm font-medium text-gray-700">
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">
                 Category
               </Label>
-              <select 
-                id="category"
-                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select category</option>
-                <option value="fantasy">Fantasy</option>
-                <option value="sci-fi">Sci-Fi</option>
-                <option value="horror">Horror</option>
-                <option value="adventure">Adventure</option>
-              </select>
+              
+              <div className="relative">
+                {/* Category Display Bar with Tags and Dropdown Arrow */}
+                <div 
+                  className="border border-gray-300 rounded-md p-3 min-h-[40px] flex flex-wrap gap-2 items-center cursor-pointer hover:border-gray-400"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  {/* Selected Category Tags */}
+                  {selectedCategories.map((category) => (
+                    <span 
+                      key={category}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 text-gray-800 text-sm rounded-md"
+                    >
+                      {category}
+                      <X 
+                        className="w-3 h-3 cursor-pointer hover:text-red-600" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCategoryRemove(category);
+                        }}
+                      />
+                    </span>
+                  ))}
+                  
+                  {/* Placeholder when no categories selected */}
+                  {selectedCategories.length === 0 && (
+                    <span className="text-gray-500 text-sm">Select categories</span>
+                  )}
+                  
+                  {/* Dropdown Arrow */}
+                  <ChevronDown className={`w-4 h-4 text-gray-400 ml-auto transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </div>
+
+                {/* Dropdown Options */}
+                {isDropdownOpen && unselectedCategories.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                    {unselectedCategories.map((category) => (
+                      <div
+                        key={category}
+                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm border-b border-gray-100 last:border-b-0"
+                        onClick={() => handleCategorySelect(category)}
+                      >
+                        {category}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Number of Teams to Start */}
