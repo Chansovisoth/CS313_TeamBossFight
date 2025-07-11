@@ -5,8 +5,21 @@ import { Button } from '@/components/ui/button';
 const ViewBosses = () => {
   // For demo purposes - toggle this to see different states
   const [bosses, setBosses] = useState([
-    { id: 1, name: 'Boss1', image: null },
-    { id: 2, name: 'Boss2', image: null }
+    {
+      id: 1,
+      name: 'Boss 1',
+      image: 'https://via.placeholder.com/150'
+    },
+    {
+      id: 2,
+      name: 'Boss 2',
+      image: 'https://via.placeholder.com/150'
+    },
+    {
+      id: 3,
+      name: 'Boss 3',
+      image: 'https://via.placeholder.com/150'
+    }
   ]);
   
   // Change to empty array to see "No Bosses Found" state

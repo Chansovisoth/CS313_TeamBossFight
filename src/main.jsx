@@ -31,6 +31,8 @@ import HostBossesView from "./pages/Host/Bosses/View";
 import HostBossesCreate from "./pages/Host/Bosses/Create";
 import HostBossesEdit from "./pages/Host/Bosses/Edit";
 
+import HostEventsView from "./pages/Host/Events/View";
+
 
 import MainQR from "./pages/MainQR";
 import BossBattle from "./pages/BossBattle";
@@ -91,6 +93,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             {/* Host Bosses View */}
             <Route path="/host/bosses/view" element={<AppOP />}>
               <Route index element={<HostBossesView />} />
+            </Route>
+
+            {/* Host Events View */}
+            <Route path="/host/events/view" element={<AppOP />}>
+              <Route index element={<HostEventsView />} />
             </Route>
 
             {/* Old Landing Page */}
