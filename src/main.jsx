@@ -26,7 +26,8 @@ import Authentication from "./pages/Authentication";
 // ===== HOST PAGES ===== //
 
 import HostAuthentication from "./pages/Host/Authentication";
-import HostCreate from "./pages/Host/BossCreate";
+import HostBossesCreate from "./pages/Host/Bosses/Create";
+
 
 import MainQR from "./pages/MainQR";
 import BossBattle from "./pages/BossBattle";
@@ -69,10 +70,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<HostAuthentication />} />
             </Route>
 
-            {/* Host Create Page */}
-            <Route path="/host/boss_create" element={<App />}>
-              <Route index element={<HostCreate />} />
+            {/* Host Bosses/Create */}
+            <Route path="/host/bosses/create" element={<App />}>
+              <Route index element={<HostBossesCreate />} />
             </Route>
+
+
+            
 
             {/* Old Landing Page */}
             <Route path="/old" element={<AppOLD />}>
