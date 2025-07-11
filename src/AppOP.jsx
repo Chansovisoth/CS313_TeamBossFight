@@ -1,3 +1,4 @@
+// AppOP is a Master Page for Host and Admin (OP or Operator)
 // ===== LIBRARIES ===== //
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";

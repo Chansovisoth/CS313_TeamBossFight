@@ -1,3 +1,4 @@
+// App is a Master Page for Player
 // ===== LIBRARIES ===== //
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";

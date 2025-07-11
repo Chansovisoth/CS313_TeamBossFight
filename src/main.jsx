@@ -13,10 +13,12 @@ import { MessageProvider } from "./context/MessageProvider";
 // ===== STYLES ===== //
 import "./index.css";
 
-// ===== PLAYER PAGES ===== //
+// ===== MASTER PAGES ===== //
 import App from "./App";
 import AppOP from "./AppOP";
 import AppOLD from "./AppOLD";
+
+// ===== PLAYER PAGES ===== //
 import PlayerHomeOLD from "./pages/Player/HomeOLD";
 import PlayerHome from "./pages/Player/Home";
 import PlayerBadges from "./pages/Player/Badges";

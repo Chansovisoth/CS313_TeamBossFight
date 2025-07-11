@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Sample badges data
-const userBadges = [
+const Badges = [
   {
     id: 1,
     name: "Boss Defeated",
@@ -334,5 +334,5 @@ const MainBadges = () => {
   );
 };
 
-export default MainBadges;
+export default Badges;
 

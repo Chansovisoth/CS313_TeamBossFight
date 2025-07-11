@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 // ===== STYLES ===== //
 import "@/index.css";
 
-const MainQR = () => {
+const QR = () => {
   const navigate = useNavigate();
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [qrResult, setQrResult] = useState("");
@@ -465,4 +465,4 @@ const MainQR = () => {
   );
 };
 
-export default MainQR;
+export default QR;

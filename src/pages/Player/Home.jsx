@@ -16,7 +16,7 @@ import "@/home.css";
 
 
 
-const MainLanding = () => {
+const Home = () => {
   const navigate = useNavigate();
   const [logoClicked, setLogoClicked] = useState(false);
 
@@ -275,5 +275,5 @@ const MainLanding = () => {
   );
 };
 
-export default MainLanding;
+export default Home;
 
