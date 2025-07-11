@@ -6,6 +6,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 // ===== LAYOUTS ===== //
 import Nav from "@/layouts/Nav";
 import Footer from "@/layouts/Footer";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 // ===== COMPONENTS ===== //
 import { MessageDisplay } from "./components/MessageDisplay";
@@ -24,20 +25,27 @@ export default function App() {
   // }, [auth, navigate]);
 
   return (
-    <div className="flex flex-col min-h-screen w-full">
-      {/* ===== NAVBAR ===== */}
-      <Nav />
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        {/* ===== SIDEBAR NAVIGATION ===== */}
+        <Nav />
 
-      {/* ===== MESSAGE DISPLAY ===== */}
-      <MessageDisplay />
+        <div className="flex flex-col flex-1">
+          {/* ===== SIDEBAR TOGGLE & MESSAGE DISPLAY ===== */}
+          <div className="flex items-center gap-4 p-4 border-b">
+            <SidebarTrigger />
+            <MessageDisplay />
+          </div>
 
-      {/* ===== PAGE CONTENT (Outlet for route rendering) ===== */}
-      <main className="flex-1 w-full">
-        <Outlet />
-      </main>
+          {/* ===== PAGE CONTENT (Outlet for route rendering) ===== */}
+          <main className="flex-1 w-full">
+            <Outlet />
+          </main>
 
-      {/* ===== FOOTER ===== */}
-      <Footer />
-    </div>
+          {/* ===== FOOTER ===== */}
+          <Footer />
+        </div>
+      </div>
+    </SidebarProvider>
   );
 }

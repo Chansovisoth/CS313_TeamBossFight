@@ -13,8 +13,9 @@ export default defineConfig({
   },
   server: {
     allowedHosts: [
-      "npm.proficientia.me", // Allow this host
-      "localhost", // Allow localhost
+      "klaude.proficientia.me",
+      "npm.proficientia.me",
+      "localhost",
     ],
   },
 })

@@ -19,6 +19,7 @@ import AppOP from "./AppOP";
 import AppOLD from "./AppOLD";
 
 // ===== PLAYER PAGES ===== //
+import Error from "./pages/Error";
 import PlayerHomeOLD from "./pages/Player/HomeOLD";
 import PlayerHome from "./pages/Player/Home";
 import PlayerBadges from "./pages/Player/Badges";
@@ -113,12 +114,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </Route>
 
             {/* 404 Error Route */}
-            <Route
-              path="*"
-              element={
-                <div className="text-center font-bold p-8">ERROR 404: PAGE DOES NOT EXIST</div>
-              }
-            />
+            <Route path="*" element={<App />}>
+              <Route path="*" element={<Error />} />
+            </Route>
+            
           </Routes>
         </MessageProvider>
       </BrowserRouter>
