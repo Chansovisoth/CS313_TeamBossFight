@@ -1,25 +1,28 @@
 import React from 'react';
-import { Upload, Menu } from 'lucide-react';
+import { Menu, Trash2, Upload, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
-const CreateBoss = () => {
+const EditBoss = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-md mx-auto">
         <div className="bg-white rounded-lg shadow-md p-6">
-          {/* Header */}
-          <div className="flex items-center mb-6">
-            <Menu className="w-6 h-6 text-gray-600 mr-3" />
-            <h1 className="text-lg font-semibold text-gray-900">Create Boss</h1>
+          {/* Header with Menu and Delete Icons */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <Menu className="w-6 h-6 text-gray-600 mr-3" />
+              <h1 className="text-lg font-semibold text-gray-900">Edit Boss</h1>
+            </div>
+            <Trash2 className="w-6 h-6 text-gray-600 hover:text-red-600 cursor-pointer" />
           </div>
 
-          {/* Upload Boss Image */}
+          {/* Change Boss Image */}
           <div className="mb-6">
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 cursor-pointer">
               <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600 font-medium">Upload Boss Image</p>
+              <p className="text-sm text-gray-600 font-medium">Change Boss Image</p>
             </div>
           </div>
 
@@ -33,8 +36,7 @@ const CreateBoss = () => {
                 </Label>
                 <Input
                   id="boss-name"
-                  type="text"
-                  placeholder="Enter boss name"
+                  defaultValue="Boss1"
                   className="mt-1"
                 />
               </div>
@@ -44,28 +46,27 @@ const CreateBoss = () => {
                 </Label>
                 <Input
                   id="boss-cooldown"
-                  type="text"
-                  placeholder="00:00"
+                  defaultValue="00:00"
                   className="mt-1"
                 />
               </div>
             </div>
 
-            {/* Category */}
+            {/* Category with Selected Chips */}
             <div>
-              <Label htmlFor="category" className="text-sm font-medium text-gray-700">
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">
                 Category
               </Label>
-              <select 
-                id="category"
-                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select category</option>
-                <option value="fantasy">Fantasy</option>
-                <option value="sci-fi">Sci-Fi</option>
-                <option value="horror">Horror</option>
-                <option value="adventure">Adventure</option>
-              </select>
+              <div className="border border-gray-300 rounded-md p-3 min-h-[40px] flex flex-wrap gap-2 items-center">
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 text-gray-800 text-sm rounded-md">
+                  CS
+                  <X className="w-3 h-3 cursor-pointer hover:text-red-600" />
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 text-gray-800 text-sm rounded-md">
+                  MIS
+                  <X className="w-3 h-3 cursor-pointer hover:text-red-600" />
+                </span>
+              </div>
             </div>
 
             {/* Number of Teams to Start */}
@@ -90,8 +91,8 @@ const CreateBoss = () => {
               <textarea
                 id="description"
                 rows={4}
-                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                placeholder="Enter boss description..."
+                defaultValue="Cool boss 😎"
+                className="mt-1 resize-none w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -116,4 +117,4 @@ const CreateBoss = () => {
   );
 };
 
-export default CreateBoss;
+export default EditBoss;
