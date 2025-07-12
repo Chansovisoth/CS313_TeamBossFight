@@ -251,16 +251,11 @@ const QR = () => {
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // Crop to central square region for better detection (use integer dimensions)
-    let size = Math.min(canvas.width, canvas.height) * 0.7;
-    size = Math.floor(size);
-    const sx = Math.floor((canvas.width - size) / 2);
-    const sy = Math.floor((canvas.height - size) / 2);
-    const imageData = context.getImageData(sx, sy, size, size);
-    console.log('Scanning region:', { sx, sy, size });
-    const code = jsQR(imageData.data, size, size, { inversionAttempts: 'attemptBoth' });
-    console.log('jsQR result after crop:', code);
-    console.log('jsQR result:', code);
+    // Scan the entire frame for QR codes
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    console.log('Scanning entire frame:', { width: canvas.width, height: canvas.height });
+    const code = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: 'attemptBoth' });
+    console.log('jsQR full frame result:', code);
     
     if (code) {
       stopQRScanning();
