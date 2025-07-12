@@ -18,5 +18,8 @@ export default defineConfig({
       "localhost",
     ],
   },
+  optimizeDeps: {
+    include: ['qr-scanner', 'qr-scanner/qr-scanner-worker.min.js']
+  }
 })
 

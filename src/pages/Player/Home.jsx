@@ -48,10 +48,10 @@ const Home = () => {
       {/* Floating QR Code Button */}
       <Button
         onClick={handleQRCodeClick}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 backdrop-blur-sm border-2 border-white/20 shadow-2xl p-2 sm:p-3"
+        className="brightness-90 fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 backdrop-blur-sm border-2 border-white/20 shadow-2xl p-2 sm:p-3"
         size="lg"
       >
-        <QrCode className="w-full h-full scale-250 text-white" />
+        <QrCode className="w-full h-full scale-250 text-[#ffffff]" />
       </Button>
 
       {/* ===== HERO SECTION ===== */}
