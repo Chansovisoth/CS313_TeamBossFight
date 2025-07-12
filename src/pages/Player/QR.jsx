@@ -191,15 +191,15 @@ const QR = () => {
     
     setScanningActive(true);
     
-    // Only draw the video to the canvas for the guide box, no automatic scanning
+    // Draw the video to the canvas for the guide box
     drawIntervalRef.current = setInterval(drawVideoToCanvas, 100);
-    // Automatically scan every 0.5s until a code is found
+    // Faster scanning for better responsiveness - scan every 300ms
     scanIntervalRef.current = setInterval(() => {
       if (!isProcessing) {
         setIsProcessing(true);
         scanQRCode();
       }
-    }, 500);
+    }, 300);
   };
 
   const stopQRScanning = () => {
@@ -251,28 +251,133 @@ const QR = () => {
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // Scan the entire frame for QR codes
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    console.log('Scanning entire frame:', { width: canvas.width, height: canvas.height });
-    const code = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: 'attemptBoth' });
-    console.log('jsQR full frame result:', code);
+    // Enhanced scanning strategies with angle detection
+    const scanStrategies = [
+      // Standard strategies
+      { type: 'crop', size: 0.7, angle: 0, name: 'center-70' },
+      { type: 'crop', size: 0.85, angle: 0, name: 'center-85' },
+      { type: 'crop', size: 0.55, angle: 0, name: 'center-55' },
+      
+      // Angled strategies for tilted QR codes
+      { type: 'crop', size: 0.7, angle: 15, name: 'center-70-15deg' },
+      { type: 'crop', size: 0.7, angle: -15, name: 'center-70-minus15deg' },
+      { type: 'crop', size: 0.7, angle: 30, name: 'center-70-30deg' },
+      { type: 'crop', size: 0.7, angle: -30, name: 'center-70-minus30deg' },
+      { type: 'crop', size: 0.85, angle: 45, name: 'center-85-45deg' },
+      { type: 'crop', size: 0.85, angle: -45, name: 'center-85-minus45deg' },
+      
+      // Full frame with angles as fallback
+      { type: 'full', angle: 0, name: 'full-frame' },
+      { type: 'full', angle: 90, name: 'full-frame-90deg' },
+      { type: 'full', angle: 180, name: 'full-frame-180deg' },
+      { type: 'full', angle: 270, name: 'full-frame-270deg' }
+    ];
     
-    if (code) {
-      stopQRScanning();
-      stopCamera();
-      const url = code.data;
-      setQrResult(url);
-      if (url.startsWith('http://') || url.startsWith('https://')) {
-        setDetectedUrl(url);
-      } else {
-        setDetectedUrl("");
-        setCameraError("QR code does not contain a valid link.");
-        setIsProcessing(false);
+    for (const strategy of scanStrategies) {
+      try {
+        let imageData, width, height;
+        
+        if (strategy.type === 'full') {
+          // Full frame with rotation
+          if (strategy.angle === 0) {
+            imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            width = canvas.width;
+            height = canvas.height;
+          } else {
+            const rotatedCanvas = document.createElement('canvas');
+            const rotatedContext = rotatedCanvas.getContext('2d');
+            
+            if (strategy.angle === 90 || strategy.angle === 270) {
+              rotatedCanvas.width = canvas.height;
+              rotatedCanvas.height = canvas.width;
+            } else {
+              rotatedCanvas.width = canvas.width;
+              rotatedCanvas.height = canvas.height;
+            }
+            
+            rotatedContext.translate(rotatedCanvas.width / 2, rotatedCanvas.height / 2);
+            rotatedContext.rotate((strategy.angle * Math.PI) / 180);
+            rotatedContext.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
+            
+            imageData = rotatedContext.getImageData(0, 0, rotatedCanvas.width, rotatedCanvas.height);
+            width = rotatedCanvas.width;
+            height = rotatedCanvas.height;
+          }
+        } else {
+          // Cropped with rotation
+          const size = Math.floor(Math.min(canvas.width, canvas.height) * strategy.size);
+          const sx = Math.floor((canvas.width - size) / 2);
+          const sy = Math.floor((canvas.height - size) / 2);
+          
+          if (strategy.angle === 0) {
+            imageData = context.getImageData(sx, sy, size, size);
+            width = height = size;
+          } else {
+            // Create rotated cropped image
+            const cropCanvas = document.createElement('canvas');
+            const cropContext = cropCanvas.getContext('2d');
+            cropCanvas.width = size;
+            cropCanvas.height = size;
+            
+            const cropImageData = context.getImageData(sx, sy, size, size);
+            cropContext.putImageData(cropImageData, 0, 0);
+            
+            const rotatedCanvas = document.createElement('canvas');
+            const rotatedContext = rotatedCanvas.getContext('2d');
+            rotatedCanvas.width = size;
+            rotatedCanvas.height = size;
+            
+            rotatedContext.translate(size / 2, size / 2);
+            rotatedContext.rotate((strategy.angle * Math.PI) / 180);
+            rotatedContext.drawImage(cropCanvas, -size / 2, -size / 2);
+            
+            imageData = rotatedContext.getImageData(0, 0, size, size);
+            width = height = size;
+          }
+        }
+        
+        console.log(`Scanning strategy: ${strategy.name} (${width}x${height})`);
+        
+        const code = jsQR(
+          imageData.data, 
+          width, 
+          height, 
+          { 
+            inversionAttempts: 'attemptBoth',
+            canOverwriteText: true,
+            greyScaleWeights: {
+              red: 0.299,
+              green: 0.587,
+              blue: 0.114
+            }
+          }
+        );
+        
+        if (code) {
+          console.log(`✅ QR Code detected with strategy: ${strategy.name}`, code);
+          stopQRScanning();
+          stopCamera();
+          const url = code.data;
+          setQrResult(url);
+          setIsProcessing(false);
+          if (url.startsWith('http://') || url.startsWith('https://')) {
+            setDetectedUrl(url);
+          } else {
+            setDetectedUrl("");
+            setCameraError("QR code does not contain a valid link.");
+          }
+          return; // Exit early on success
+        }
+      } catch (error) {
+        console.warn(`Strategy ${strategy.name} failed:`, error);
+        continue; // Try next strategy
       }
-    } else {
-      setCameraError("No QR code could be detected. Please try again.");
-      setIsProcessing(false);
     }
+    
+    // If no strategy worked
+    console.log('❌ No QR code detected with any strategy');
+    setCameraError("No QR code could be detected. Please try again.");
+    setIsProcessing(false);
   };
 
   const captureImage = () => {
@@ -302,25 +407,179 @@ const QR = () => {
         canvas.width = img.width;
         canvas.height = img.height;
         context.drawImage(img, 0, 0);
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
-        console.log('jsQR file result:', code);
+        
+        console.log(`📁 File loaded: ${img.width}x${img.height}`);
+        
+        // Try simple direct scan first (most reliable for file uploads)
+        console.log('🔍 Trying direct full image scan...');
+        let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        let code = jsQR(imageData.data, canvas.width, canvas.height, { 
+          inversionAttempts: 'attemptBoth'
+        });
         
         if (code) {
+          console.log(`✅ QR Code detected with direct scan!`, code);
           const url = code.data;
+          setIsProcessing(false);
           if (url.startsWith('http://') || url.startsWith('https://')) {
             setQrResult(`URL detected! Redirecting...`);
-            // Redirect to the URL from the QR code
             window.location.href = url;
           } else {
             setQrResult(`Detected content (not a URL): ${url}`);
             setCameraError("QR code in image does not contain a valid link.");
-            setIsProcessing(false);
           }
-        } else {
-          setCameraError("No QR code found in the uploaded image.");
-          setIsProcessing(false);
+          return;
         }
+        
+        // If direct scan fails, try scaled down version
+        console.log('🔍 Trying scaled down scan...');
+        const scaledCanvas = document.createElement('canvas');
+        const scaledContext = scaledCanvas.getContext('2d');
+        const scale = 0.5;
+        scaledCanvas.width = Math.floor(canvas.width * scale);
+        scaledCanvas.height = Math.floor(canvas.height * scale);
+        scaledContext.drawImage(img, 0, 0, scaledCanvas.width, scaledCanvas.height);
+        
+        imageData = scaledContext.getImageData(0, 0, scaledCanvas.width, scaledCanvas.height);
+        code = jsQR(imageData.data, scaledCanvas.width, scaledCanvas.height, { 
+          inversionAttempts: 'attemptBoth'
+        });
+        
+        if (code) {
+          console.log(`✅ QR Code detected with scaled scan!`, code);
+          const url = code.data;
+          setIsProcessing(false);
+          if (url.startsWith('http://') || url.startsWith('https://')) {
+            setQrResult(`URL detected! Redirecting...`);
+            window.location.href = url;
+          } else {
+            setQrResult(`Detected content (not a URL): ${url}`);
+            setCameraError("QR code in image does not contain a valid link.");
+          }
+          return;
+        }
+        
+        // If simple scans fail, try the advanced camera strategies
+        console.log('🔍 Trying advanced camera strategies...');
+        const scanStrategies = [
+          // Standard strategies (same as camera)
+          { type: 'crop', size: 0.7, angle: 0, name: 'center-70' },
+          { type: 'crop', size: 0.85, angle: 0, name: 'center-85' },
+          { type: 'crop', size: 0.55, angle: 0, name: 'center-55' },
+          
+          // Angled strategies for tilted QR codes (same as camera)
+          { type: 'crop', size: 0.7, angle: 15, name: 'center-70-15deg' },
+          { type: 'crop', size: 0.7, angle: -15, name: 'center-70-minus15deg' },
+          { type: 'crop', size: 0.7, angle: 30, name: 'center-70-30deg' },
+          { type: 'crop', size: 0.7, angle: -30, name: 'center-70-minus30deg' },
+          { type: 'crop', size: 0.85, angle: 45, name: 'center-85-45deg' },
+          { type: 'crop', size: 0.85, angle: -45, name: 'center-85-minus45deg' },
+          
+          // Full frame with angles as fallback (same as camera)
+          { type: 'full', angle: 90, name: 'full-frame-90deg' },
+          { type: 'full', angle: 180, name: 'full-frame-180deg' },
+          { type: 'full', angle: 270, name: 'full-frame-270deg' }
+        ];
+        
+        for (const strategy of scanStrategies) {
+          try {
+            let imageData, width, height;
+            
+            if (strategy.type === 'full') {
+              // Full frame with rotation (SAME logic as camera)
+              const rotatedCanvas = document.createElement('canvas');
+              const rotatedContext = rotatedCanvas.getContext('2d');
+              
+              if (strategy.angle === 90 || strategy.angle === 270) {
+                rotatedCanvas.width = canvas.height;
+                rotatedCanvas.height = canvas.width;
+              } else {
+                rotatedCanvas.width = canvas.width;
+                rotatedCanvas.height = canvas.height;
+              }
+              
+              rotatedContext.translate(rotatedCanvas.width / 2, rotatedCanvas.height / 2);
+              rotatedContext.rotate((strategy.angle * Math.PI) / 180);
+              rotatedContext.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
+              
+              imageData = rotatedContext.getImageData(0, 0, rotatedCanvas.width, rotatedCanvas.height);
+              width = rotatedCanvas.width;
+              height = rotatedCanvas.height;
+            } else {
+              // Cropped with rotation (SAME logic as camera)
+              const size = Math.floor(Math.min(canvas.width, canvas.height) * strategy.size);
+              const sx = Math.floor((canvas.width - size) / 2);
+              const sy = Math.floor((canvas.height - size) / 2);
+              
+              if (strategy.angle === 0) {
+                imageData = context.getImageData(sx, sy, size, size);
+                width = height = size;
+              } else {
+                // Create rotated cropped image (SAME logic as camera)
+                const cropCanvas = document.createElement('canvas');
+                const cropContext = cropCanvas.getContext('2d');
+                cropCanvas.width = size;
+                cropCanvas.height = size;
+                
+                const cropImageData = context.getImageData(sx, sy, size, size);
+                cropContext.putImageData(cropImageData, 0, 0);
+                
+                const rotatedCanvas = document.createElement('canvas');
+                const rotatedContext = rotatedCanvas.getContext('2d');
+                rotatedCanvas.width = size;
+                rotatedCanvas.height = size;
+                
+                rotatedContext.translate(size / 2, size / 2);
+                rotatedContext.rotate((strategy.angle * Math.PI) / 180);
+                rotatedContext.drawImage(cropCanvas, -size / 2, -size / 2);
+                
+                imageData = rotatedContext.getImageData(0, 0, size, size);
+                width = height = size;
+              }
+            }
+            
+            console.log(`🔍 Trying file scan strategy: ${strategy.name} (${width}x${height})`);
+            
+            // Use EXACT same jsQR options as camera
+            const code = jsQR(
+              imageData.data, 
+              width, 
+              height, 
+              { 
+                inversionAttempts: 'attemptBoth',
+                canOverwriteText: true,
+                greyScaleWeights: {
+                  red: 0.299,
+                  green: 0.587,
+                  blue: 0.114
+                }
+              }
+            );
+            
+            if (code) {
+              console.log(`✅ QR Code detected in file with strategy: ${strategy.name}`, code);
+              const url = code.data;
+              setIsProcessing(false);
+              if (url.startsWith('http://') || url.startsWith('https://')) {
+                setQrResult(`URL detected! Redirecting...`);
+                // Redirect to the URL from the QR code
+                window.location.href = url;
+              } else {
+                setQrResult(`Detected content (not a URL): ${url}`);
+                setCameraError("QR code in image does not contain a valid link.");
+              }
+              return; // Exit early on success
+            }
+          } catch (error) {
+            console.warn(`File strategy ${strategy.name} failed:`, error);
+            continue; // Try next strategy
+          }
+        }
+        
+        // If no strategy worked
+        console.log('❌ No QR code detected in uploaded file with any strategy');
+        setCameraError("No QR code found in the uploaded image.");
+        setIsProcessing(false);
       };
       img.onerror = () => {
         setIsProcessing(false);
@@ -375,7 +634,7 @@ const QR = () => {
             <Button onClick={goBack} variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" /> Back
             </Button>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">QR Code Scanner</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">QR Scanner</h1>
             <div className="w-16"></div>
           </div>
 
@@ -459,7 +718,7 @@ const QR = () => {
                     <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
                     <p className="text-green-800 dark:text-green-200 font-medium text-lg">{qrResult}</p>
                     <div className="flex flex-col space-y-2">
-                      <Button onClick={() => {setQrResult(""); setDetectedUrl(""); setCameraError(""); startCamera();}} variant="outline">
+                      <Button onClick={() => {setQrResult(""); setDetectedUrl(""); setCameraError(""); setIsProcessing(false); startCamera();}} variant="outline">
                         <Camera className="w-4 h-4 mr-2" />
                         Scan Again
                       </Button>

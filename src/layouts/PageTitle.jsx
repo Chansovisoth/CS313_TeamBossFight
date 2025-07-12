@@ -1,5 +1,16 @@
 // ===== LIBRARIES ===== //
 import { useLocation } from "react-router-dom";
+import { 
+  Home, 
+  Info, 
+  Award, 
+  QrCode, 
+  Sword, 
+  KeyRound, 
+  Trophy,
+  Shield,
+  Settings
+} from "lucide-react";
 
 // ===== PAGE TITLE COMPONENT ===== //
 export function PageTitle({ className = "text-lg font-semibold text-foreground" }) {
@@ -11,7 +22,7 @@ export function PageTitle({ className = "text-lg font-semibold text-foreground" 
       '/': 'Home',
       '/about': 'About',
       '/badges': 'Badges',
-      '/qr': 'QR Scanner',
+      '/qr': 'QR',
       '/boss-battle': 'Boss Battle',
       '/authentication': 'Authentication',
       '/leaderboard': 'Leaderboard'

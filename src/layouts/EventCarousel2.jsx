@@ -99,14 +99,14 @@ const EventCarousel2 = () => {
       // Center card
       return "translate-x-[-50%] translate-y-[-50%] z-10 scale-100 brightness-100";
     } else if (diff === -1 || (diff === events.length - 1)) {
-      // Left card
-      return "translate-x-[-80%] translate-y-[-50%] scale-75 brightness-[.4]";
+      // Left card - closer to center on mobile
+      return "translate-x-[-66%] sm:translate-x-[-80%] translate-y-[-50%] scale-75 brightness-[.4]";
     } else if (diff === 1 || (diff === -(events.length - 1))) {
-      // Right card
-      return "translate-x-[-20%] translate-y-[-50%] scale-75 brightness-[.4]";
+      // Right card - closer to center on mobile
+      return "translate-x-[-34%] sm:translate-x-[-20%] translate-y-[-50%] scale-75 brightness-[.4]";
     } else {
-      // Hidden cards
-      return "translate-x-[-20%] translate-y-[-50%] scale-75 brightness-[.4] opacity-0";
+      // Hidden cards - closer to center on mobile
+      return "translate-x-[-35%] sm:translate-x-[-20%] translate-y-[-50%] scale-75 brightness-[.4] opacity-0";
     }
   };
 
@@ -127,14 +127,14 @@ const EventCarousel2 = () => {
         <div className="absolute inset-0 h-[300px] flex items-center justify-between z-20 px-4">
           <button
             onClick={goToPrevious}
-            className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center text-white/30 sm:text-purple-500 dark:text-white hover:scale-90 hover:bg-white dark:hover:bg-gray-700/20 duration-200 shadow-lg"
+            className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center text-white/30 sm:text-purple-500 dark:text-white hover:scale-90 dark:hover:bg-gray-700/20 duration-200 shadow-lg"
             aria-label="Previous event"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button
             onClick={goToNext}
-            className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center text-white/30 sm:text-purple-500 dark:text-white hover:scale-90 hover:bg-white dark:hover:bg-gray-700/20 duration-200 shadow-lg"
+            className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center text-white/30 sm:text-purple-500 dark:text-white hover:scale-90 dark:hover:bg-gray-700/20 duration-200 shadow-lg"
             aria-label="Next event"
           >
             <ChevronRight className="w-6 h-6" />
