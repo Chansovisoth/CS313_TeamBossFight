@@ -272,6 +272,15 @@ button {
   filter: brightness(1.2);
 }
 
+.hero-text-gradient-2 {
+  background: linear-gradient(to right, #6BCE90 0%, #409DA1 66%, #2F698B 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: brightness(1.4);
+}
+
 
 
 /* ===== ===== ===== ===== ===== NEW CSS ABOVE THIS ONLY!!! (Keep all animations down below) ===== ===== ===== ===== ===== */
