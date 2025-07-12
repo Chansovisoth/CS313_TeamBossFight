@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Plus, X, QrCode, Play, BarChart3, SkipForward } from 'lucide-react';
+import { Menu, Plus, X, QrCode, Play, BarChart3, SkipForward, Trophy, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -51,8 +51,9 @@ const AssignBoss = () => {
             <Button 
               variant="secondary" 
               size="sm"
-              className="text-xs hover:bg-gray-200 cursor-pointer transition-colors"
+              className="text-xs hover:bg-gray-200 cursor-pointer transition-colors flex items-center gap-1"
             >
+              <Users className="w-3 h-3" />
               Player Badges
             </Button>
           </div>
@@ -105,7 +106,7 @@ const AssignBoss = () => {
                         <QrCode className="w-3 h-3" />
                       </Button>
                       <Button variant="ghost" size="sm" className="w-6 h-6 p-0 hover:bg-gray-100">
-                        <BarChart3 className="w-3 h-3" />
+                        <Trophy className="w-3 h-3" />
                       </Button>
                       
                     </div>

@@ -30,6 +30,7 @@ import PlayerBossBattle from "./pages/Player/BossBattle";
 
 // ===== HOST PAGES ===== //
 import HostAuthentication from "./pages/Host/Authentication";
+
 import HostBossesView from "./pages/Host/Bosses/View";
 import HostBossesCreate from "./pages/Host/Bosses/Create";
 import HostBossesEdit from "./pages/Host/Bosses/Edit";
@@ -37,8 +38,11 @@ import HostBossesEdit from "./pages/Host/Bosses/Edit";
 import HostEventsView from "./pages/Host/Events/View";
 import HostEventsAssignBoss from "./pages/Host/Events/AssignBoss";
 import HostEventsBossTemplate from "./pages/Host/Events/BossTemplate";
+import HostEventsCreate from "./pages/Host/Events/Create";
+import HostEventsEdit from "./pages/Host/Events/Edit";
 
-
+import HostProfileView from "./pages/Host/Profile/View";
+import HostProfileEdit from "./pages/Host/Profile/Edit";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -106,6 +110,26 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             {/* Host Events Boss Template */}
             <Route path="/host/events/boss_template" element={<AppOP />}>
               <Route index element={<HostEventsBossTemplate />} />
+            </Route>
+
+            {/* Host Events Create */}
+            <Route path="/host/events/create" element={<AppOP />}>
+              <Route index element={<HostEventsCreate />} />
+            </Route>
+
+            {/* Host Events Edit */}
+            <Route path="/host/events/edit" element={<AppOP />}>
+              <Route index element={<HostEventsEdit />} />
+            </Route>
+
+            {/* Host Profile View */}
+            <Route path="/host/profile/view" element={<AppOP />}>
+              <Route index element={<HostProfileView />} />
+            </Route>
+
+            {/* Host Profile Edit */}
+            <Route path="/host/profile/edit" element={<AppOP />}>
+              <Route index element={<HostProfileEdit />} />
             </Route>
 
             {/* Old Home Page */}
