@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 // ===== COMPONENTS ===== //
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -24,18 +25,16 @@ const Authentication = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Add this state
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [registerData, setRegisterData] = useState({
-    fullName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
   const [loginData, setLoginData] = useState({
-    email: "",
+    emailOrUsername: "",
     password: "",
   });
 
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("info");
   const navigate = useNavigate();
 
   // Function to handle form transitions with animation
@@ -86,11 +85,10 @@ const Authentication = () => {
     // }
 
     // Static message for demo purposes
-    setMessage("Account created! You can now sign in. (Static Demo)");
-    setMessageType("success");
+    toast.success("Account created! You can now sign in. (Static Demo)");
     handleFormTransition(true);
     setRegisterData({
-      fullName: "",
+      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -128,8 +126,7 @@ const Authentication = () => {
     // }
 
     // Static message for demo purposes
-    setMessage("Login successful! (Static Demo)");
-    setMessageType("success");
+    toast.success("Login successful! (Static Demo)");
     // Simulate navigation delay
     setTimeout(() => {
       navigate("/");
@@ -137,32 +134,12 @@ const Authentication = () => {
   };
 
   return (
-    <main className="flex-grow px-4 pb-6 sm:px-12 md:px-20 lg:px-20 xl:px-50 2xl:px-80 flex items-center justify-center min-h-[calc(100vh-200px)]">
-      {/* Message */}
-      {message && (
-        <div
-          className={`fixed top-4 left-1/2 transform -translate-x-1/2 p-4 rounded-md shadow-lg transition-all duration-300 ${
-            messageType === "success"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span>{message}</span>
-            <button
-              className="ml-4 text-xl text-gray-500 hover:text-gray-700"
-              onClick={() => setMessage("")}
-            >
-              &times;
-            </button>
-          </div>
-        </div>
-      )}
+    <main className="purple-gradient flex-grow px-4 pt-6 pb-6 sm:px-12 md:px-20 lg:px-20 xl:px-50 2xl:px-80 flex items-center justify-center min-h-[calc(100vh-200px)]">
       <div className="w-full max-w-5xl flex flex-col md:flex-row items-center justify-center gap-8">
         {/* ===== REGISTER CARD ===== */}
         {!isSignIn && (
           <Card
-            className={`flex flex-col md:flex-row overflow-hidden min-h-[600px] mt-2 g-lg-0 py-0 gap-0 ${
+            className={`border-0 flex flex-col md:flex-row overflow-hidden min-h-[600px] mt-2 g-lg-0 py-0 gap-0 ${
               isClosing
                 ? "animated-fadeOut-down-fast"
                 : "animated-fadeIn-down-fast"
@@ -173,20 +150,18 @@ const Authentication = () => {
               {/* Decorative Elements */}
               <div className="absolute inset-0 opacity-20">
                 <div className="absolute top-20 left-10 w-20 h-20 bg-yellow-400 rounded-full transform rotate-45"></div>
-                <div className="absolute top-40 right-20 w-16 h-4 bg-orange-400 rounded-full transform rotate-12"></div>
+                <div className="absolute top-35 right-20 w-16 h-4 bg-orange-400 rounded-full transform rotate-12"></div>
                 <div className="absolute bottom-32 left-16 w-24 h-6 bg-pink-400 rounded-full transform -rotate-12"></div>
                 <div className="absolute bottom-20 right-10 w-18 h-5 bg-yellow-300 rounded-full transform rotate-45"></div>
               </div>
 
               <div className="relative z-10 p-2 lg:p-8">
-                <h1 className="text-4xl font-bold mb-4">
-                  Welcome to BallotPilot
+                <h1 className="text-4xl font-bold mb-0 sm:mb-4">
+                  Welcome to UniRAID
                 </h1>
-                <p className="text-lg opacity-90 leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  diam nonummy nibh euismod tincidunt ut laoreet dolore magna
-                  aliquam erat volutpat.
-                </p>
+                {/* <p className="hidden md:block text-lg opacity-90 leading-relaxed">
+                  Join epic boss battles with your fellow students! Create your account to participate in multiplayer boss fights and compete for glory in the ultimate university gaming experience.
+                </p> */}
               </div>
             </div>
 
@@ -195,26 +170,26 @@ const Authentication = () => {
               <div className="max-w-md mx-auto w-full">
                 <CardHeader className="text-center pb-6">
                   <CardTitle className="text-2xl font-bold mb-2">
-                    Create Account
+                    Register
                   </CardTitle>
                   <CardDescription>
-                    Sign up to start voting and creating polls
+                    Create your account to participate in boss battles
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="p-0">
                   <form onSubmit={handleRegisterSubmit} className="space-y-4">
-                    {/* Full Name */}
+                    {/* Username */}
                     <div className="space-y-2">
-                      <Label htmlFor="register-fullName">Full Name</Label>
+                      <Label htmlFor="register-username">Username</Label>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                         <Input
-                          id="register-fullName"
-                          name="fullName"
+                          id="register-username"
+                          name="username"
                           type="text"
-                          placeholder="Enter your full name"
-                          value={registerData.fullName}
+                          placeholder="Enter your username"
+                          value={registerData.username}
                           onChange={handleRegisterChange}
                           className="pl-10"
                           required
@@ -338,21 +313,20 @@ const Authentication = () => {
             }`}
           >
             {/* ===== BANNER SECTION (LEFT) ===== */}
-            <div className="flex-1 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 p-8 flex flex-col justify-center text-white relative">
+            <div className="flex-1 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 p-8 flex flex-col justify-center text-white relative h-40 md:h-auto">
               {/* Decorative Elements */}
               <div className="absolute inset-0 opacity-20">
                 <div className="absolute top-20 left-10 w-20 h-20 bg-cyan-400 rounded-full transform rotate-45"></div>
-                <div className="absolute top-40 right-20 w-16 h-4 bg-blue-400 rounded-full transform rotate-12"></div>
+                <div className="absolute top-35 right-20 w-16 h-4 bg-blue-400 rounded-full transform rotate-12"></div>
                 <div className="absolute bottom-32 left-16 w-24 h-6 bg-indigo-400 rounded-full transform -rotate-12"></div>
                 <div className="absolute bottom-20 right-10 w-18 h-5 bg-cyan-300 rounded-full transform rotate-45"></div>
               </div>
 
               <div className="relative z-10 p-2 lg:p-8">
-                <h1 className="text-4xl font-bold mb-4">Welcome Back!</h1>
-                <p className="text-lg opacity-90 leading-relaxed">
-                  Good to see you again! Sign in to your account to continue
-                  voting and managing your polls with BallotPilot.
-                </p>
+                <h1 className="text-4xl font-bold mb-0 sm:mb-4">Welcome Back, Warrior!</h1>
+                {/* <p className="hidden md:block text-lg opacity-90 leading-relaxed">
+                  Ready for another epic boss battle? Sign back into UniRAID and rejoin your team to take on legendary bosses and claim victory!
+                </p> */}
               </div>
             </div>
 
@@ -361,26 +335,26 @@ const Authentication = () => {
               <div className="max-w-md mx-auto w-full">
                 <CardHeader className="text-center pb-6">
                   <CardTitle className="text-2xl font-bold">
-                    Welcome Back
+                    Login
                   </CardTitle>
                   <CardDescription>
-                    Sign in to your account to continue voting
+                    Sign in to continue your boss battle adventures
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="p-0">
                   <form onSubmit={handleLoginSubmit} className="space-y-4">
-                    {/* Email */}
+                    {/* Email or Username */}
                     <div className="space-y-2">
-                      <Label htmlFor="login-email">Email Address</Label>
+                      <Label htmlFor="login-emailOrUsername">Email / Username</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                         <Input
-                          id="login-email"
-                          name="email"
-                          type="email"
-                          placeholder="Enter your email"
-                          value={loginData.email}
+                          id="login-emailOrUsername"
+                          name="emailOrUsername"
+                          type="text"
+                          placeholder="Enter your email or username"
+                          value={loginData.emailOrUsername}
                           onChange={handleLoginChange}
                           className="pl-10"
                           required
@@ -431,7 +405,7 @@ const Authentication = () => {
                       variant="outline"
                       className="w-full bg-zinc-900 dark:bg-zinc-750 text-white hover:text-white hover:bg-zinc-800 px-6 py-2 rounded-2 mt-6"
                     >
-                      Sign In
+                      Login
                     </Button>
                   </form>
 

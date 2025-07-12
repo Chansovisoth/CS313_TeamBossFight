@@ -11,6 +11,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 // ===== COMPONENTS ===== //
 import { MessageDisplay } from "./components/MessageDisplay";
 import PageTitle from "@/layouts/PageTitle";
+import { Toaster } from "@/components/ui/sonner";
 // import { useAuth } from "./context/useAuth";
 // import { setupInterceptors } from "./api";
 
@@ -48,6 +49,7 @@ export default function App() {
           <Footer />
         </div>
       </div>
+      <Toaster position="top-center" />
     </SidebarProvider>
   );
 }

@@ -45,7 +45,7 @@ const EventCarousel = () => {
       setCurrentIndex((prevIndex) => 
         prevIndex === events.length - 1 ? 0 : prevIndex + 1
       );
-    }, 5000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, [events.length]);
@@ -147,7 +147,7 @@ const EventCarousel = () => {
       </div>
 
       {/* Dot Indicators */}
-      <div className="flex justify-center space-x-2 mt-4 sm:mt-6">
+      <div className="flex justify-center space-x-2 sm:translate-y-7 -translate-y-5">
         {events.map((_, index) => (
           <button
             key={index}

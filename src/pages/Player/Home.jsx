@@ -1,7 +1,7 @@
 "use client"
 
 // ===== LIBRARIES ===== //
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Users, ChevronRight, ArrowRight, QrCode, Sparkles, Zap, Trophy, Target, Swords, Badge as BadgeIcon } from "lucide-react"
 import { startConfettiCelebration } from "@/lib/Confetti"
@@ -10,7 +10,9 @@ import { startConfettiCelebration } from "@/lib/Confetti"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import EventCarousel from "@/layouts/EventCarousel"
+// import EventCarousel from "@/layouts/EventCarousel"
+import EventCarousel2 from "@/layouts/EventCarousel2"
+import QRButton from "@/layouts/QRButton"
 
 // ===== STYLES ===== //
 import "@/index.css"
@@ -25,10 +27,6 @@ const Home = () => {
     document.getElementById("features")?.scrollIntoView({
       behavior: "smooth",
     })
-  }
-
-  const handleQRCodeClick = () => {
-    navigate("/qr")
   }
 
   const handleLogoClick = async () => {
@@ -46,28 +44,16 @@ const Home = () => {
   return (
     <main className="flex-grow">
       {/* Floating QR Code Button */}
-      <Button
-        onClick={handleQRCodeClick}
-        className="brightness-90 fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 backdrop-blur-sm border-2 border-white/20 shadow-2xl p-2 sm:p-3"
-        size="lg"
-      >
-        <QrCode className="w-full h-full scale-250 text-[#ffffff]" />
-      </Button>
+      <QRButton />
 
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-screen text-white overflow-hidden py-8 purple-gradient">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-spin-slow"></div>
-        </div>
+      <section className="relative min-h-screen overflow-hidden py-6 bg-[#f3f0ff] dark:bg-gray-900">
 
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 2xl:px-48">
           <div className="max-w-6xl mx-auto text-center w-full">
 
             {/* Main Hero Content */}
-            <div className="mb-8 sm:mb-12">
+            <div className="mb-12 sm:mb-12">
               {/* Swords Image */}
               <div className="mb-0 sm:mb-0 flex justify-center">
                 <img 
@@ -76,22 +62,23 @@ const Home = () => {
                   className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain drop-shadow-lg"
                 />
               </div>
-              <h1 className="hero-text-gradient text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-0 hero-text-gradient leading-tight">
+              <h1 className="hero-text-gradient dark:text-white text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-0 leading-tight">
                 UniRAID
               </h1>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-purple-200 max-w-4xl mx-auto leading-normal px-2">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-normal px-2">
                 Answer questions, deal damage, claim victory!
               </p>
             </div>
 
             {/* Event Carousel */}
-            <div className="mb-8 sm:mb-12">
-              <EventCarousel />
+            <div className="mb-8 sm:mb-14">
+              {/* <EventCarousel /> */}
+              <EventCarousel2 />
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8 sm:mb-12 px-2">
-              <Button
+              {/* <Button
                 onClick={handleQRCodeClick}
                 size="lg"
                 className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold bg-white text-purple-600 hover:bg-gray-100 transition-all duration-300 rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 group"
@@ -99,13 +86,13 @@ const Home = () => {
                 <QrCode className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
                 Scan to Join Battle
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-              </Button>
+              </Button> */}
 
               <Button
                 onClick={handleLearnMore}
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold border-2 border-white/30 text-white hover:bg-white/10 transition-all duration-300 rounded-xl backdrop-blur-sm group bg-transparent"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-300 rounded-xl backdrop-blur-sm group bg-transparent"
               >
                 Learn More
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
@@ -114,25 +101,20 @@ const Home = () => {
 
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-2xl mx-auto px-2">
-              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
-                <div className="text-2xl sm:text-3xl font-bold mb-1">50</div>
-                <div className="text-xs sm:text-sm text-purple-200">Battles Fought</div>
+              <div className="text-center p-3 sm:p-4 rounded-xl bg-gray-50 dark:bg-gray-800 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-gray-900 dark:text-white">50</div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Battles Fought</div>
               </div>
-              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
-                <div className="text-2xl sm:text-3xl font-bold mb-1">3</div>
-                <div className="text-xs sm:text-sm text-purple-200">Epic Bosses</div>
+              <div className="text-center p-3 sm:p-4 rounded-xl bg-gray-50 dark:bg-gray-800 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-gray-900 dark:text-white">3</div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Epic Bosses</div>
               </div>
-              <div className="text-center p-3 sm:p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
-                <div className="text-2xl sm:text-3xl font-bold mb-1">123</div>
-                <div className="text-xs sm:text-sm text-purple-200">Unique Players</div>
+              <div className="text-center p-3 sm:p-4 rounded-xl bg-gray-50 dark:bg-gray-800 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-gray-900 dark:text-white">123</div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Unique Players</div>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronRight className="w-6 h-6 text-white/70 rotate-90" />
         </div>
       </section>
 

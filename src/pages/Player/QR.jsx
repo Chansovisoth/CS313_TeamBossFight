@@ -369,21 +369,21 @@ const QR = () => {
   return (
     <>
       {/* Main container for the entire page */}
-      <main className="flex-grow min-h-screen bg-gradient-to-br purple-gradient">
+      <main className="flex-grow min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-8">
-            <Button onClick={goBack} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+            <Button onClick={goBack} variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" /> Back
             </Button>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">QR Code Scanner</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">QR Code Scanner</h1>
             <div className="w-16"></div>
           </div>
 
           <div className="max-w-md mx-auto">
-            <Card className="bg-white/10 backdrop-blur-md border-white/20">
+            <Card>
               <CardHeader className="text-center">
                 <div className="flex justify-center mb-4">
-                  <div className="relative w-full max-w-xs aspect-square bg-black rounded-xl overflow-hidden border-2 border-white/30 shadow-lg">
+                  <div className="relative w-full max-w-xs aspect-square bg-black rounded-xl overflow-hidden border-2 border-border shadow-lg">
                     {/* Video and Overlay Container */}
                     <video
                       ref={videoRef}
@@ -442,29 +442,29 @@ const QR = () => {
                     )}
                   </div>
                 </div>
-                <CardTitle className="text-white text-xl">Scan QR Code to Join Boss Battle</CardTitle>
-                <CardDescription className="text-white/80">Use your camera or upload an image</CardDescription>
+                <CardTitle className="text-foreground text-xl">Scan QR Code to Join Boss Battle</CardTitle>
+                <CardDescription className="text-muted-foreground">Use your camera or upload an image</CardDescription>
               </CardHeader>
               
               <CardContent className="space-y-4">
                 {cameraError && (
-                  <div className="text-center p-3 bg-red-500/20 rounded-lg border border-red-400/30">
-                    <p className="text-red-100 font-medium text-sm">{cameraError}</p>
-                    <Button onClick={() => setCameraError("")} variant="ghost" size="sm" className="mt-2 text-red-200/80">Dismiss</Button>
+                  <div className="text-center p-3 bg-destructive/10 rounded-lg border border-destructive/20">
+                    <p className="text-destructive font-medium text-sm">{cameraError}</p>
+                    <Button onClick={() => setCameraError("")} variant="ghost" size="sm" className="mt-2">Dismiss</Button>
                   </div>
                 )}
                 
                 {qrResult ? (
-                  <div className="text-center p-6 bg-green-500/20 rounded-lg border border-green-400/30 space-y-4">
-                    <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-4" />
-                    <p className="text-green-100 font-medium text-lg">{qrResult}</p>
+                  <div className="text-center p-6 bg-green-500/10 rounded-lg border border-green-500/20 space-y-4">
+                    <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
+                    <p className="text-green-800 dark:text-green-200 font-medium text-lg">{qrResult}</p>
                     <div className="flex flex-col space-y-2">
-                      <Button onClick={() => {setQrResult(""); setDetectedUrl(""); setCameraError(""); startCamera();}} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                      <Button onClick={() => {setQrResult(""); setDetectedUrl(""); setCameraError(""); startCamera();}} variant="outline">
                         <Camera className="w-4 h-4 mr-2" />
                         Scan Again
                       </Button>
                       {detectedUrl && (
-                        <Button onClick={() => window.location.href = detectedUrl} className="bg-blue-600 text-white">
+                        <Button onClick={() => window.location.href = detectedUrl}>
                           Go to Link
                         </Button>
                       )}
@@ -474,26 +474,26 @@ const QR = () => {
                   <>
                     {isCameraActive ? (
                       <div className="space-y-3">
-                        <div className="text-center p-3 bg-blue-500/20 rounded-lg border border-blue-400/30">
-                          <p className="text-blue-100 font-medium">
+                        <div className="text-center p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                          <p className="text-blue-800 dark:text-blue-200 font-medium">
                             {isProcessing ? "Scanning..." : "Point camera at a QR Code"}
                           </p>
                         </div>
-                        <Button onClick={captureImage} disabled={isProcessing} size="lg" className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white">
+                        <Button onClick={captureImage} disabled={isProcessing} size="lg" className="w-full">
                           <Camera className="w-5 h-5 mr-2" /> 
                           {isProcessing ? "Processing..." : "Capture Code"}
                         </Button>
-                        <Button onClick={toggleCamera} size="lg" className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white">
+                        <Button onClick={toggleCamera} variant="destructive" size="lg" className="w-full">
                           <X className="w-5 h-5 mr-2" /> Stop Camera
                         </Button>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <Button onClick={toggleCamera} disabled={isRequestingPermission || isProcessing} size="lg" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                        <Button onClick={toggleCamera} disabled={isRequestingPermission || isProcessing} size="lg" className="w-full">
                           <Camera className="w-5 h-5 mr-2" />
                           {isRequestingPermission ? "Requesting..." : "Start Camera Scan"}
                         </Button>
-                        <Button onClick={() => fileInputRef.current?.click()} variant="outline" size="lg" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20" disabled={isProcessing}>
+                        <Button onClick={() => fileInputRef.current?.click()} variant="outline" size="lg" className="w-full" disabled={isProcessing}>
                           <Upload className="w-5 h-5 mr-2" />
                           {isProcessing ? "Processing..." : "Upload Image"}
                         </Button>
