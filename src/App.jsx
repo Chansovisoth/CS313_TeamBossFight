@@ -41,7 +41,8 @@ export default function App() {
           </div>
 
           {/* ===== PAGE CONTENT (Outlet for route rendering) ===== */}
-          <main className="flex-1 w-full">
+          {/* <main className="flex-1 w-full"> */}
+          <main className="flex-1 w-full overflow-x-hidden">
             <Outlet />
           </main>
 

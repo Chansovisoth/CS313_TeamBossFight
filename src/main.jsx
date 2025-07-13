@@ -23,6 +23,7 @@ import Error from "./pages/Error";
 import PlayerAuthentication from "./pages/Player/Authentication";
 import PlayerHome from "./pages/Player/Home";
 import PlayerBadges from "./pages/Player/Badges";
+import PlayerLeaderboard from "./pages/Player/Leaderboard";
 import PlayerAbout from "./pages/Player/About";
 import PlayerQR from "./pages/Player/QR";
 // import PlayerBossPreview from "./pages/Player/BossPreview";
@@ -80,6 +81,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
             <Route path="/badges" element={<App />}>
               <Route index element={<PlayerBadges />} />
+            </Route>
+
+            <Route path="/leaderboard" element={<App />}>
+              <Route index element={<PlayerLeaderboard />} />
             </Route>
 
             <Route path="/about" element={<App />}>
