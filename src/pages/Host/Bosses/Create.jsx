@@ -33,20 +33,20 @@ const CreateBoss = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-md mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600">
           {/* Header */}
           <div className="flex items-center mb-6">
-            <Menu className="w-6 h-6 text-gray-600 mr-3" />
-            <h1 className="text-lg font-semibold text-gray-900">Create Boss</h1>
+            <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400 mr-3" />
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Create Boss</h1>
           </div>
 
           {/* Upload Boss Image */}
           <div className="mb-6">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 cursor-pointer">
-              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600 font-medium">Upload Boss Image</p>
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-gray-400 dark:hover:border-gray-500 cursor-pointer bg-gray-50 dark:bg-gray-700/50">
+              <Upload className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Upload Boss Image</p>
             </div>
           </div>
 
@@ -55,50 +55,50 @@ const CreateBoss = () => {
             {/* Boss Name and Boss Cooldown Row */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label htmlFor="boss-name" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="boss-name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Boss Name
                 </Label>
                 <Input
                   id="boss-name"
                   type="text"
                   placeholder="Enter boss name"
-                  className="mt-1"
+                  className="mt-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                 />
               </div>
               <div>
-                <Label htmlFor="boss-cooldown" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="boss-cooldown" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Boss Cooldown
                 </Label>
                 <Input
                   id="boss-cooldown"
                   type="text"
                   placeholder="00:00"
-                  className="mt-1"
+                  className="mt-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                 />
               </div>
             </div>
 
             {/* Category with Multi-Select Display */}
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                 Category
               </Label>
               
               <div className="relative">
                 {/* Category Display Bar with Tags and Dropdown Arrow */}
                 <div 
-                  className="border border-gray-300 rounded-md p-3 min-h-[40px] flex flex-wrap gap-2 items-center cursor-pointer hover:border-gray-400"
+                  className="border border-gray-300 dark:border-gray-600 rounded-md p-3 min-h-[40px] flex flex-wrap gap-2 items-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-700"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   {/* Selected Category Tags */}
                   {selectedCategories.map((category) => (
                     <span 
                       key={category}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 text-gray-800 text-sm rounded-md"
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 text-sm rounded-md"
                     >
                       {category}
                       <X 
-                        className="w-3 h-3 cursor-pointer hover:text-red-600" 
+                        className="w-3 h-3 cursor-pointer hover:text-red-600 dark:hover:text-red-400" 
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCategoryRemove(category);
@@ -109,20 +109,20 @@ const CreateBoss = () => {
                   
                   {/* Placeholder when no categories selected */}
                   {selectedCategories.length === 0 && (
-                    <span className="text-gray-500 text-sm">Select categories</span>
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">Select categories</span>
                   )}
                   
                   {/* Dropdown Arrow */}
-                  <ChevronDown className={`w-4 h-4 text-gray-400 ml-auto transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 ml-auto transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </div>
 
                 {/* Dropdown Options */}
                 {isDropdownOpen && unselectedCategories.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-10">
                     {unselectedCategories.map((category) => (
                       <div
                         key={category}
-                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm border-b border-gray-100 last:border-b-0"
+                        className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm border-b border-gray-100 dark:border-gray-600 last:border-b-0 text-gray-900 dark:text-white"
                         onClick={() => handleCategorySelect(category)}
                       >
                         {category}
@@ -135,7 +135,7 @@ const CreateBoss = () => {
 
             {/* Number of Teams to Start */}
             <div>
-              <Label htmlFor="teams-count" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="teams-count" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Number of Teams to Start
               </Label>
               <Input
@@ -143,19 +143,19 @@ const CreateBoss = () => {
                 type="number"
                 placeholder="Enter number"
                 min="1"
-                className="mt-1"
+                className="mt-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>
 
             {/* Description */}
             <div>
-              <Label htmlFor="description" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="description" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Description
               </Label>
               <textarea
                 id="description"
                 rows={4}
-                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                 placeholder="Enter boss description..."
               />
             </div>
@@ -165,12 +165,12 @@ const CreateBoss = () => {
           <div className="flex gap-3 mt-6">
             <Button 
               variant="outline" 
-              className="flex-1"
+              className="flex-1 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               Cancel
             </Button>
             <Button 
-              className="flex-1 bg-black hover:bg-gray-800"
+              className="flex-1 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
             >
               Create
             </Button>

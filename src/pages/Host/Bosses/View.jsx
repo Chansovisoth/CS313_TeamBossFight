@@ -26,19 +26,19 @@ const ViewBosses = () => {
   // const [bosses, setBosses] = useState([]);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-md mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-6 min-h-[500px]">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 min-h-[500px] border border-gray-200 dark:border-gray-600">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
-              <Menu className="w-6 h-6 text-gray-600 mr-3" />
-              <h1 className="text-lg font-semibold text-gray-900">Bosses</h1>
+              <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400 mr-3" />
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Bosses</h1>
             </div>
             <Button 
               variant="outline" 
               size="sm"
-              className="w-8 h-8 p-0"
+              className="w-8 h-8 p-0 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <Plus className="w-4 h-4" />
             </Button>
@@ -48,8 +48,8 @@ const ViewBosses = () => {
           {bosses.length === 0 ? (
             // No Bosses Found State
             <div className="flex flex-col items-center justify-center h-96">
-              <h2 className="text-lg font-medium text-gray-900 mb-2">No Bosses Found</h2>
-              <p className="text-sm text-gray-600">Press the "+" to create boss</p>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Bosses Found</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Press the "+" to create boss</p>
             </div>
           ) : (
             // Bosses Grid
@@ -57,7 +57,7 @@ const ViewBosses = () => {
               {bosses.map((boss) => (
                 <div
                   key={boss.id}
-                  className="border border-gray-300 rounded-lg p-4 aspect-square flex flex-col items-center justify-center hover:border-gray-400 cursor-pointer"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 aspect-square flex flex-col items-center justify-center hover:border-gray-400 dark:hover:border-gray-500 cursor-pointer bg-white dark:bg-gray-700"
                 >
                   {boss.image ? (
                     <img 
@@ -66,11 +66,11 @@ const ViewBosses = () => {
                       className="w-full h-3/4 object-cover rounded mb-2"
                     />
                   ) : (
-                    <div className="w-full h-3/4 bg-gray-100 rounded mb-2 flex items-center justify-center">
-                      <span className="text-gray-400 text-xs">No Image</span>
+                    <div className="w-full h-3/4 bg-gray-100 dark:bg-gray-600 rounded mb-2 flex items-center justify-center">
+                      <span className="text-gray-400 dark:text-gray-500 text-xs">No Image</span>
                     </div>
                   )}
-                  <span className="text-sm font-medium text-gray-900">{boss.name}</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">{boss.name}</span>
                 </div>
               ))}
             </div>
