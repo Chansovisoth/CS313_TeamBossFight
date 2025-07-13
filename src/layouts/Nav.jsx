@@ -68,9 +68,9 @@ export function NavSidebar({ ...props }) {
   // Mock user data - replace with actual user context
   const user = null // Replace with actual user from context
   const mockUser = {
-    name: "Boss Fighter",
-    email: "fighter@uniraid.com",
-    avatar: "/Furry.jpg",
+    name: "UwU",
+    email: "uwu@gmail.com",
+    avatar: "/src/assets/placeholder/Profile1.jpg",
   }
 
   // ===== NAVIGATION DATA ===== //
