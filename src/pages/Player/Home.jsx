@@ -16,7 +16,8 @@ import QRButton from "@/layouts/QRButton"
 
 // ===== STYLES ===== //
 import "@/index.css"
-import "@/home.css"
+
+
 
 const Home = () => {
   const navigate = useNavigate()

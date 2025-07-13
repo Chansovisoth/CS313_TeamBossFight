@@ -34,7 +34,7 @@ export default function App() {
 
         <div className="flex flex-col flex-1">
           {/* ===== SIDEBAR TOGGLE & MESSAGE DISPLAY ===== */}
-          <div className="flex items-center gap-4 p-4 border-b">
+          <div className="flex items-center gap-4 p-4 border-b sticky top-0 z-11 bg-background">
             <SidebarTrigger />
             <PageTitle />
             {/* <MessageDisplay /> */}

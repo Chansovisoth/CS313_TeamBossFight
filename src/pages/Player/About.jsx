@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 
 // ===== STYLES ===== //
 import "@/index.css";
-import "@/home.css";
 
 
 
