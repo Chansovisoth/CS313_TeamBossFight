@@ -16,6 +16,7 @@ import "./index.css";
 // ===== MASTER PAGES ===== //
 import App from "./App";
 import AppOP from "./AppOP";
+import AppError from "./AppError";
 
 // ===== PLAYER PAGES ===== //
 import Error from "./pages/Error";
@@ -202,7 +203,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </Route>
 
             {/* 404 Error Route */}
-            <Route path="*" element={<App />}>
+            <Route path="*" element={<AppError />}>
               <Route path="*" element={<Error />} />
             </Route>
             

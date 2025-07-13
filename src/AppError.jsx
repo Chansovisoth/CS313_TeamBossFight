@@ -1,11 +1,12 @@
-// Master for Player
+// Master to show Error 404 Page
 // ===== LIBRARIES ===== //
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 // ===== LAYOUTS ===== //
-import Nav from "@/layouts/Nav";
+// import Nav from "@/layouts/Nav";
 import Footer from "@/layouts/Footer";
+import Error from "./pages/Error";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 // ===== COMPONENTS ===== //
@@ -30,19 +31,17 @@ export default function App() {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         {/* ===== SIDEBAR NAVIGATION ===== */}
-        <Nav />
+        {/* <Nav /> */}
 
         <div className="flex flex-col flex-1">
           {/* ===== SIDEBAR TOGGLE & MESSAGE DISPLAY ===== */}
           <div className="flex items-center gap-4 p-4 border-b">
-            <SidebarTrigger />
-            <PageTitle />
-            {/* <MessageDisplay /> */}
+
           </div>
 
-          {/* ===== PAGE CONTENT (Outlet for route rendering) ===== */}
+          {/* ===== PAGE CONTENT (Always show Error) ===== */}
           <main className="flex-1 w-full">
-            <Outlet />
+            <Error />
           </main>
 
           {/* ===== FOOTER ===== */}
