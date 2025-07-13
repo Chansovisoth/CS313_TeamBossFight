@@ -37,36 +37,6 @@ const EventCarousel2 = () => {
       image: "/src/assets/Swords.png",
       isActive: false
     },
-    {
-      id: 3,
-      name: "Science Fair 2025",
-      title: "Interactive Boss Battle Experience",
-      description: "Test your scientific knowledge in our epic quest format. Explore different fields of science while battling through challenging questions and powerful bosses.",
-      startTime: "May 10, 2025 - 8:00 AM",
-      endTime: "May 10, 2025 - 4:00 PM",
-      image: "/src/assets/Swords.png",
-      isActive: false
-    },
-    {
-      id: 3,
-      name: "Science Fair 2025",
-      title: "Interactive Boss Battle Experience",
-      description: "Test your scientific knowledge in our epic quest format. Explore different fields of science while battling through challenging questions and powerful bosses.",
-      startTime: "May 10, 2025 - 8:00 AM",
-      endTime: "May 10, 2025 - 4:00 PM",
-      image: "/src/assets/Swords.png",
-      isActive: false
-    },
-    {
-      id: 3,
-      name: "Science Fair 2025",
-      title: "Interactive Boss Battle Experience",
-      description: "Test your scientific knowledge in our epic quest format. Explore different fields of science while battling through challenging questions and powerful bosses.",
-      startTime: "May 10, 2025 - 8:00 AM",
-      endTime: "May 10, 2025 - 4:00 PM",
-      image: "/src/assets/Swords.png",
-      isActive: false
-    },
   ];
 
   // Auto-advance carousel
@@ -146,7 +116,7 @@ const EventCarousel2 = () => {
           {events.map((event, index) => (
             <li
               key={event.id}
-              className={`absolute top-[50%] left-[50%] w-[350px] h-[350px] sm:w-[600px] sm:h-[338px] duration-500 cursor-pointer ${getCardPosition(index)}`}
+              className={`absolute top-[50%] left-[50%] w-[350px] h-[350px] sm:w-[600px] sm:h-[338px] duration-400 cursor-pointer ${getCardPosition(index)}`}
               onClick={() => goToSlide(index)}
             >
               {/* Card with gradient border */}
