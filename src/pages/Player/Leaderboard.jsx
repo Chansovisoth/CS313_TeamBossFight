@@ -89,7 +89,7 @@ const Leaderboard = () => {
             </Card>
 
             {/* Leaderboard Table */}
-            <Card className="relative h-[693.5px] flex flex-col">
+            <Card className="relative h-[693.5px]">
                 <CardHeader className="pb-3 sm:pb-6">
                     <CardTitle className="text-2xl sm:text-3xl font-bold">Leaderboard</CardTitle>
                     <p className="text-muted-foreground mt-2 text-sm sm:text-base">
@@ -105,11 +105,6 @@ const Leaderboard = () => {
                                     <TableHead className="resizable">Username</TableHead>
                                     <TableHead className="text-right">DMG</TableHead>
                                     <TableHead className="text-right">Correct %</TableHead>
-                                    <TableHead className="text-right">asd %</TableHead>
-                                    <TableHead className="text-right">asd %</TableHead>
-                                    <TableHead className="text-right">asd %</TableHead>
-                                    <TableHead className="text-right">asd %</TableHead>
-                                    <TableHead className="text-right">asd %</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
