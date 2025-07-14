@@ -45,6 +45,7 @@ import HostEventsEdit from "./pages/Host/Events/Edit";
 import HostEventsPlayerbadges from "./pages/Host/Events/Playerbadges";
 import HostEventsPlayerBadgesEdit from "./pages/Host/Events/Playerbadgesedit";
 import HostEventsLeaderboard from "./pages/Host/Events/Leaderboard";
+import HostEventsAllLeaderboard from "./pages/Host/Events/AllLeaderboard";
 // Users
 import HostUsersView from "./pages/Host/Users/View";
 import HostUsersEdit from "./pages/Host/Users/Edit";
@@ -154,6 +155,23 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/host/events/leaderboard" element={<AppOP />}>
               <Route index element={<HostEventsLeaderboard />} />
             </Route>
+
+            {/* Host Events All Leaderboard */}
+            <Route path="/host/events/all_leaderboard" element={<AppOP />}>
+              <Route index element={<HostEventsAllLeaderboard />} />
+            </Route>
+
+            {/* Host Users View */}
+            <Route path="/host/users/view" element={<AppOP />}>
+              <Route index element={<HostUsersView />} />
+            </Route>
+
+            {/* Host Users Edit */}
+            <Route path="/host/users/edit" element={<AppOP />}>
+              <Route index element={<HostUsersEdit />} />
+            </Route>
+
+            
 
             {/* Host Categories View */}
             <Route path="/host/categories/view" element={<AppOP />}>
