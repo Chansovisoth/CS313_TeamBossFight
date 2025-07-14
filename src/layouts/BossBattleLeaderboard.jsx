@@ -240,13 +240,8 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
                         {team.players.map((player, playerIndex) => (
                           <div 
                             key={playerIndex}
-                            className="grid grid-cols-12 gap-3 items-center py-1 px-2 rounded bg-muted/10 border border-muted"
+                            className="grid grid-cols-10 gap-3 items-center py-1 px-2 rounded bg-muted/10"
                           >
-                            {/* Player Rank within team */}
-                            <div className="col-span-2 flex justify-center">
-                              <span className="text-xs font-medium text-muted-foreground">#{playerIndex + 1}</span>
-                            </div>
-
                             {/* Player Name */}
                             <div className="col-span-7 pl-4">
                               <p className="text-xs font-medium truncate text-muted-foreground">{player.name}</p>
