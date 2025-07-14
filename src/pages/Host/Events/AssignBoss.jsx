@@ -34,28 +34,28 @@ const AssignBoss = () => {
   const [assignedBosses, setAssignedBosses] = useState([
     {
       id: 1,
-      name: 'Dragon Lord',
+      name: 'Falcon',
       status: 'Active',
-      image: 'https://via.placeholder.com/80x60',
+      image: '/src/assets/Placeholder/Falcon.png',
       categories: ['CS', 'MIS'],
       teamsEngaged: 3,
       totalTeams: 8
     },
     {
       id: 2,
-      name: 'Shadow Beast',
+      name: 'The Predator',
       status: 'On Cooldown',
       cooldownTime: '5:32',
-      image: 'https://via.placeholder.com/80x60',
+      image: '/src/assets/Placeholder/ThePredator.png',
       categories: ['BUS', 'ARC'],
       teamsEngaged: 0,
       totalTeams: 5
     },
     {
       id: 3,
-      name: 'Fire Elemental',
+      name: 'Tricera',
       status: 'Active',
-      image: 'https://via.placeholder.com/80x60',
+      image: '/src/assets/Placeholder/Tricera.png',
       categories: ['CE'],
       teamsEngaged: 2,
       totalTeams: 4

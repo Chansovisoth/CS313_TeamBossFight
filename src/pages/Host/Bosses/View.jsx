@@ -11,20 +11,20 @@ const ViewBosses = () => {
   const [bosses, setBosses] = useState([
     {
       id: 1,
-      name: 'Boss 1',
+      name: 'Falcon',
       image: '/src/assets/Placeholder/Falcon.png',
       description: 'A fearsome boss with incredible strength'
     },
     {
       id: 2,
-      name: 'Boss 2', 
-      image: 'https://via.placeholder.com/200x150/8b5cf6/ffffff?text=Boss+2',
+      name: 'The Predator', 
+      image: '/src/assets/Placeholder/ThePredator.png',
       description: 'Master of dark magic and ancient spells'
     },
     {
       id: 3,
-      name: 'Boss 3',
-      image: 'https://via.placeholder.com/200x150/06b6d4/ffffff?text=Boss+3',
+      name: 'Tricera',
+      image: '/src/assets/Placeholder/Tricera.png',
       description: 'Lightning-fast warrior with deadly precision'
     }
   ]);
