@@ -7,6 +7,75 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+// ===== REUSABLE COMPONENTS ===== //
+const BadgeCard = ({ badge, isMilestone = false }) => {
+  const IconComponent = badge.icon;
+  
+  return (
+    <Card 
+      className={`relative transition-all duration-200 ${
+        badge.earned 
+          ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/30" 
+          : "border-gray-200 bg-gray-50/50 dark:border-gray-700 dark:bg-gray-800/50"
+      }`}
+    >
+      <CardContent className="p-3 sm:p-4">
+        {/* Badge Status Icon */}
+        <div className="absolute top-2 right-2">
+          {badge.earned ? (
+            <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 dark:text-green-400" />
+          ) : (
+            <Lock className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 dark:text-gray-500" />
+          )}
+        </div>
+        
+        {/* Badge Icon */}
+        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 sm:mb-3 ${
+          badge.earned 
+            ? "bg-green-400 text-primary-foreground" 
+            : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+        }`}>
+          <IconComponent className="h-5 w-5 sm:h-6 sm:w-6" />
+        </div>
+        
+        {/* Badge Info */}
+        <h4 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base">{badge.name}</h4>
+        <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 leading-relaxed line-clamp-3">
+          {badge.description}
+        </p>
+
+        {/* Progress Bar for Milestones */}
+        {isMilestone && badge.target && (
+          <div className="mb-2 sm:mb-3">
+            <div className="flex justify-between text-xs text-muted-foreground mb-1">
+              <span>Progress</span>
+              <span>{badge.progress}/{badge.target}</span>
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+              <div 
+                className="bg-green-400 h-1.5 rounded-full transition-all duration-300" 
+                style={{ width: `${Math.min((badge.progress / badge.target) * 100, 100)}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
+        
+        {/* Earned Status */}
+        {badge.earned ? (
+          <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+            Earned
+          </p>
+        ) : (
+          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+            {isMilestone && badge.target ? `${badge.target - badge.progress} more needed` : "Not yet earned"}
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
 // Sample events and bosses data
 const eventsData = [
@@ -131,7 +200,7 @@ const eventsData = [
     ]
   },
   {
-    id: 2,
+    id: 5,
     name: "Tech Conference 2025",
     isActive: false,
     bosses: [
@@ -219,7 +288,7 @@ const eventsData = [
     ]
   },
   {
-    id: 3,
+    id: 6,
     name: "Science Fair 2025",
     isActive: false,
     bosses: [
@@ -352,12 +421,8 @@ const Badges = () => {
     <div className="container mx-auto p-3 sm:p-6 max-w-7xl">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Badge Collection</h1>
-        <p className="text-muted-foreground mb-4 sm:mb-6 text-sm sm:text-base">
-          Track your achievements across all boss battles and events
-        </p>
         
-        {/* Stats */}
+        {/* ===== Stats ===== */}
         <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
           <Card>
             <CardContent className="p-3 sm:p-4">
@@ -400,31 +465,51 @@ const Badges = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-        {/* Event Sidebar - Mobile: Horizontal scroll, Desktop: Vertical */}
-        <div className="lg:col-span-1">
-          <Card>
+        {/* Mobile: Tabs for Events */}
+        <div className="lg:hidden">
+          <Tabs value={selectedEvent.id.toString()} onValueChange={(value) => handleEventChange(eventsData.find(e => e.id.toString() === value))}>
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 h-auto gap-1 p-1">
+              {eventsData.map((event) => (
+                <TabsTrigger 
+                  key={event.id} 
+                  value={event.id.toString()}
+                  className="text-xs sm:text-sm flex items-center gap-1 h-auto py-2 px-2"
+                >
+                  {event.isActive && (
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  )}
+                  <span className="truncate text-center">{event.name.replace(' 2025', '')}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {/* Desktop: Vertical Tabs for Events */}
+        <div className="hidden lg:block lg:col-span-1">
+          <Card className="h-full">
             <CardHeader className="pb-3 sm:pb-6">
               <CardTitle className="text-base sm:text-lg">Events</CardTitle>
             </CardHeader>
             <CardContent className="space-y-1 sm:space-y-2">
-              {/* Mobile: Horizontal scroll */}
-              <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
-                {eventsData.map((event) => (
-                  <Button
-                    key={event.id}
-                    variant={selectedEvent.id === event.id ? "default" : "ghost"}
-                    className="flex-shrink-0 lg:w-full justify-start text-sm sm:text-base min-w-[140px] lg:min-w-0"
-                    onClick={() => handleEventChange(event)}
-                  >
-                    <div className="flex items-center space-x-2">
-                      {event.isActive && (
-                        <div className="w-2 h-2 bg-green-500 rounded-full" />
-                      )}
-                      <span className="truncate">{event.name}</span>
-                    </div>
-                  </Button>
-                ))}
-              </div>
+              <Tabs value={selectedEvent.id.toString()} onValueChange={(value) => handleEventChange(eventsData.find(e => e.id.toString() === value))} orientation="vertical" className="w-full">
+                <TabsList className="flex flex-col h-auto w-full bg-transparent p-0 space-y-1">
+                  {eventsData.map((event) => (
+                    <TabsTrigger 
+                      key={event.id} 
+                      value={event.id.toString()}
+                      className="w-full justify-start text-sm h-auto py-2 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-transparent hover:bg-accent"
+                    >
+                      <div className="flex items-center space-x-2 w-full">
+                        {event.isActive && (
+                          <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                        )}
+                        <span className="truncate text-wrap text-left flex-1">{event.name}</span>
+                      </div>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
             </CardContent>
           </Card>
         </div>
@@ -439,7 +524,7 @@ const Badges = () => {
                     <span>{selectedEvent.name}</span>
                     {selectedEvent.isActive && (
                       <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800 text-xs sm:text-sm">
-                        Active
+                        Happening Now
                       </Badge>
                     )}
                   </CardTitle>
@@ -453,7 +538,7 @@ const Badges = () => {
                           <div className="flex items-center gap-2">
                             <div className="w-full sm:w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                               <div 
-                                className="bg-primary h-2 rounded-full transition-all duration-300" 
+                                className="bg-green-400 h-2 rounded-full transition-all duration-300" 
                                 style={{ width: `${progress.percentage}%` }}
                               ></div>
                             </div>
@@ -467,56 +552,50 @@ const Badges = () => {
                 
                 {/* Boss Navigation Tabs */}
                 {selectedEvent.bosses.length > 1 && (
-                  <div className="flex gap-1 sm:gap-2 overflow-x-auto pb-2">
-                    <Button
-                      variant={selectedBoss === null ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedBoss(null)}
-                      className="text-xs sm:text-sm flex-shrink-0"
-                    >
-                      All Bosses
-                    </Button>
-                    {selectedEvent.bosses.map((boss) => (
-                      <Button
-                        key={boss.id}
-                        variant={selectedBoss === boss.id ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSelectedBoss(boss.id)}
-                        className="text-xs sm:text-sm flex-shrink-0"
+                  <Tabs value={selectedBoss === null ? "all" : selectedBoss.toString()} onValueChange={(value) => setSelectedBoss(value === "all" ? null : parseInt(value))}>
+                    <TabsList className="grid w-full h-auto gap-1 p-1" style={{ gridTemplateColumns: `repeat(${selectedEvent.bosses.length + 1}, minmax(0, 1fr))` }}>
+                      <TabsTrigger 
+                        value="all"
+                        className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
                       >
-                        {boss.name}
-                      </Button>
-                    ))}
-                  </div>
+                        All Bosses
+                      </TabsTrigger>
+                      {selectedEvent.bosses.map((boss) => (
+                        <TabsTrigger
+                          key={boss.id}
+                          value={boss.id.toString()}
+                          className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
+                        >
+                          {boss.name}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                  </Tabs>
                 )}
                 
-                {/* Filter Controls */}
-                <div className="flex gap-1 sm:gap-2">
-                  <Button
-                    variant={filter === "all" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setFilter("all")}
-                    className="text-xs sm:text-sm"
-                  >
-                    All
-                  </Button>
-                  <Button
-                    variant={filter === "earned" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setFilter("earned")}
-                    className="text-xs sm:text-sm"
-                  >
-                    Earned
-                  </Button>
-                  <Button
-                    variant={filter === "unearned" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setFilter("unearned")}
-                    className="text-xs sm:text-sm"
-                  >
-                    Unearned
-                  </Button>
-                </div>
+                {/* Filter Controls Tabs */}
+                <Tabs value={filter} onValueChange={(value) => setFilter(value)}>
+                  <TabsList className="grid w-full grid-cols-3 h-auto gap-1 p-1">
+                    <TabsTrigger 
+                      value="all"
+                      className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
+                    >
+                      All
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="earned"
+                      className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
+                    >
+                      Earned
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="unearned"
+                      className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
+                    >
+                      Unearned
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
             </CardHeader>
             
@@ -541,58 +620,9 @@ const Badges = () => {
                     
                     {/* Boss Badges */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                      {filteredBadges.map((badge) => {
-                        const IconComponent = badge.icon;
-                        return (
-                          <Card 
-                            key={badge.id} 
-                            className={`relative transition-all duration-200 ${
-                              badge.earned 
-                                ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/30" 
-                                : "border-gray-200 bg-gray-50/50 dark:border-gray-700 dark:bg-gray-800/50"
-                            }`}
-                          >
-                            <CardContent className="p-3 sm:p-4">
-                              {/* Badge Status Icon */}
-                              <div className="absolute top-2 right-2">
-                                {badge.earned ? (
-                                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 dark:text-green-400" />
-                                ) : (
-                                  <Lock className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 dark:text-gray-500" />
-                                )}
-                              </div>
-                              
-                              {/* Badge Icon */}
-                              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 sm:mb-3 ${
-                                badge.earned 
-                                  ? "bg-primary text-primary-foreground" 
-                                  : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-                              }`}>
-                                <IconComponent className="h-5 w-5 sm:h-6 sm:w-6" />
-                              </div>
-                              
-                              {/* Badge Info */}
-                              <h4 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base">{badge.name}</h4>
-                              <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 leading-relaxed line-clamp-3">
-                                {badge.description}
-                              </p>
-                              
-                              {/* Earned Date */}
-                              {badge.earned && badge.earnedDate && (
-                                <p className="text-xs text-green-600 dark:text-green-400 font-medium">
-                                  Earned {new Date(badge.earnedDate).toLocaleDateString()}
-                                </p>
-                              )}
-                              
-                              {!badge.earned && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                  Not yet earned
-                                </p>
-                              )}
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
+                      {filteredBadges.map((badge) => (
+                        <BadgeCard key={badge.id} badge={badge} />
+                      ))}
                     </div>
                   </div>
                 );
@@ -620,74 +650,9 @@ const Badges = () => {
                     
                     {/* Milestone Badges */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                      {filteredMilestones.map((milestone) => {
-                        const IconComponent = milestone.icon;
-                        return (
-                          <Card 
-                            key={milestone.id} 
-                            className={`relative transition-all duration-200 ${
-                              milestone.earned 
-                                ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/30" 
-                                : "border-gray-200 bg-gray-50/50 dark:border-gray-700 dark:bg-gray-800/50"
-                            }`}
-                          >
-                            <CardContent className="p-3 sm:p-4">
-                              {/* Badge Status Icon */}
-                              <div className="absolute top-2 right-2">
-                                {milestone.earned ? (
-                                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 dark:text-green-400" />
-                                ) : (
-                                  <Lock className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 dark:text-gray-500" />
-                                )}
-                              </div>
-                              
-                              {/* Badge Icon */}
-                              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 sm:mb-3 ${
-                                milestone.earned 
-                                  ? "bg-primary text-primary-foreground" 
-                                  : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-                              }`}>
-                                <IconComponent className="h-5 w-5 sm:h-6 sm:w-6" />
-                              </div>
-                              
-                              {/* Badge Info */}
-                              <h4 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base">{milestone.name}</h4>
-                              <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 leading-relaxed line-clamp-3">
-                                {milestone.description}
-                              </p>
-
-                              {/* Progress Bar for Question Milestones */}
-                              {milestone.target && (
-                                <div className="mb-2 sm:mb-3">
-                                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                                    <span>Progress</span>
-                                    <span>{milestone.progress}/{milestone.target}</span>
-                                  </div>
-                                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                                    <div 
-                                      className="bg-primary h-1.5 rounded-full transition-all duration-300" 
-                                      style={{ width: `${Math.min((milestone.progress / milestone.target) * 100, 100)}%` }}
-                                    ></div>
-                                  </div>
-                                </div>
-                              )}
-                              
-                              {/* Earned Date */}
-                              {milestone.earned && milestone.earnedDate && (
-                                <p className="text-xs text-green-600 dark:text-green-400 font-medium">
-                                  Earned {new Date(milestone.earnedDate).toLocaleDateString()}
-                                </p>
-                              )}
-                              
-                              {!milestone.earned && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                  {milestone.target ? `${milestone.target - milestone.progress} more needed` : "Not yet earned"}
-                                </p>
-                              )}
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
+                      {filteredMilestones.map((milestone) => (
+                        <BadgeCard key={milestone.id} badge={milestone} isMilestone />
+                      ))}
                     </div>
                   </div>
                 );
