@@ -1,7 +1,7 @@
 // ===== LIBRARIES ===== //
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, Users, X } from "lucide-react";
 
 // ===== COMPONENTS ===== //
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -15,6 +15,8 @@ import "@/index.css";
 const BossPreview = () => {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
+  const [isJoined, setIsJoined] = useState(false);
+  const [playersOnline, setPlayersOnline] = useState(0);
 
   const goBack = () => {
     navigate("/qr"); // Go to QR page
@@ -22,10 +24,18 @@ const BossPreview = () => {
 
   const handleJoin = () => {
     if (nickname.trim()) {
-      // Handle join logic here
+      setIsJoined(true);
+      setPlayersOnline(prev => prev + 1);
       console.log("Joining with nickname:", nickname);
-      // Navigate to boss battle or handle join
+      // Handle join logic here
     }
+  };
+
+  const handleUnjoin = () => {
+    setIsJoined(false);
+    setPlayersOnline(prev => Math.max(0, prev - 1));
+    console.log("Unjoining from battle");
+    // Handle unjoin logic here
   };
 
   return (
@@ -69,18 +79,38 @@ const BossPreview = () => {
             <div className="text-center py-2">
               <div className="flex items-center justify-center text-muted-foreground text-sm">
                 <Users className="w-4 h-4 mr-2" />
-                <span>Players online: 0</span>
+                <span>Players online: {playersOnline}</span>
               </div>
             </div>
 
-            {/* Join Button */}
-            <Button 
-              onClick={handleJoin}
-              className="w-full"
-              disabled={!nickname.trim()}
-            >
-              Join
-            </Button>
+            {/* Join/Waiting Button */}
+            {!isJoined ? (
+              <Button 
+                onClick={handleJoin}
+                className="w-full"
+                disabled={!nickname.trim()}
+              >
+                Join
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button 
+                  className="flex-1"
+                  disabled
+                  variant="secondary"
+                >
+                  Waiting for 1 more player
+                </Button>
+                <Button
+                  onClick={handleUnjoin}
+                  variant="outline"
+                  size="icon"
+                  className="flex-shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
 
             {/* Nickname Input */}
             <div className="space-y-2">
