@@ -72,48 +72,48 @@ const Leaderboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600">
-          <div className="flex items-center mb-6">
-            <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400 mr-3" />
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Event1</h1>
-          </div>
 
-          {/* Boss HP Section */}
-          <div className="mb-6">
-            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-              Boss HP
-            </Label>
-            <div className="space-y-2">
-              <div className="relative w-full bg-gray-200 dark:bg-gray-700 rounded-full h-5 border border-gray-300 dark:border-gray-600">
-                <div className="bg-red-500 dark:bg-red-600 h-5 rounded-full" style={{ width: '25%' }}></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white text-xs font-medium drop-shadow-sm">250/1000</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Boss Info Grid */}
-          <Card className="mb-6 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
-            <CardContent className="p-4">
-              <div className="space-y-2 text-sm">
-                <div className="text-gray-600 dark:text-gray-400">
-                  <span className="font-medium text-gray-900 dark:text-white">Boss Name:</span> Boss1
-                </div>
-                <div className="text-gray-600 dark:text-gray-400">
-                  <span className="font-medium text-gray-900 dark:text-white">Player:</span> 10
-                </div>
-                <div className="text-gray-600 dark:text-gray-400">
-                  <span className="font-medium text-gray-900 dark:text-white">Battle's Status:</span> <span className="text-green-600 dark:text-green-400 font-medium">Active</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          
+     
 
         {/* Podium Section */}
-        
+        <Card>
+          <CardHeader className="pb-3 sm:pb-6 text-center">
+            <CardTitle className="text-xl sm:text-2xl font-bold flex items-center justify-center gap-2">
+              <Trophy className="w-5 h-5 text-yellow-500" /> Top Players
+            </CardTitle>
+            <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm sm:text-base">
+              Top 3 players by damage and accuracy
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-end justify-center gap-6 py-4">
+              {podiumPlayers.map((player, idx) => {
+                let height = player.rank === 1 ? 120 : player.rank === 2 ? 80 : 60;
+                return (
+                  <div key={player.rank} className={`flex flex-col items-center ${idx === 0 ? "order-2" : idx === 1 ? "order-1" : "order-3"}`}>
+                    <div className="mb-2 relative">
+                      <Avatar className="w-20 h-20 md:w-24 md:h-24 border-4 border-gray-200 dark:border-gray-700 shadow-lg">
+                        <AvatarImage src={player.avatar} alt={player.player} />
+                        <AvatarFallback>{player.player[0]}</AvatarFallback>
+                      </Avatar>
+                      <div className={`absolute -top-3 -right-3 w-8 h-8 rounded-full ${getPodiumColor(player.rank)} flex items-center justify-center shadow-lg border-2 border-white`}>
+                        {getPodiumIcon(player.rank)}
+                      </div>
+                    </div>
+                    <div className="font-bold text-lg mb-1 text-gray-900 dark:text-white">{player.player}</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{player.dmg} DMG</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">{player.correct} Correct</div>
+                    <div className={`w-20 md:w-24 h-6 rounded-t-lg ${getPodiumColor(player.rank)} text-white flex items-center justify-center font-bold text-sm shadow-lg`} style={{ height: `${height}px` }}>
+                      {player.rank === 1 ? "1st" : player.rank === 2 ? "2nd" : "3rd"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Live Team Leaderboard */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600">
@@ -223,42 +223,7 @@ const Leaderboard = () => {
           </CardContent>
         </Card>
 
-        {/* All-Time Individual Leaderboard */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600">
-          <Label className="text-base font-semibold text-gray-900 dark:text-white mb-4 block">
-            All-Time Individual Leaderboard
-          </Label>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-16 text-center">Rank</TableHead>
-                <TableHead>Player</TableHead>
-                <TableHead className="text-right">DMG</TableHead>
-                <TableHead className="text-right">Correct</TableHead>
-                <TableHead className="text-right">Last Played</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {allTimeLeaderboard.map((player) => (
-                <TableRow key={player.rank} className={`${getRowBackground(player.rank)} transition-colors`}>
-                  <TableCell className={`text-center font-bold ${getTextColor(player.rank)}`}>
-                    {player.rank}
-                  </TableCell>
-                  <TableCell className={`font-medium flex items-center gap-2 ${getTextColor(player.rank)}`}>
-                    <Avatar className="w-7 h-7 border border-gray-200 dark:border-gray-700">
-                      <AvatarImage src={player.avatar} alt={player.player} />
-                      <AvatarFallback>{player.player[0]}</AvatarFallback>
-                    </Avatar>
-                    {player.player}
-                  </TableCell>
-                  <TableCell className={`text-right ${getTextColor(player.rank)}`}>{player.dmg}</TableCell>
-                  <TableCell className={`text-right ${getTextColor(player.rank)}`}>{player.correct}</TableCell>
-                  <TableCell className={`text-right text-xs ${getTextColor(player.rank)}`}>{player.lastPlayed}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        
       </div>
     </div>
   );
