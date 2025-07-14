@@ -76,7 +76,7 @@ const Leaderboard = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600">
           <div className="flex items-center mb-6">
             <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400 mr-3" />
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Leaderboard</h1>
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Event1</h1>
           </div>
 
           {/* Boss HP Section */}
@@ -97,14 +97,14 @@ const Leaderboard = () => {
           {/* Boss Info Grid */}
           <Card className="mb-6 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
             <CardContent className="p-4">
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              <div className="space-y-2 text-sm">
                 <div className="text-gray-600 dark:text-gray-400">
                   <span className="font-medium text-gray-900 dark:text-white">Boss Name:</span> Boss1
                 </div>
                 <div className="text-gray-600 dark:text-gray-400">
                   <span className="font-medium text-gray-900 dark:text-white">Player:</span> 10
                 </div>
-                <div className="text-gray-600 dark:text-gray-400 col-span-2">
+                <div className="text-gray-600 dark:text-gray-400">
                   <span className="font-medium text-gray-900 dark:text-white">Battle's Status:</span> <span className="text-green-600 dark:text-green-400 font-medium">Active</span>
                 </div>
               </div>
@@ -113,42 +113,7 @@ const Leaderboard = () => {
         </div>
 
         {/* Podium Section */}
-        <Card>
-          <CardHeader className="pb-3 sm:pb-6 text-center">
-            <CardTitle className="text-xl sm:text-2xl font-bold flex items-center justify-center gap-2">
-              <Trophy className="w-5 h-5 text-yellow-500" /> Top Players
-            </CardTitle>
-            <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm sm:text-base">
-              Top 3 players by damage and accuracy
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-end justify-center gap-6 py-4">
-              {podiumPlayers.map((player, idx) => {
-                let height = player.rank === 1 ? 120 : player.rank === 2 ? 80 : 60;
-                return (
-                  <div key={player.rank} className={`flex flex-col items-center ${idx === 0 ? "order-2" : idx === 1 ? "order-1" : "order-3"}`}>
-                    <div className="mb-2 relative">
-                      <Avatar className="w-20 h-20 md:w-24 md:h-24 border-4 border-gray-200 dark:border-gray-700 shadow-lg">
-                        <AvatarImage src={player.avatar} alt={player.player} />
-                        <AvatarFallback>{player.player[0]}</AvatarFallback>
-                      </Avatar>
-                      <div className={`absolute -top-3 -right-3 w-8 h-8 rounded-full ${getPodiumColor(player.rank)} flex items-center justify-center shadow-lg border-2 border-white`}>
-                        {getPodiumIcon(player.rank)}
-                      </div>
-                    </div>
-                    <div className="font-bold text-lg mb-1 text-gray-900 dark:text-white">{player.player}</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{player.dmg} DMG</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">{player.correct} Correct</div>
-                    <div className={`w-20 md:w-24 h-6 rounded-t-lg ${getPodiumColor(player.rank)} text-white flex items-center justify-center font-bold text-sm shadow-lg`} style={{ height: `${height}px` }}>
-                      {player.rank === 1 ? "1st" : player.rank === 2 ? "2nd" : "3rd"}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        
 
         {/* Live Team Leaderboard */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600">
