@@ -1,5 +1,5 @@
 // ===== LIBRARIES ===== //
-import { Calendar, Sword, BookOpen, Settings, Home, Moon, Sun, User, LogOut } from "lucide-react";
+import { Calendar, Sword, BookOpen, Settings, Home, Moon, Sun, User, LogOut, BarChart3 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 // ===== COMPONENTS ===== //
@@ -46,6 +46,11 @@ const mainNavItems = [
     title: "Question Bank",
     url: "/host/categories/view",
     icon: BookOpen,
+  },
+  {
+    title: "All Time Leaderboard",
+    url: "/host/all_leaderboard",
+    icon: BarChart3,
   },
 ];
 

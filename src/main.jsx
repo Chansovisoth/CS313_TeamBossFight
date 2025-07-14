@@ -158,7 +158,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </Route>
 
             {/* Host Events All Leaderboard */}
-            <Route path="/host/events/all_leaderboard" element={<AppOP />}>
+            <Route path="/host/all_leaderboard" element={<AppOP />}>
               <Route index element={<HostEventsAllLeaderboard />} />
             </Route>
 
