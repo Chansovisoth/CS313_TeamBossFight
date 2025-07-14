@@ -40,6 +40,7 @@ export function PageTitle({ className = "text-lg font-semibold text-foreground" 
     if (pathname.includes('/host/events/player_badges')) return 'Bosses';
     if (pathname.includes('/host/events/player_badges/edit')) return 'Bosses';
     if (pathname.includes('/host/events/leaderboard')) return 'Bosses';
+    if (pathname.includes('/host/bosses/view')) return 'Bosses';
     if (pathname.includes('/host/bosses/create')) return 'Bosses';
     if (pathname.includes('/host/bosses/edit')) return 'Bosses';
     if (pathname.includes('/host/categories')) return 'Question Bank';
