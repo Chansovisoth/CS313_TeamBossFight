@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 // ===== STYLES ===== //
 import "@/index.css";
 
-const BossBattle = () => {
+const BossPreview = () => {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
 
@@ -103,4 +103,4 @@ const BossBattle = () => {
   );
 };
 
-export default BossBattle;
+export default BossPreview;

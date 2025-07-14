@@ -69,7 +69,7 @@ const QR = () => {
   // ===== HANDLERS ===== //
   const goBack = () => {
     qrScannerRef.current?.stopCamera();
-    navigate(-1);
+    navigate("/");
   };
 
   const handleStartCamera = () => {
@@ -108,14 +108,20 @@ const QR = () => {
   return (
     <>
       {/* Main container for the entire page */}
-      <main className="flex-grow min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between mb-8">
-            <Button onClick={goBack} variant="outline">
+      {/* <main className="flex-grow min-h-screen bg-background"> */}
+      <main className="flex-grow min-h-screen">
+        <div className="container mx-auto p-3 sm:p-6 max-w-4xl">
+          {/* Header */}
+          <div className="mb-6 sm:mb-8">
+            <Button onClick={goBack} variant="outline" className="mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" /> Back
             </Button>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">QR Scanner</h1>
-            <div className="w-16"></div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="mx-auto">
+                <h1 className="text-2xl sm:text-3xl font-bold text-center">QR Scanner</h1>
+                <p className="text-muted-foreground text-center">Scan QR codes to join boss battles and events</p>
+              </div>
+            </div>
           </div>
 
           <div className="max-w-md mx-auto">

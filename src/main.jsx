@@ -25,8 +25,9 @@ import PlayerHome from "./pages/Player/Home";
 import PlayerBadges from "./pages/Player/Badges";
 import PlayerLeaderboard from "./pages/Player/Leaderboard";
 import PlayerAbout from "./pages/Player/About";
+import PlayerProfile from "./pages/Player/Profile";
 import PlayerQR from "./pages/Player/QR";
-// import PlayerBossPreview from "./pages/Player/BossPreview";
+import PlayerBossPreview from "./pages/Player/BossPreview";
 import PlayerBossBattle from "./pages/Player/BossBattle";
 
 // ===== HOST PAGES ===== //
@@ -75,10 +76,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<PlayerQR />} />
             </Route>
 
-            <Route path="/boss-battle" element={<App />}>
-              <Route index element={<PlayerBossBattle />} />
-            </Route>
-
             <Route path="/badges" element={<App />}>
               <Route index element={<PlayerBadges />} />
             </Route>
@@ -91,8 +88,20 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<PlayerAbout />} />
             </Route>
 
+            <Route path="/profile" element={<App />}>
+              <Route index element={<PlayerProfile />} />
+            </Route>
+
             <Route path="/auth" element={<App />}>
               <Route index element={<PlayerAuthentication />} />
+            </Route>
+
+            <Route path="/boss-preview" element={<App />}>
+              <Route index element={<PlayerBossPreview />} />
+            </Route>
+
+            <Route path="/boss-battle" element={<App />}>
+              <Route index element={<PlayerBossBattle />} />
             </Route>
 
             {/* ===== HOST ROUTES ===== */}

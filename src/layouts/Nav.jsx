@@ -66,12 +66,12 @@ export function NavSidebar({ ...props }) {
   // }, [logout, navigate])
 
   // Mock user data - replace with actual user context
-  const user = null // Replace with actual user from context
-  const mockUser = {
+  const user = { // Set to logged in state since sidebar is visible
     name: "UwU",
     email: "uwu@gmail.com",
     avatar: "/src/assets/placeholder/Profile1.jpg",
   }
+  const mockUser = user
 
   // ===== NAVIGATION DATA ===== //
   const navigationItems = useMemo(
@@ -255,10 +255,6 @@ export function NavSidebar({ ...props }) {
                     <DropdownMenuItem onClick={() => navigate("/profile")}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/settings")}>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem

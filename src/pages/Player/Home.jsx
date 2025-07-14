@@ -48,7 +48,7 @@ const Home = () => {
       <QRButton />
 
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-screen overflow-hidden py-6 bg-[#f3f0ff] dark:bg-gray-900">
+      <section className="relative min-h-screen overflow-hidden py-6 bg-[#f3f0ff] dark:bg-[#140f25]">
 
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 2xl:px-48">
           <div className="max-w-6xl mx-auto text-center w-full">

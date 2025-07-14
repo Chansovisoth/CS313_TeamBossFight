@@ -12,14 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // ===== REUSABLE COMPONENTS ===== //
 const BadgeCard = ({ badge, isMilestone = false }) => {
   const IconComponent = badge.icon;
-  
+
   return (
-    <Card 
-      className={`relative transition-all duration-200 ${
-        badge.earned 
-          ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/30" 
+    <Card
+      className={`relative transition-all duration-200 ${badge.earned
+          ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/30"
           : "border-gray-200 bg-gray-50/50 dark:border-gray-700 dark:bg-gray-800/50"
-      }`}
+        }`}
     >
       <CardContent className="p-3 sm:p-4">
         {/* Badge Status Icon */}
@@ -30,16 +29,15 @@ const BadgeCard = ({ badge, isMilestone = false }) => {
             <Lock className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 dark:text-gray-500" />
           )}
         </div>
-        
+
         {/* Badge Icon */}
-        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 sm:mb-3 ${
-          badge.earned 
-            ? "bg-green-400 text-primary-foreground" 
+        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 sm:mb-3 ${badge.earned
+            ? "bg-green-400 text-primary-foreground"
             : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-        }`}>
+          }`}>
           <IconComponent className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
-        
+
         {/* Badge Info */}
         <h4 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base">{badge.name}</h4>
         <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 leading-relaxed line-clamp-3">
@@ -54,14 +52,14 @@ const BadgeCard = ({ badge, isMilestone = false }) => {
               <span>{badge.progress}/{badge.target}</span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-              <div 
-                className="bg-green-400 h-1.5 rounded-full transition-all duration-300" 
+              <div
+                className="bg-green-400 h-1.5 rounded-full transition-all duration-300"
                 style={{ width: `${Math.min((badge.progress / badge.target) * 100, 100)}%` }}
               ></div>
             </div>
           </div>
         )}
-        
+
         {/* Earned Status */}
         {badge.earned ? (
           <p className="text-xs text-green-600 dark:text-green-400 font-medium">
@@ -419,44 +417,49 @@ const Badges = () => {
 
   return (
     <div className="container mx-auto p-3 sm:p-6 max-w-7xl">
-      {/* Header */}
+
+      {/* ===== HEADER ===== */}
       <div className="mb-6 sm:mb-8">
-        
-        {/* ===== Stats ===== */}
+
+        {/* ===== STATS ===== */}
         <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+
+          {/* EARNED */}
           <Card>
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
-                <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 mb-1 sm:mb-0" />
+                <Trophy className="h-8 w-8 sm:h-5 sm:w-5 text-yellow-600 mb-2 sm:mb-0 mx-auto sm:mx-0" />
                 <div className="text-center sm:text-left">
-                  <p className="text-lg sm:text-2xl font-bold">{earnedBadges.length}</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Earned</p>
+                  <p className="text-lg sm:text-2xl font-bold ms-0 sm:ms-3">{earnedBadges.length}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground ms-0 sm:ms-3">Earned</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
+          {/* TOTAL */}
           <Card>
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
-                <Award className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mb-1 sm:mb-0" />
+                <Award className="h-8 w-8 sm:h-5 sm:w-5 text-blue-600 mb-2 sm:mb-0 mx-auto sm:mx-0" />
                 <div className="text-center sm:text-left">
-                  <p className="text-lg sm:text-2xl font-bold">{totalBadges}</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
+                  <p className="text-lg sm:text-2xl font-bold ms-0 sm:ms-3">{totalBadges}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground ms-0 sm:ms-3">Total</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
+          {/* PROGRESS */}
           <Card>
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
-                <Star className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 mb-1 sm:mb-0" />
+                <Star className="h-8 w-8 sm:h-5 sm:w-5 text-green-600 mb-2 sm:mb-0 mx-auto sm:mx-0" />
                 <div className="text-center sm:text-left">
-                  <p className="text-lg sm:text-2xl font-bold">
+                  <p className="text-lg sm:text-2xl font-bold ms-0 sm:ms-3">
                     {Math.round((earnedBadges.length / totalBadges) * 100)}%
                   </p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Done</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground ms-0 sm:ms-3">Done</p>
                 </div>
               </div>
             </CardContent>
@@ -464,14 +467,16 @@ const Badges = () => {
         </div>
       </div>
 
+      {/* ===== EVENTS FILTERS ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-        {/* Mobile: Tabs for Events */}
+
+        {/* MOBILE: Tabs for Events */}
         <div className="lg:hidden">
           <Tabs value={selectedEvent.id.toString()} onValueChange={(value) => handleEventChange(eventsData.find(e => e.id.toString() === value))}>
             <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 h-auto gap-1 p-1">
               {eventsData.map((event) => (
-                <TabsTrigger 
-                  key={event.id} 
+                <TabsTrigger
+                  key={event.id}
                   value={event.id.toString()}
                   className="text-xs sm:text-sm flex items-center gap-1 h-auto py-2 px-2"
                 >
@@ -485,18 +490,20 @@ const Badges = () => {
           </Tabs>
         </div>
 
-        {/* Desktop: Vertical Tabs for Events */}
+        {/* DESKTOP: Vertical Tabs for Events */}
         <div className="hidden lg:block lg:col-span-1">
           <Card className="h-full">
+
             <CardHeader className="pb-3 sm:pb-6">
               <CardTitle className="text-base sm:text-lg">Events</CardTitle>
             </CardHeader>
+
             <CardContent className="space-y-1 sm:space-y-2">
               <Tabs value={selectedEvent.id.toString()} onValueChange={(value) => handleEventChange(eventsData.find(e => e.id.toString() === value))} orientation="vertical" className="w-full">
                 <TabsList className="flex flex-col h-auto w-full bg-transparent p-0 space-y-1">
                   {eventsData.map((event) => (
-                    <TabsTrigger 
-                      key={event.id} 
+                    <TabsTrigger
+                      key={event.id}
                       value={event.id.toString()}
                       className="w-full justify-start text-sm h-auto py-2 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-transparent hover:bg-accent"
                     >
@@ -511,18 +518,20 @@ const Badges = () => {
                 </TabsList>
               </Tabs>
             </CardContent>
+
           </Card>
         </div>
 
 
 
-        {/* ===== Main Content ===== */}
+        {/* ===== MAIN CONTENT ===== */}
         <div className="lg:col-span-3">
           <Card>
             <CardHeader className="pb-3 sm:pb-6">
               <div className="flex flex-col gap-3 sm:gap-4">
                 <div>
-                  {/* ===== Event Title ===== */}
+
+                  {/* Event Title */}
                   <CardTitle className="flex flex-col sm:flex-row sm:items-center gap-2 text-lg sm:text-xl">
                     <span>{selectedEvent.name}</span>
                     {selectedEvent.isActive && (
@@ -532,17 +541,18 @@ const Badges = () => {
                     )}
                   </CardTitle>
 
-                  {/* ===== Event Progress Summary ===== */}
+                  {/* Event Progress Summary */}
                   <div className="mt-2">
                     {(() => {
                       const progress = getEventProgress(selectedEvent);
                       return (
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                          {/* How many badges earned */}
                           <span>{progress.earned} of {progress.total} badges earned</span>
                           <div className="flex items-center gap-2">
                             <div className="w-full sm:w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                              <div 
-                                className="bg-green-400 h-2 rounded-full transition-all duration-300" 
+                              <div
+                                className="bg-green-400 h-2 rounded-full transition-all duration-300"
                                 style={{ width: `${progress.percentage}%` }}
                               ></div>
                             </div>
@@ -553,13 +563,14 @@ const Badges = () => {
                     })()}
                   </div>
                 </div>
-                
+
+
 
                 {/* ===== Boss Navigation Tabs ===== */}
                 {selectedEvent.bosses.length > 1 && (
                   <Tabs value={selectedBoss === null ? "all" : selectedBoss.toString()} onValueChange={(value) => setSelectedBoss(value === "all" ? null : parseInt(value))}>
                     <TabsList className="grid w-full h-auto gap-1 p-1" style={{ gridTemplateColumns: `repeat(${selectedEvent.bosses.length + 1}, minmax(0, 1fr))` }}>
-                      <TabsTrigger 
+                      <TabsTrigger
                         value="all"
                         className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
                       >
@@ -577,24 +588,25 @@ const Badges = () => {
                     </TabsList>
                   </Tabs>
                 )}
-                
 
-                {/* ===== Filter Controls Tabs ===== */}
+
+
+                {/* ===== ALL/EARNED/UNEARNED FILTER ===== */}
                 <Tabs value={filter} onValueChange={(value) => setFilter(value)}>
                   <TabsList className="grid w-full grid-cols-3 h-auto gap-1 p-1">
-                    <TabsTrigger 
+                    <TabsTrigger
                       value="all"
                       className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
                     >
                       All
                     </TabsTrigger>
-                    <TabsTrigger 
+                    <TabsTrigger
                       value="earned"
                       className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
                     >
                       Earned
                     </TabsTrigger>
-                    <TabsTrigger 
+                    <TabsTrigger
                       value="unearned"
                       className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
                     >
@@ -604,18 +616,20 @@ const Badges = () => {
                 </Tabs>
               </div>
             </CardHeader>
-            
+
+
+
             {/* ===== DISPLAY ALL BADGES ===== */}
             <CardContent className="space-y-6 sm:space-y-8">
               {selectedEvent.bosses.map((boss, bossIndex) => {
                 const filteredBadges = getFilteredBadges(boss.badges);
-                
+
                 if (filteredBadges.length === 0) return null;
-                
+
                 return (
                   <div key={boss.id}>
                     {bossIndex > 0 && <Separator className="my-4 sm:my-6" />}
-                    
+
                     {/* Boss Header */}
                     <div className="mb-4 sm:mb-6">
                       <h3 className="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
@@ -624,7 +638,7 @@ const Badges = () => {
                       </h3>
                       <p className="text-muted-foreground text-sm sm:text-base">{boss.description}</p>
                     </div>
-                    
+
                     {/* Boss Badges */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                       {filteredBadges.map((badge) => (
@@ -639,11 +653,11 @@ const Badges = () => {
               {(() => {
                 const filteredMilestones = getFilteredBadges(selectedEvent.milestones);
                 if (filteredMilestones.length === 0) return null;
-                
+
                 return (
                   <div>
                     <Separator className="my-4 sm:my-6" />
-                    
+
                     {/* Milestone Header */}
                     <div className="mb-4 sm:mb-6">
                       <h3 className="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
@@ -654,7 +668,7 @@ const Badges = () => {
                         Progress tracked across all boss sessions within this event
                       </p>
                     </div>
-                    
+
                     {/* Milestone Badges */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                       {filteredMilestones.map((milestone) => (
@@ -664,25 +678,25 @@ const Badges = () => {
                   </div>
                 );
               })()}
-              
+
               {/* ===== Empty State ===== */}
-              {selectedEvent.bosses.every(boss => getFilteredBadges(boss.badges).length === 0) && 
-               getFilteredBadges(selectedEvent.milestones).length === 0 && (
-                <div className="text-center py-8 sm:py-12">
-                  <Trophy className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 dark:text-gray-600 mx-auto mb-3 sm:mb-4" />
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
-                    No badges found
-                  </h3>
-                  <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 px-4">
-                    {filter === "earned"
-                      ? "You haven't earned any badges in this event yet."
-                      : filter === "unearned"
-                      ? "You've earned all badges in this event!"
-                      : "No badges available in this event."
-                    }
-                  </p>
-                </div>
-              )}
+              {selectedEvent.bosses.every(boss => getFilteredBadges(boss.badges).length === 0) &&
+                getFilteredBadges(selectedEvent.milestones).length === 0 && (
+                  <div className="text-center py-8 sm:py-12">
+                    <Trophy className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 dark:text-gray-600 mx-auto mb-3 sm:mb-4" />
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
+                      No badges found
+                    </h3>
+                    <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 px-4">
+                      {filter === "earned"
+                        ? "You haven't earned any badges in this event yet."
+                        : filter === "unearned"
+                          ? "You've earned all badges in this event!"
+                          : "No badges available in this event."
+                      }
+                    </p>
+                  </div>
+                )}
             </CardContent>
           </Card>
         </div>

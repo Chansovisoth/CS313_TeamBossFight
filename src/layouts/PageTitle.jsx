@@ -24,10 +24,12 @@ export function PageTitle({ className = "text-lg font-semibold text-foreground" 
       '/': 'Home',
       '/about': 'About',
       '/badges': 'Badges',
+      '/leaderboard': 'Leaderboard',
       '/qr': 'QR',
+      '/boss-preview': 'Boss Preview',
       '/boss-battle': 'Boss Battle',
+      '/profile': 'Profile',
       '/authentication': 'Authentication',
-      '/leaderboard': 'Leaderboard'
     };
     
     // Handle nested routes

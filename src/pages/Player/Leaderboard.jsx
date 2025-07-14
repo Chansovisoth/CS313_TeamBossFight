@@ -4,30 +4,66 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext } from "@/components/ui/pagination";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, Medal, Award } from "lucide-react";
 
-// Sample leaderboard data with avatar
-const leaderboardData = [
-    { rank: 1, username: "Player1", dmg: 12000, correctPercent: 95, avatar: "/src/assets/Placeholder/Profile1.jpg" },
-    { rank: 2, username: "Player2", dmg: 11000, correctPercent: 90, avatar: "/src/assets/Placeholder/Profile2.jpg" },
-    { rank: 3, username: "Player3", dmg: 9500, correctPercent: 88, avatar: "/src/assets/Placeholder/Profile3.jpg" },
-    { rank: 4, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
-    { rank: 5, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg" },
-    { rank: 6, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
-    { rank: 7, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg" },
-    { rank: 8, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
-    { rank: 9, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg" },
-    { rank: 10, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
-    { rank: 11, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg" },
-    { rank: 12, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
-];
+// Sample leaderboard data with avatar and event information
+const leaderboardData = {
+  all: [
+    { rank: 1, username: "Player1", dmg: 12000, correctPercent: 95, avatar: "/src/assets/Placeholder/Profile1.jpg", event: "Open House 2025" },
+    { rank: 2, username: "Player2", dmg: 11000, correctPercent: 90, avatar: "/src/assets/Placeholder/Profile2.jpg", event: "Tech Conference 2025" },
+    { rank: 3, username: "Player3", dmg: 9500, correctPercent: 88, avatar: "/src/assets/Placeholder/Profile3.jpg", event: "Open House 2025" },
+    { rank: 4, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg", event: "Science Fair 2025" },
+    { rank: 5, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg", event: "Open House 2025" },
+    { rank: 6, username: "TechMaster", dmg: 8200, correctPercent: 92, avatar: "/src/assets/Placeholder/Profile1.jpg", event: "Tech Conference 2025" },
+    { rank: 7, username: "ScienceWiz", dmg: 7800, correctPercent: 87, avatar: "/src/assets/Placeholder/Profile2.jpg", event: "Science Fair 2025" },
+    { rank: 8, username: "CodeNinja", dmg: 7500, correctPercent: 83, avatar: "/src/assets/Placeholder/Profile3.jpg", event: "Tech Conference 2025" },
+    { rank: 9, username: "KnowledgeSeeker", dmg: 7200, correctPercent: 89, avatar: "/src/assets/Placeholder/Profile4.jpg", event: "Open House 2025" },
+    { rank: 10, username: "AlgoHero", dmg: 6900, correctPercent: 86, avatar: "/src/assets/Placeholder/Profile5.jpg", event: "Tech Conference 2025" },
+    { rank: 11, username: "DataMaster", dmg: 6500, correctPercent: 84, avatar: "/src/assets/Placeholder/Profile1.jpg", event: "Science Fair 2025" },
+    { rank: 12, username: "LogicLord", dmg: 6200, correctPercent: 81, avatar: "/src/assets/Placeholder/Profile2.jpg", event: "Open House 2025" },
+  ],
+  "Open House 2025": [
+    { rank: 1, username: "Player1", dmg: 12000, correctPercent: 95, avatar: "/src/assets/Placeholder/Profile1.jpg", event: "Open House 2025" },
+    { rank: 2, username: "Player3", dmg: 9500, correctPercent: 88, avatar: "/src/assets/Placeholder/Profile3.jpg", event: "Open House 2025" },
+    { rank: 3, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg", event: "Open House 2025" },
+    { rank: 4, username: "KnowledgeSeeker", dmg: 7200, correctPercent: 89, avatar: "/src/assets/Placeholder/Profile4.jpg", event: "Open House 2025" },
+    { rank: 5, username: "LogicLord", dmg: 6200, correctPercent: 81, avatar: "/src/assets/Placeholder/Profile2.jpg", event: "Open House 2025" },
+    { rank: 6, username: "WisdomWarrior", dmg: 5800, correctPercent: 78, avatar: "/src/assets/Placeholder/Profile1.jpg", event: "Open House 2025" },
+    { rank: 7, username: "BrainBuster", dmg: 5400, correctPercent: 75, avatar: "/src/assets/Placeholder/Profile3.jpg", event: "Open House 2025" },
+  ],
+  "Tech Conference 2025": [
+    { rank: 1, username: "Player2", dmg: 11000, correctPercent: 90, avatar: "/src/assets/Placeholder/Profile2.jpg", event: "Tech Conference 2025" },
+    { rank: 2, username: "TechMaster", dmg: 8200, correctPercent: 92, avatar: "/src/assets/Placeholder/Profile1.jpg", event: "Tech Conference 2025" },
+    { rank: 3, username: "CodeNinja", dmg: 7500, correctPercent: 83, avatar: "/src/assets/Placeholder/Profile3.jpg", event: "Tech Conference 2025" },
+    { rank: 4, username: "AlgoHero", dmg: 6900, correctPercent: 86, avatar: "/src/assets/Placeholder/Profile5.jpg", event: "Tech Conference 2025" },
+    { rank: 5, username: "ByteBeast", dmg: 6100, correctPercent: 82, avatar: "/src/assets/Placeholder/Profile4.jpg", event: "Tech Conference 2025" },
+    { rank: 6, username: "DevDestroyer", dmg: 5700, correctPercent: 79, avatar: "/src/assets/Placeholder/Profile2.jpg", event: "Tech Conference 2025" },
+  ],
+  "Science Fair 2025": [
+    { rank: 1, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg", event: "Science Fair 2025" },
+    { rank: 2, username: "ScienceWiz", dmg: 7800, correctPercent: 87, avatar: "/src/assets/Placeholder/Profile2.jpg", event: "Science Fair 2025" },
+    { rank: 3, username: "DataMaster", dmg: 6500, correctPercent: 84, avatar: "/src/assets/Placeholder/Profile1.jpg", event: "Science Fair 2025" },
+    { rank: 4, username: "LabLegend", dmg: 5900, correctPercent: 81, avatar: "/src/assets/Placeholder/Profile5.jpg", event: "Science Fair 2025" },
+    { rank: 5, username: "FormulaFighter", dmg: 5300, correctPercent: 77, avatar: "/src/assets/Placeholder/Profile3.jpg", event: "Science Fair 2025" },
+  ]
+};
 
 const PAGE_SIZE = 10;
 const Leaderboard = () => {
-    const [data] = useState(leaderboardData);
+    const [eventFilter, setEventFilter] = useState("all");
     const [page, setPage] = useState(1);
+    
+    // Get data based on selected event filter
+    const data = leaderboardData[eventFilter] || leaderboardData.all;
     const totalPages = Math.ceil(data.length / PAGE_SIZE);
     const paginatedData = data.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+    // Reset page when event filter changes
+    const handleEventFilterChange = (value) => {
+        setEventFilter(value);
+        setPage(1);
+    };
 
     // Podium helpers
     const getPodiumColor = (rank) => {
@@ -89,14 +125,46 @@ const Leaderboard = () => {
             </Card>
 
             {/* Leaderboard Table */}
-            <Card className="relative h-[693.5px]">
+            <Card className="relative h-[730px]">
                 <CardHeader className="pb-3 sm:pb-6">
-                    <CardTitle className="text-2xl sm:text-3xl font-bold">Leaderboard</CardTitle>
-                    <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+                    <CardTitle className="text-2xl sm:text-3xl font-bold">All-time Leaderboard</CardTitle>
+                    <p className="text-muted-foreground mt-2 -mb-7 text-sm sm:text-base">
                         See the top players by overall damage and answer accuracy
                     </p>
                 </CardHeader>
                 <CardContent>
+                    {/* Event Filter Tabs */}
+                    <div className="mb-2">
+                        <Tabs value={eventFilter} onValueChange={handleEventFilterChange}>
+                            <TabsList className="grid w-full grid-cols-4 h-auto gap-1 p-1">
+                                <TabsTrigger
+                                    value="all"
+                                    className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
+                                >
+                                    All Events
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="Open House 2025"
+                                    className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
+                                >
+                                    Open House 2025
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="Tech Conference 2025"
+                                    className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
+                                >
+                                    Tech Conference 2025
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="Science Fair 2025"
+                                    className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight"
+                                >
+                                    Science Fair 2025
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
+
                     <div className="max-w-screen overflow-x-auto flex-1">
                         <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <TableHeader>
