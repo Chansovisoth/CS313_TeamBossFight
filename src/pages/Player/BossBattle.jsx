@@ -1,7 +1,7 @@
 // ===== LIBRARIES ===== //
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Users, Heart, Timer, Trophy, LogOut, Sun, Moon } from "lucide-react";
+import { ArrowLeft, Users, Heart, Timer, Trophy, LogOut, Sun, Moon, Smartphone } from "lucide-react";
 
 // ===== COMPONENTS ===== //
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -29,6 +29,7 @@ const BossBattle = () => {
   const [isWrongAnswer, setIsWrongAnswer] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [damageNumbers, setDamageNumbers] = useState([]);
   const maxBossHP = 1000;
 
   // Sample question data - each question has its own time limit
@@ -93,6 +94,20 @@ const BossBattle = () => {
       // Correct answer - damage boss
       setBossHP(prev => Math.max(0, prev - totalDamage));
       setIsDamaged(true);
+      
+      // Add damage number animation
+      const damageId = Date.now() + Math.random();
+      setDamageNumbers(prev => [...prev, {
+        id: damageId,
+        damage: totalDamage,
+        x: Math.random() * 60 + 20, // Random position between 20% and 80% from left (more constrained)
+        y: Math.random() * 40 + 30 // Random position between 30% and 70% from top (more constrained)
+      }]);
+      
+      // Remove damage number after animation
+      setTimeout(() => {
+        setDamageNumbers(prev => prev.filter(dmg => dmg.id !== damageId));
+      }, 2000);
       
       // Play punch sound effect
       punchAudio.currentTime = 0; // Reset audio to start
@@ -187,7 +202,18 @@ const BossBattle = () => {
   };
 
   return (
-    <main className={`h-screen overflow-hidden bg-background relative ${isWrongAnswer ? 'player-shake' : ''}`}>
+    <main className={`h-screen overflow-hidden bg-background relative ${isWrongAnswer ? 'player-shake' : ''} portrait-only`}>
+      {/* Landscape Rotation Warning */}
+      <div className="landscape-warning fixed inset-0 bg-background z-[100] flex items-center justify-center p-4 md:hidden">
+        <div className="text-center">
+          <div className="mb-4">
+            <Smartphone className="w-16 h-16 mx-auto text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-bold mb-2">Rotate Your Device</h2>
+          <p className="text-muted-foreground">Please rotate your device to portrait mode to play.</p>
+        </div>
+      </div>
+
       {/* Full Screen Wrong Answer Flash */}
       {isWrongAnswer && (
         <div className="absolute inset-0 bg-red-500/60 z-50 animate-pulse"></div>
@@ -235,6 +261,23 @@ const BossBattle = () => {
               {isDamaged && (
                 <div className="absolute inset-0 bg-red-500/40 animate-pulse"></div>
               )}
+              
+              {/* Damage Numbers */}
+              {damageNumbers.map((dmg) => (
+                <div
+                  key={dmg.id}
+                  className="absolute text-red-500 font-bold text-4xl pointer-events-none z-20 animate-pulse"
+                  style={{
+                    left: `${dmg.x}%`,
+                    top: `${dmg.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    animation: 'damage-float 2s ease-out forwards',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+                  }}
+                >
+                  -{dmg.damage}
+                </div>
+              ))}
               
               {/* Boss Info Overlay */}
               <div className="absolute top-3 left-0 right-0 z-10">
