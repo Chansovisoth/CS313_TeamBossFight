@@ -125,13 +125,15 @@ const Leaderboard = () => {
             </Card>
 
             {/* Leaderboard Table */}
-            <Card className="relative h-[730px]">
+            <Card className="relative h-[710px]">
+                
                 <CardHeader className="pb-3 sm:pb-6">
                     <CardTitle className="text-2xl sm:text-3xl font-bold">All-time Leaderboard</CardTitle>
                     <p className="text-muted-foreground mt-2 -mb-7 text-sm sm:text-base">
                         See the top players by overall damage and answer accuracy
                     </p>
                 </CardHeader>
+
                 <CardContent>
                     {/* Event Filter Tabs */}
                     <div className="mb-2">
@@ -165,51 +167,55 @@ const Leaderboard = () => {
                         </Tabs>
                     </div>
 
-                    <div className="max-w-screen overflow-x-auto flex-1">
-                        <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-16 text-center">Rank</TableHead>
-                                    <TableHead className="resizable">Username</TableHead>
-                                    <TableHead className="text-right">DMG</TableHead>
-                                    <TableHead className="text-right">Correct %</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
+                    <div className="w-full max-w-full overflow-x-auto">
+                        <div className="min-w-0 max-w-full">
+                            <Table className="w-full table-fixed overflow-hidden">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-10 text-center">Rank</TableHead>
+                                        <TableHead className="w-35">Username</TableHead>
+                                        <TableHead className="w-17 text-right">DMG</TableHead>
+                                        <TableHead className="w-14 text-right">Correct</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
 
-                                {paginatedData.map((player) => {
-                                    let bgClass = "";
-                                    let textClass = "";
-                                    if (player.rank === 1) {
-                                        bgClass = "bg-yellow-500 dark:bg-yellow-700 hover:bg-yellow-500 transition-colors"; // Gold
-                                        textClass = "text-white";
-                                    } else if (player.rank === 2) {
-                                        bgClass = "bg-gray-400 dark:bg-gray-600 hover:bg-gray-400 transition-colors"; // Silver
-                                        textClass = "text-white";
-                                    } else if (player.rank === 3) {
-                                        bgClass = "bg-amber-600 dark:bg-amber-800 hover:bg-amber-600 transition-colors"; // Bronze
-                                        textClass = "text-white";
-                                    }
+                                    {paginatedData.map((player) => {
+                                        let bgClass = "";
+                                        let textClass = "";
+                                        if (player.rank === 1) {
+                                            bgClass = "bg-yellow-500 dark:bg-yellow-700 hover:bg-yellow-500 transition-colors"; // Gold
+                                            textClass = "text-white";
+                                        } else if (player.rank === 2) {
+                                            bgClass = "bg-gray-400 dark:bg-gray-600 hover:bg-gray-400 transition-colors"; // Silver
+                                            textClass = "text-white";
+                                        } else if (player.rank === 3) {
+                                            bgClass = "bg-amber-600 dark:bg-amber-800 hover:bg-amber-600 transition-colors"; // Bronze
+                                            textClass = "text-white";
+                                        }
 
-                                    return (
-                                        <TableRow key={player.rank} className={bgClass}>
-                                            <TableCell className={`text-center font-bold ${textClass}`}>
-                                                {player.rank}
-                                            </TableCell>
-                                            <TableCell className={`font-medium flex items-center gap-2 ${textClass}`}>
-                                                <Avatar className="w-7 h-7 border border-gray-200 dark:border-gray-700">
-                                                    <AvatarImage src={player.avatar} alt={player.username} />
-                                                    <AvatarFallback>{player.username[0]}</AvatarFallback>
-                                                </Avatar>
-                                                {player.username}
-                                            </TableCell>
-                                            <TableCell className={`text-right ${textClass}`}>{player.dmg.toLocaleString()}</TableCell>
-                                            <TableCell className={`text-right ${textClass}`}>{player.correctPercent}%</TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
+                                        return (
+                                            <TableRow key={player.rank} className={bgClass}>
+                                                <TableCell className={`text-center font-bold ${textClass} p-2`}>
+                                                    {player.rank}
+                                                </TableCell>
+                                                <TableCell className={`${textClass} p-2`}>
+                                                    <div className="flex items-center gap-1 min-w-0">
+                                                        <Avatar className="w-6 h-6 border border-gray-200 dark:border-gray-700 flex-shrink-0">
+                                                            <AvatarImage src={player.avatar} alt={player.username} />
+                                                            <AvatarFallback className="text-xs">{player.username[0]}</AvatarFallback>
+                                                        </Avatar>
+                                                        <span className="truncate text-xs">{player.username}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className={`text-right ${textClass} p-2 text-sm`}>{player.dmg.toLocaleString()}</TableCell>
+                                                <TableCell className={`text-right ${textClass} p-2 text-sm`}>{player.correctPercent}%</TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </div>
                     </div>
                     {/* Pagination */}
                     {totalPages > 1 && (
