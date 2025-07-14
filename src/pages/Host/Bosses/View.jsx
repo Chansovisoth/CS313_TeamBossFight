@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Menu, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,12 +22,9 @@ const ViewBosses = () => {
       image: 'https://via.placeholder.com/150'
     }
   ]);
-  
-  // Change to empty array to see "No Bosses Found" state
-  // const [bosses, setBosses] = useState([]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+    <div className="py-8 px-4">
       <div className="max-w-md mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 min-h-[500px] border border-gray-200 dark:border-gray-600">
           {/* Header */}

@@ -15,8 +15,6 @@ import { Toaster } from "@/components/ui/sonner";
 // import { useAuth } from "./context/useAuth";
 // import { setupInterceptors } from "./api";
 
-
-
 export default function App() {
   const navigate = useNavigate();
   
