@@ -20,14 +20,6 @@ const leaderboardData = [
     { rank: 10, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
     { rank: 11, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg" },
     { rank: 12, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
-    { rank: 13, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg" },
-    { rank: 14, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
-    { rank: 15, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg" },
-    { rank: 16, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
-    { rank: 17, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg" },
-    { rank: 18, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
-    { rank: 19, username: "Player5", dmg: 8500, correctPercent: 80, avatar: "/src/assets/Placeholder/Profile5.jpg" },
-    { rank: 20, username: "Player4", dmg: 9000, correctPercent: 85, avatar: "/src/assets/Placeholder/Profile4.jpg" },
 ];
 
 const PAGE_SIZE = 10;
@@ -93,35 +85,11 @@ const Leaderboard = () => {
                             );
                         })}
                     </div>
-                    {/* Mobile Podium (commented out, using normal leaderboard for all devices) */}
-                    {/**
-                    <div className="block sm:hidden space-y-3">
-                        {podiumPlayers.map((player) => (
-                            <div key={player.rank} className="flex items-center space-x-4 bg-background rounded-lg p-4 shadow-md border">
-                                <div className="relative">
-                                    <Avatar className="w-16 h-16 border-4 border-gray-200 dark:border-gray-700">
-                                        <AvatarImage src={player.avatar} alt={player.username} />
-                                        <AvatarFallback>{player.username[0]}</AvatarFallback>
-                                    </Avatar>
-                                    <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full ${getPodiumColor(player.rank)} flex items-center justify-center shadow-lg border-2 border-white`}>
-                                        {getPodiumIcon(player.rank)}
-                                    </div>
-                                </div>
-                                <div className="flex-1">
-                                    <div className="font-bold text-lg">{player.username}</div>
-                                    <div className="text-xs text-muted-foreground">{player.dmg.toLocaleString()} DMG</div>
-                                    <div className="text-xs text-muted-foreground">{player.correctPercent}% Correct</div>
-                                </div>
-                                <div className={`${getPodiumColor(player.rank)} text-white px-3 py-1 rounded-full text-sm font-bold`}>{player.rank === 1 ? "1st" : player.rank === 2 ? "2nd" : "3rd"}</div>
-                            </div>
-                        ))}
-                    </div>
-                    */}
                 </CardContent>
             </Card>
 
             {/* Leaderboard Table */}
-            <Card>
+            <Card className="relative h-[693.5px] flex flex-col">
                 <CardHeader className="pb-3 sm:pb-6">
                     <CardTitle className="text-2xl sm:text-3xl font-bold">Leaderboard</CardTitle>
                     <p className="text-muted-foreground mt-2 text-sm sm:text-base">
@@ -129,7 +97,7 @@ const Leaderboard = () => {
                     </p>
                 </CardHeader>
                 <CardContent>
-                    <div className="max-w-screen overflow-x-auto">
+                    <div className="max-w-screen overflow-x-auto flex-1">
                         <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <TableHeader>
                                 <TableRow>
@@ -137,11 +105,11 @@ const Leaderboard = () => {
                                     <TableHead className="resizable">Username</TableHead>
                                     <TableHead className="text-right">DMG</TableHead>
                                     <TableHead className="text-right">Correct %</TableHead>
-                                    {/* <TableHead className="text-right">asd %</TableHead>
                                     <TableHead className="text-right">asd %</TableHead>
                                     <TableHead className="text-right">asd %</TableHead>
                                     <TableHead className="text-right">asd %</TableHead>
-                                    <TableHead className="text-right">asd %</TableHead> */}
+                                    <TableHead className="text-right">asd %</TableHead>
+                                    <TableHead className="text-right">asd %</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -182,35 +150,37 @@ const Leaderboard = () => {
                     </div>
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <Pagination className="mt-4">
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        href="#"
-                                        onClick={e => { e.preventDefault(); setPage(page > 1 ? page - 1 : 1); }}
-                                        disabled={page === 1}
-                                    />
-                                </PaginationItem>
-                                {[...Array(totalPages)].map((_, idx) => (
-                                    <PaginationItem key={idx}>
-                                        <PaginationLink
+                        <div className="absolute left-0 bottom-0 w-full flex justify-center pb-4">
+                            <Pagination>
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        <PaginationPrevious
                                             href="#"
-                                            isActive={page === idx + 1}
-                                            onClick={e => { e.preventDefault(); setPage(idx + 1); }}
-                                        >
-                                            {idx + 1}
-                                        </PaginationLink>
+                                            onClick={e => { e.preventDefault(); setPage(page > 1 ? page - 1 : 1); }}
+                                            disabled={page === 1}
+                                        />
                                     </PaginationItem>
-                                ))}
-                                <PaginationItem>
-                                    <PaginationNext
-                                        href="#"
-                                        onClick={e => { e.preventDefault(); setPage(page < totalPages ? page + 1 : totalPages); }}
-                                        disabled={page === totalPages}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
+                                    {[...Array(totalPages)].map((_, idx) => (
+                                        <PaginationItem key={idx}>
+                                            <PaginationLink
+                                                href="#"
+                                                isActive={page === idx + 1}
+                                                onClick={e => { e.preventDefault(); setPage(idx + 1); }}
+                                            >
+                                                {idx + 1}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            href="#"
+                                            onClick={e => { e.preventDefault(); setPage(page < totalPages ? page + 1 : totalPages); }}
+                                            disabled={page === totalPages}
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </div>
                     )}
                 </CardContent>
             </Card>

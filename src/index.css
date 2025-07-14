@@ -141,6 +141,11 @@
     width: 100%;
     min-height: 100vh;
   }
+
+  /* ADDED BY CHANSOVISOTH (14-07-2025) */
+  /* html, body {
+    overflow-x: hidden;
+  } */
 }
 
 /* ===== ===== ===== ===== ===== CUSTOM CSS (EDIT HERE) ===== ===== ===== ===== ===== */
