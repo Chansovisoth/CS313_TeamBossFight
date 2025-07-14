@@ -514,12 +514,15 @@ const Badges = () => {
           </Card>
         </div>
 
-        {/* Main Content */}
+
+
+        {/* ===== Main Content ===== */}
         <div className="lg:col-span-3">
           <Card>
             <CardHeader className="pb-3 sm:pb-6">
               <div className="flex flex-col gap-3 sm:gap-4">
                 <div>
+                  {/* ===== Event Title ===== */}
                   <CardTitle className="flex flex-col sm:flex-row sm:items-center gap-2 text-lg sm:text-xl">
                     <span>{selectedEvent.name}</span>
                     {selectedEvent.isActive && (
@@ -528,7 +531,8 @@ const Badges = () => {
                       </Badge>
                     )}
                   </CardTitle>
-                  {/* Event Progress Summary */}
+
+                  {/* ===== Event Progress Summary ===== */}
                   <div className="mt-2">
                     {(() => {
                       const progress = getEventProgress(selectedEvent);
@@ -550,7 +554,8 @@ const Badges = () => {
                   </div>
                 </div>
                 
-                {/* Boss Navigation Tabs */}
+
+                {/* ===== Boss Navigation Tabs ===== */}
                 {selectedEvent.bosses.length > 1 && (
                   <Tabs value={selectedBoss === null ? "all" : selectedBoss.toString()} onValueChange={(value) => setSelectedBoss(value === "all" ? null : parseInt(value))}>
                     <TabsList className="grid w-full h-auto gap-1 p-1" style={{ gridTemplateColumns: `repeat(${selectedEvent.bosses.length + 1}, minmax(0, 1fr))` }}>
@@ -573,7 +578,8 @@ const Badges = () => {
                   </Tabs>
                 )}
                 
-                {/* Filter Controls Tabs */}
+
+                {/* ===== Filter Controls Tabs ===== */}
                 <Tabs value={filter} onValueChange={(value) => setFilter(value)}>
                   <TabsList className="grid w-full grid-cols-3 h-auto gap-1 p-1">
                     <TabsTrigger 
@@ -599,6 +605,7 @@ const Badges = () => {
               </div>
             </CardHeader>
             
+            {/* ===== DISPLAY ALL BADGES ===== */}
             <CardContent className="space-y-6 sm:space-y-8">
               {selectedEvent.bosses.map((boss, bossIndex) => {
                 const filteredBadges = getFilteredBadges(boss.badges);
@@ -628,7 +635,7 @@ const Badges = () => {
                 );
               })}
 
-              {/* Event Milestone Badges */}
+              {/* ===== Event Milestone Badges ===== */}
               {(() => {
                 const filteredMilestones = getFilteredBadges(selectedEvent.milestones);
                 if (filteredMilestones.length === 0) return null;
@@ -658,7 +665,7 @@ const Badges = () => {
                 );
               })()}
               
-              {/* Empty State */}
+              {/* ===== Empty State ===== */}
               {selectedEvent.bosses.every(boss => getFilteredBadges(boss.badges).length === 0) && 
                getFilteredBadges(selectedEvent.milestones).length === 0 && (
                 <div className="text-center py-8 sm:py-12">
