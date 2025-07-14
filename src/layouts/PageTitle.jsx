@@ -9,7 +9,9 @@ import {
   KeyRound, 
   Trophy,
   Shield,
-  Settings
+  Settings,
+  Calendar,
+  BookOpen
 } from "lucide-react";
 
 // ===== PAGE TITLE COMPONENT ===== //
@@ -32,6 +34,17 @@ export function PageTitle({ className = "text-lg font-semibold text-foreground" 
     if (pathname.includes('/boss-battle')) return 'Boss Battle';
     if (pathname.includes('/authentication')) return 'Authentication';
     if (pathname.includes('/admin')) return 'Admin Panel';
+    if (pathname.includes('/host/events/view')) return 'Events';
+    if (pathname.includes('/host/events/assign_boss')) return 'Events';
+    if (pathname.includes('/host/events/boss_template')) return 'Events';
+    if (pathname.includes('/host/events/player_badges')) return 'Bosses';
+    if (pathname.includes('/host/events/player_badges/edit')) return 'Bosses';
+    if (pathname.includes('/host/events/leaderboard')) return 'Bosses';
+    if (pathname.includes('/host/bosses/create')) return 'Bosses';
+    if (pathname.includes('/host/bosses/edit')) return 'Bosses';
+    if (pathname.includes('/host/categories')) return 'Question Bank';
+    if (pathname.includes('/host/questions')) return 'Question Bank';
+    if (pathname.includes('/host/profile/view')) return 'Profile';
     if (pathname.includes('/host')) return 'Host Panel';
     if (pathname.includes('/leaderboard')) return 'Leaderboard';
     

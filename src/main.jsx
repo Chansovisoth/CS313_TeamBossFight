@@ -131,16 +131,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<HostEventsBossTemplate />} />
             </Route>
 
-            {/* Host Events Create */}
-            <Route path="/host/events/create" element={<AppOP />}>
-              <Route index element={<HostEventsCreate />} />
-            </Route>
-
-            {/* Host Events Edit */}
-            <Route path="/host/events/edit" element={<AppOP />}>
-              <Route index element={<HostEventsEdit />} />
-            </Route>
-
             {/* Host Events Player Badges */}
             <Route path="/host/events/player_badges" element={<AppOP />}>
               <Route index element={<HostEventsPlayerbadges />} />
@@ -156,17 +146,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<HostEventsLeaderboard />} />
             </Route>
 
-            {/* Host Users View */}
-            <Route path="/host/users/view" element={<AppOP />}>
-              <Route index element={<HostUsersView />} />
-            </Route>
-
-            {/* Host Users Edit */}
-            <Route path="/host/users/edit" element={<AppOP />}>
-              <Route index element={<HostUsersEdit />} />
-            </Route>
-
-            
             {/* Host Categories View */}
             <Route path="/host/categories/view" element={<AppOP />}>
               <Route index element={<HostCategoriesView />} />
@@ -211,7 +190,27 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="*" element={<AppError />}>
               <Route path="*" element={<Error />} />
             </Route>
+
+            {/* Admin Events Create */}
+            <Route path="/admin/events/create" element={<AppOP />}>
+              <Route index element={<HostEventsCreate />} />
+            </Route>
+
+            {/* Admin Events Edit */}
+            <Route path="/host/events/edit" element={<AppOP />}>
+              <Route index element={<HostEventsEdit />} />
+            </Route>
             
+            {/* Admin Users View */}
+            <Route path="/admin/users/view" element={<AppOP />}>
+              <Route index element={<HostUsersView />} />
+            </Route>
+
+            {/* Admin Users Edit */}
+            <Route path="/admin/users/edit" element={<AppOP />}>
+              <Route index element={<HostUsersEdit />} />
+            </Route>
+
           </Routes>
         </MessageProvider>
       </BrowserRouter>
