@@ -1,20 +1,34 @@
 import React, { useState } from 'react';
-import { Menu, Trophy, Medal, Award } from 'lucide-react';
+import { ArrowLeft, Trophy, Users, User, TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext } from '@/components/ui/pagination';
+import { useNavigate } from 'react-router-dom';
 
 const Leaderboard = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 5;
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState({ teams: 1, individual: 1, alltime: 1 });
+  const PAGE_SIZE = 10;
 
-  // Enhanced leaderboard data with avatars
+  // Enhanced leaderboard data
   const teamLeaderboard = [
     { rank: 1, team: 'Kangaroo', dmg: 100, correct: 9, avatar: '/src/assets/Placeholder/Team1.jpg' },
     { rank: 2, team: 'Koala', dmg: 85, correct: 8, avatar: '/src/assets/Placeholder/Team2.jpg' },
-    { rank: 3, team: 'Shellfish', dmg: 68, correct: 7, avatar: '/src/assets/Placeholder/Team3.jpg' }
+    { rank: 3, team: 'Shellfish', dmg: 68, correct: 7, avatar: '/src/assets/Placeholder/Team3.jpg' },
+    { rank: 4, team: 'Dolphins', dmg: 55, correct: 6, avatar: '/src/assets/Placeholder/Team1.jpg' },
+    { rank: 5, team: 'Eagles', dmg: 42, correct: 5, avatar: '/src/assets/Placeholder/Team2.jpg' },
+    { rank: 6, team: 'Tigers', dmg: 38, correct: 4, avatar: '/src/assets/Placeholder/Team3.jpg' },
+    { rank: 7, team: 'Lions', dmg: 35, correct: 4, avatar: '/src/assets/Placeholder/Team1.jpg' },
+    { rank: 8, team: 'Bears', dmg: 32, correct: 3, avatar: '/src/assets/Placeholder/Team2.jpg' },
+    { rank: 9, team: 'Wolves', dmg: 28, correct: 3, avatar: '/src/assets/Placeholder/Team3.jpg' },
+    { rank: 10, team: 'Panthers', dmg: 25, correct: 2, avatar: '/src/assets/Placeholder/Team1.jpg' },
+    { rank: 11, team: 'Hawks', dmg: 22, correct: 2, avatar: '/src/assets/Placeholder/Team2.jpg' },
+    { rank: 12, team: 'Falcons', dmg: 18, correct: 1, avatar: '/src/assets/Placeholder/Team3.jpg' },
   ];
 
   const individualLeaderboard = [
@@ -24,241 +38,320 @@ const Leaderboard = () => {
     { rank: 4, player: 'Alice', dmg: 65, correct: 6, avatar: '/src/assets/Placeholder/Profile4.jpg' },
     { rank: 5, player: 'Bob', dmg: 55, correct: 5, avatar: '/src/assets/Placeholder/Profile5.jpg' },
     { rank: 6, player: 'Charlie', dmg: 45, correct: 4, avatar: '/src/assets/Placeholder/Profile6.jpg' },
-    { rank: 7, player: 'David', dmg: 35, correct: 3, avatar: '/src/assets/Placeholder/Profile7.jpg' }
+    { rank: 7, player: 'David', dmg: 35, correct: 3, avatar: '/src/assets/Placeholder/Profile7.jpg' },
+    { rank: 8, player: 'Emma', dmg: 30, correct: 3, avatar: '/src/assets/Placeholder/Profile1.jpg' },
+    { rank: 9, player: 'Frank', dmg: 25, correct: 2, avatar: '/src/assets/Placeholder/Profile2.jpg' },
+    { rank: 10, player: 'Grace', dmg: 20, correct: 2, avatar: '/src/assets/Placeholder/Profile3.jpg' },
+    { rank: 11, player: 'Henry', dmg: 15, correct: 1, avatar: '/src/assets/Placeholder/Profile4.jpg' },
+    { rank: 12, player: 'Ivy', dmg: 10, correct: 1, avatar: '/src/assets/Placeholder/Profile5.jpg' }
   ];
 
   const allTimeLeaderboard = [
-    { rank: 1, player: 'Python', dmg: 300, correct: 25, lastPlayed: '12/15/2024', avatar: '/src/assets/Placeholder/Profile1.jpg' },
-    { rank: 2, player: 'Sovitep', dmg: 180, correct: 15, lastPlayed: '12/14/2024', avatar: '/src/assets/Placeholder/Profile2.jpg' },
-    { rank: 3, player: 'Visoth', dmg: 90, correct: 8, lastPlayed: '12/13/2024', avatar: '/src/assets/Placeholder/Profile3.jpg' },
-    { rank: 4, player: 'Alice', dmg: 85, correct: 7, lastPlayed: '12/12/2024', avatar: '/src/assets/Placeholder/Profile4.jpg' },
-    { rank: 5, player: 'Bob', dmg: 75, correct: 6, lastPlayed: '12/11/2024', avatar: '/src/assets/Placeholder/Profile5.jpg' },
-    { rank: 6, player: 'Charlie', dmg: 65, correct: 5, lastPlayed: '12/10/2024', avatar: '/src/assets/Placeholder/Profile6.jpg' }
+    { rank: 1, player: 'Python', dmg: 300, correct: 25, avatar: '/src/assets/Placeholder/Profile1.jpg' },
+    { rank: 2, player: 'Sovitep', dmg: 280, correct: 22, avatar: '/src/assets/Placeholder/Profile2.jpg' },
+    { rank: 3, player: 'Visoth', dmg: 250, correct: 20, avatar: '/src/assets/Placeholder/Profile3.jpg' },
+    { rank: 4, player: 'Alice', dmg: 220, correct: 18, avatar: '/src/assets/Placeholder/Profile4.jpg' },
+    { rank: 5, player: 'Bob', dmg: 200, correct: 16, avatar: '/src/assets/Placeholder/Profile5.jpg' },
+    { rank: 6, player: 'Charlie', dmg: 180, correct: 14, avatar: '/src/assets/Placeholder/Profile6.jpg' },
+    { rank: 7, player: 'Master', dmg: 160, correct: 12, avatar: '/src/assets/Placeholder/Profile7.jpg' },
+    { rank: 8, player: 'Legend', dmg: 140, correct: 11, avatar: '/src/assets/Placeholder/Profile1.jpg' },
+    { rank: 9, player: 'Hero', dmg: 120, correct: 10, avatar: '/src/assets/Placeholder/Profile2.jpg' },
+    { rank: 10, player: 'Champion', dmg: 100, correct: 9, avatar: '/src/assets/Placeholder/Profile3.jpg' },
+    { rank: 11, player: 'Warrior', dmg: 90, correct: 8, avatar: '/src/assets/Placeholder/Profile4.jpg' },
+    { rank: 12, player: 'Fighter', dmg: 80, correct: 7, avatar: '/src/assets/Placeholder/Profile5.jpg' },
   ];
 
-  // Podium helpers
-  const getPodiumColor = (rank) => {
-    if (rank === 1) return "bg-yellow-500"; // Gold
-    if (rank === 2) return "bg-gray-400";   // Silver
-    if (rank === 3) return "bg-amber-600";  // Bronze
-    return "bg-gray-500";
+  // Pagination helpers
+  const getPaginatedData = (data, tabKey) => {
+    const page = currentPage[tabKey];
+    const totalPages = Math.ceil(data.length / PAGE_SIZE);
+    const paginatedData = data.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    return { paginatedData, totalPages, currentPageNum: page };
   };
 
-  const getPodiumIcon = (rank) => {
-    if (rank === 1) return <Trophy className="w-4 h-4 text-white" />;
-    if (rank === 2) return <Medal className="w-4 h-4 text-white" />;
-    if (rank === 3) return <Award className="w-4 h-4 text-white" />;
-    return null;
+  const handlePageChange = (tabKey, newPage) => {
+    setCurrentPage(prev => ({ ...prev, [tabKey]: newPage }));
   };
 
-  const getRowBackground = (rank) => {
-    if (rank === 1) return "bg-yellow-500 dark:bg-yellow-700 hover:bg-yellow-500";
-    if (rank === 2) return "bg-gray-400 dark:bg-gray-600 hover:bg-gray-400";
-    if (rank === 3) return "bg-amber-600 dark:bg-amber-800 hover:bg-amber-600";
-    return "";
+  const handleBack = () => {
+    navigate('/host/events/assign_boss');
   };
 
-  const getTextColor = (rank) => {
-    return rank <= 3 ? "text-white" : "text-gray-900 dark:text-white";
+  const getRankBadge = (rank) => {
+    if (rank === 1) return <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white">1st</Badge>;
+    if (rank === 2) return <Badge className="bg-gray-400 hover:bg-gray-500 text-white">2nd</Badge>;
+    if (rank === 3) return <Badge className="bg-amber-600 hover:bg-amber-700 text-white">3rd</Badge>;
+    return <span className="text-sm font-medium text-muted-foreground">#{rank}</span>;
   };
 
-  // Pagination for individual leaderboard
-  const totalPages = Math.ceil(individualLeaderboard.length / PAGE_SIZE);
-  const paginatedIndividual = individualLeaderboard.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  // Pagination component
+  const PaginationControls = ({ totalPages, currentPageNum, onPageChange }) => {
+    if (totalPages <= 1) return null;
 
-  // Top 3 for podium
-  const podiumPlayers = individualLeaderboard.slice(0, 3);
+    return (
+      <div className="flex justify-center mt-6">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  onPageChange(currentPageNum > 1 ? currentPageNum - 1 : 1); 
+                }}
+                className={currentPageNum === 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+            {[...Array(totalPages)].map((_, idx) => (
+              <PaginationItem key={idx}>
+                <PaginationLink
+                  href="#"
+                  isActive={currentPageNum === idx + 1}
+                  onClick={(e) => { 
+                    e.preventDefault(); 
+                    onPageChange(idx + 1); 
+                  }}
+                >
+                  {idx + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  onPageChange(currentPageNum < totalPages ? currentPageNum + 1 : totalPages); 
+                }}
+                className={currentPageNum === totalPages ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 sm:px-6 py-6 max-w-6xl">
+        
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600">
-          <div className="flex items-center mb-6">
-            <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400 mr-3" />
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Event1</h1>
-          </div>
-
-          {/* Boss HP Section */}
-          <div className="mb-6">
-            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-              Boss HP
-            </Label>
-            <div className="space-y-2">
-              <div className="relative w-full bg-gray-200 dark:bg-gray-700 rounded-full h-5 border border-gray-300 dark:border-gray-600">
-                <div className="bg-red-500 dark:bg-red-600 h-5 rounded-full" style={{ width: '25%' }}></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white text-xs font-medium drop-shadow-sm">250/1000</span>
-                </div>
-              </div>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Back</span>
+            </Button>
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-6 bg-primary rounded-full"></div>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Event Leaderboard</h1>
             </div>
           </div>
-
-          {/* Boss Info Grid */}
-          <Card className="mb-6 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
-            <CardContent className="p-4">
-              <div className="space-y-2 text-sm">
-                <div className="text-gray-600 dark:text-gray-400">
-                  <span className="font-medium text-gray-900 dark:text-white">Boss Name:</span> Boss1
-                </div>
-                <div className="text-gray-600 dark:text-gray-400">
-                  <span className="font-medium text-gray-900 dark:text-white">Player:</span> 10
-                </div>
-                <div className="text-gray-600 dark:text-gray-400">
-                  <span className="font-medium text-gray-900 dark:text-white">Battle's Status:</span> <span className="text-green-600 dark:text-green-400 font-medium">Active</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+            Live
+          </Badge>
         </div>
 
-        {/* Podium Section */}
-        
-
-        {/* Live Team Leaderboard */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600">
-          <Label className="text-base font-semibold text-gray-900 dark:text-white mb-4 block">
-            Live Team Leaderboard
-          </Label>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-16 text-center">Rank</TableHead>
-                <TableHead>Team</TableHead>
-                <TableHead className="text-right">DMG</TableHead>
-                <TableHead className="text-right">Correct</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {teamLeaderboard.map((team) => (
-                <TableRow key={team.rank} className={`${getRowBackground(team.rank)} transition-colors`}>
-                  <TableCell className={`text-center font-bold ${getTextColor(team.rank)}`}>
-                    {team.rank}
-                  </TableCell>
-                  <TableCell className={`font-medium flex items-center gap-2 ${getTextColor(team.rank)}`}>
-                    <Avatar className="w-7 h-7 border border-gray-200 dark:border-gray-700">
-                      <AvatarImage src={team.avatar} alt={team.team} />
-                      <AvatarFallback>{team.team[0]}</AvatarFallback>
-                    </Avatar>
-                    {team.team}
-                  </TableCell>
-                  <TableCell className={`text-right ${getTextColor(team.rank)}`}>{team.dmg}</TableCell>
-                  <TableCell className={`text-right ${getTextColor(team.rank)}`}>{team.correct}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Live Individual Leaderboard with Pagination */}
-        <Card className="relative min-h-[400px]">
+        {/* Event Info Card */}
+        <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-xl font-bold">Live Individual Leaderboard</CardTitle>
-            <p className="text-gray-600 dark:text-gray-400">Individual player rankings</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <CardTitle className="text-lg">Adventure Quest 2024</CardTitle>
+                <p className="text-sm text-muted-foreground">Boss: Dragon Lord • 10 Players Active</p>
+              </div>
+              <Badge className="bg-green-500 hover:bg-green-600 w-fit">
+                <TrendingUp className="w-3 h-3 mr-1" />
+                Active Battle
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-16 text-center">Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead className="text-right">DMG</TableHead>
-                  <TableHead className="text-right">Correct</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedIndividual.map((player) => (
-                  <TableRow key={player.rank} className={`${getRowBackground(player.rank)} transition-colors`}>
-                    <TableCell className={`text-center font-bold ${getTextColor(player.rank)}`}>
-                      {player.rank}
-                    </TableCell>
-                    <TableCell className={`font-medium flex items-center gap-2 ${getTextColor(player.rank)}`}>
-                      <Avatar className="w-7 h-7 border border-gray-200 dark:border-gray-700">
-                        <AvatarImage src={player.avatar} alt={player.player} />
-                        <AvatarFallback>{player.player[0]}</AvatarFallback>
-                      </Avatar>
-                      {player.player}
-                    </TableCell>
-                    <TableCell className={`text-right ${getTextColor(player.rank)}`}>{player.dmg}</TableCell>
-                    <TableCell className={`text-right ${getTextColor(player.rank)}`}>{player.correct}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="absolute left-0 bottom-0 w-full flex justify-center pb-4">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
-                        onClick={(e) => { e.preventDefault(); setCurrentPage(currentPage > 1 ? currentPage - 1 : 1); }}
-                        disabled={currentPage === 1}
-                      />
-                    </PaginationItem>
-                    {[...Array(totalPages)].map((_, idx) => (
-                      <PaginationItem key={idx}>
-                        <PaginationLink
-                          href="#"
-                          isActive={currentPage === idx + 1}
-                          onClick={(e) => { e.preventDefault(); setCurrentPage(idx + 1); }}
-                        >
-                          {idx + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationItem>
-                      <PaginationNext
-                        href="#"
-                        onClick={(e) => { e.preventDefault(); setCurrentPage(currentPage < totalPages ? currentPage + 1 : totalPages); }}
-                        disabled={currentPage === totalPages}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">Boss Health</Label>
+                <span className="text-sm text-muted-foreground">250 / 1000 HP</span>
               </div>
-            )}
+              {/* Custom Progress Bar */}
+              <div className="w-full bg-muted rounded-full h-3">
+                <div 
+                  className="bg-destructive rounded-full h-3 transition-all duration-300" 
+                  style={{ width: '25%' }}
+                ></div>
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>25% Remaining</span>
+                <span>750 damage dealt</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        {/* All-Time Individual Leaderboard */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600">
-          <Label className="text-base font-semibold text-gray-900 dark:text-white mb-4 block">
-            All-Time Individual Leaderboard
-          </Label>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-16 text-center">Rank</TableHead>
-                <TableHead>Player</TableHead>
-                <TableHead className="text-right">DMG</TableHead>
-                <TableHead className="text-right">Correct</TableHead>
-                <TableHead className="text-right">Last Played</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {allTimeLeaderboard.map((player) => (
-                <TableRow key={player.rank} className={`${getRowBackground(player.rank)} transition-colors`}>
-                  <TableCell className={`text-center font-bold ${getTextColor(player.rank)}`}>
-                    {player.rank}
-                  </TableCell>
-                  <TableCell className={`font-medium flex items-center gap-2 ${getTextColor(player.rank)}`}>
-                    <Avatar className="w-7 h-7 border border-gray-200 dark:border-gray-700">
-                      <AvatarImage src={player.avatar} alt={player.player} />
-                      <AvatarFallback>{player.player[0]}</AvatarFallback>
-                    </Avatar>
-                    {player.player}
-                  </TableCell>
-                  <TableCell className={`text-right ${getTextColor(player.rank)}`}>{player.dmg}</TableCell>
-                  <TableCell className={`text-right ${getTextColor(player.rank)}`}>{player.correct}</TableCell>
-                  <TableCell className={`text-right text-xs ${getTextColor(player.rank)}`}>{player.lastPlayed}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        {/* Leaderboard Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="w-5 h-5" />
+              Leaderboard Rankings
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">View performance across different categories</p>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="teams" className="space-y-6">
+              {/* Tabs List */}
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="teams" className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  <span className="hidden sm:inline">Team Rankings</span>
+                  <span className="sm:hidden">Teams</span>
+                </TabsTrigger>
+                <TabsTrigger value="individual" className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">Individual Rankings</span>
+                  <span className="sm:hidden">Players</span>
+                </TabsTrigger>
+                <TabsTrigger value="alltime" className="flex items-center gap-2">
+                  <Trophy className="w-4 h-4" />
+                  <span className="hidden sm:inline">All-Time</span>
+                  <span className="sm:hidden">All-Time</span>
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Team Leaderboard */}
+              <TabsContent value="teams" className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Team Rankings</h3>
+                  <p className="text-sm text-muted-foreground mb-4">Current event team performance</p>
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-16">Rank</TableHead>
+                      <TableHead>Team</TableHead>
+                      <TableHead className="text-right">Damage</TableHead>
+                      <TableHead className="text-right">Correct Answers</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {getPaginatedData(teamLeaderboard, 'teams').paginatedData.map((team) => (
+                      <TableRow key={team.rank} className="hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          {getRankBadge(team.rank)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="w-8 h-8">
+                              <AvatarImage src={team.avatar} alt={team.team} />
+                              <AvatarFallback>{team.team[0]}</AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium">{team.team}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">{team.dmg}</TableCell>
+                        <TableCell className="text-right">{team.correct}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <PaginationControls 
+                  {...getPaginatedData(teamLeaderboard, 'teams')} 
+                  onPageChange={(page) => handlePageChange('teams', page)}
+                />
+              </TabsContent>
+
+              {/* Individual Leaderboard */}
+              <TabsContent value="individual" className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Individual Rankings</h3>
+                  <p className="text-sm text-muted-foreground mb-4">Current event individual player performance</p>
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-16">Rank</TableHead>
+                      <TableHead>Player</TableHead>
+                      <TableHead className="text-right">Damage</TableHead>
+                      <TableHead className="text-right">Correct Answers</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {getPaginatedData(individualLeaderboard, 'individual').paginatedData.map((player) => (
+                      <TableRow key={player.rank} className="hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          {getRankBadge(player.rank)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="w-8 h-8">
+                              <AvatarImage src={player.avatar} alt={player.player} />
+                              <AvatarFallback>{player.player[0]}</AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium">{player.player}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">{player.dmg}</TableCell>
+                        <TableCell className="text-right">{player.correct}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <PaginationControls 
+                  {...getPaginatedData(individualLeaderboard, 'individual')} 
+                  onPageChange={(page) => handlePageChange('individual', page)}
+                />
+              </TabsContent>
+
+              {/* All-Time Leaderboard */}
+              <TabsContent value="alltime" className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">All-Time Rankings</h3>
+                  <p className="text-sm text-muted-foreground mb-4">Historical player performance across all events</p>
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-16">Rank</TableHead>
+                      <TableHead>Player</TableHead>
+                      <TableHead className="text-right">Total Damage</TableHead>
+                      <TableHead className="text-right">Total Correct</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {getPaginatedData(allTimeLeaderboard, 'alltime').paginatedData.map((player) => (
+                      <TableRow key={player.rank} className="hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          {getRankBadge(player.rank)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="w-8 h-8">
+                              <AvatarImage src={player.avatar} alt={player.player} />
+                              <AvatarFallback>{player.player[0]}</AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium">{player.player}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">{player.dmg}</TableCell>
+                        <TableCell className="text-right">{player.correct}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <PaginationControls 
+                  {...getPaginatedData(allTimeLeaderboard, 'alltime')} 
+                  onPageChange={(page) => handlePageChange('alltime', page)}
+                />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -1,23 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, X, ChevronDown, ArrowLeft, Sword, ImageIcon, Trash2 } from 'lucide-react';
+import { Upload, X, ChevronDown, ArrowLeft, Sword, ImageIcon, Trash2, AlertTriangle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const EditBoss = () => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(['CS', 'MIS']);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState('https://via.placeholder.com/300x200'); // Pre-existing image
+  const [imagePreview, setImagePreview] = useState('/src/assets/Placeholder/Falcon.png'); // Pre-existing image
+  const [hasOriginalImage, setHasOriginalImage] = useState(true); // Track if boss has original image
+  const [deleteDialog, setDeleteDialog] = useState({ isOpen: false });
   const [formData, setFormData] = useState({
     name: 'Boss1',
     cooldown: '30',
     teamsCount: '4',
     description: 'Cool boss 😎'
   });
+  const fileInputRef = useRef(null);
 
   const availableCategories = [
     'ARC',
@@ -37,6 +50,23 @@ const EditBoss = () => {
         setImagePreview(e.target.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImagePreview(null);
+    setSelectedImage(null);
+    setHasOriginalImage(false);
+    
+    // Clear the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -60,7 +90,17 @@ const EditBoss = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Updated form data:', formData, selectedCategories, selectedImage);
+    
+    // Prepare form data for submission
+    const submissionData = {
+      ...formData,
+      categories: selectedCategories,
+      imageAction: hasOriginalImage ? 'keep' : 'remove', // Track image action
+      newImage: selectedImage, // New image file if uploaded
+      removeImage: !hasOriginalImage && !selectedImage // Flag to remove image
+    };
+    
+    console.log('Updated form data:', submissionData);
     navigate('/host/bosses/view');
   };
 
@@ -69,10 +109,18 @@ const EditBoss = () => {
   };
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this boss?')) {
-      console.log('Boss deleted');
-      navigate('/host/bosses/view');
-    }
+    // Open confirmation dialog
+    setDeleteDialog({ isOpen: true });
+  };
+
+  const confirmDeleteBoss = () => {
+    console.log('Boss deleted:', formData.name);
+    setDeleteDialog({ isOpen: false });
+    navigate('/host/bosses/view');
+  };
+
+  const cancelDeleteBoss = () => {
+    setDeleteDialog({ isOpen: false });
   };
 
   const unselectedCategories = availableCategories.filter(
@@ -122,12 +170,16 @@ const EditBoss = () => {
             <CardContent>
               <div className="relative">
                 <input
+                  ref={fileInputRef}
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  className="hidden"
                 />
-                <div className="border-2 border-dashed border-border rounded-lg p-6 sm:p-8 text-center hover:border-primary/50 transition-colors bg-muted/30">
+                <div 
+                  className="border-2 border-dashed border-border rounded-lg p-6 sm:p-8 text-center hover:border-primary/50 transition-colors bg-muted/30 cursor-pointer"
+                  onClick={!imagePreview ? triggerFileInput : undefined}
+                >
                   {imagePreview ? (
                     <div className="space-y-4">
                       <img
@@ -135,17 +187,33 @@ const EditBoss = () => {
                         alt="Boss preview"
                         className="w-full max-w-sm h-48 object-cover rounded-lg mx-auto"
                       />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setImagePreview(null);
-                          setSelectedImage(null);
-                        }}
-                      >
-                        Remove Image
-                      </Button>
+                      <div className="flex justify-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveImage();
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <X className="w-4 h-4" />
+                          Remove Image
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            triggerFileInput();
+                          }}
+                        >
+                          <Upload className="w-4 h-4 mr-2" />
+                          Change Image
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -153,7 +221,9 @@ const EditBoss = () => {
                         <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                       </div>
                       <div>
-                        <p className="text-base sm:text-lg font-medium">Change Boss Image</p>
+                        <p className="text-base sm:text-lg font-medium">
+                          {hasOriginalImage ? 'Change Boss Image' : 'Add Boss Image'}
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           Click to browse or drag and drop
                         </p>
@@ -161,6 +231,11 @@ const EditBoss = () => {
                           PNG, JPG up to 10MB
                         </p>
                       </div>
+                      {!hasOriginalImage && (
+                        <p className="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-md">
+                          Boss image will be removed when you save changes
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -204,7 +279,7 @@ const EditBoss = () => {
                 </div>
               </div>
 
-              {/* Categories - UNCHANGED */}
+              {/* Categories */}
               <div>
                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                   Category
@@ -307,6 +382,41 @@ const EditBoss = () => {
           </div>
         </form>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialog.isOpen} onOpenChange={cancelDeleteBoss}>
+        <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <AlertDialogTitle>Delete Boss</AlertDialogTitle>
+                <AlertDialogDescription className="mt-1">
+                  Are you sure you want to delete <span className="font-semibold">{formData.name}</span>?
+                </AlertDialogDescription>
+              </div>
+            </div>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">
+              This action will permanently delete this boss and remove it from all events. This cannot be undone.
+            </p>
+          </div>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="mt-0">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteBoss}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              Delete Boss
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

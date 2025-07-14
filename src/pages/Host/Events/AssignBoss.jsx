@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, X, QrCode, SkipForward, Trophy, Users, Clock, Zap, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Plus, X, QrCode, SkipForward, Trophy, Clock, Zap, AlertTriangle, Badge as BadgeIcon, Download, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +28,8 @@ import {
 const AssignBoss = () => {
   const navigate = useNavigate();
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, bossId: null, bossName: '' });
+  const [qrDialog, setQrDialog] = useState({ isOpen: false, bossName: '', qrUrl: '' });
+  const [copied, setCopied] = useState(false);
   
   const [assignedBosses, setAssignedBosses] = useState([
     {
@@ -52,15 +62,37 @@ const AssignBoss = () => {
     }
   ]);
 
-  // Change to empty array to see "No Bosses Assigned" state
-  // const [assignedBosses, setAssignedBosses] = useState([]);
+  const handleShowQR = (boss) => {
+    const qrUrl = `${window.location.origin}/host/bosses/view`;
+    setQrDialog({
+      isOpen: true,
+      bossName: boss.name,
+      qrUrl: qrUrl
+    });
+  };
+
+  const handleDownloadQR = () => {
+    // Create a temporary link to download the placeholder image
+    const link = document.createElement('a');
+    link.download = `${qrDialog.bossName.replace(/\s+/g, '_')}_QR.webp`;
+    link.href = '/src/assets/Placeholder/placeholder_image.webp';
+    link.click();
+  };
+
+  const handleCopyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(qrDialog.qrUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy URL:', err);
+    }
+  };
 
   const handleRemoveBoss = (bossId) => {
-    // Find the boss name for the confirmation message
     const boss = assignedBosses.find(b => b.id === bossId);
     const bossName = boss ? boss.name : 'this boss';
     
-    // Open confirmation dialog
     setConfirmDialog({
       isOpen: true,
       bossId: bossId,
@@ -95,6 +127,14 @@ const AssignBoss = () => {
     navigate('/host/events/view');
   };
 
+  const handleViewLeaderboard = () => {
+    navigate('/host/events/leaderboard');
+  };
+
+  const handlePlayerBadges = () => {
+    navigate('/host/events/player_badges');
+  };
+
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background">
@@ -121,8 +161,9 @@ const AssignBoss = () => {
                 variant="outline"
                 size="sm"
                 className="flex items-center gap-2"
+                onClick={handlePlayerBadges}
               >
-                <Users className="w-4 h-4" />
+                <BadgeIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">Player Badges</span>
               </Button>
               <Button 
@@ -276,7 +317,12 @@ const AssignBoss = () => {
                             )}
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="w-8 h-8 p-0"
+                                  onClick={() => handleShowQR(boss)}
+                                >
                                   <QrCode className="w-4 h-4" />
                                 </Button>
                               </TooltipTrigger>
@@ -285,11 +331,16 @@ const AssignBoss = () => {
                           </div>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="w-8 h-8 p-0"
+                                onClick={handleViewLeaderboard}
+                              >
                                 <Trophy className="w-4 h-4" />
                               </Button>
                             </TooltipTrigger>
-                            <TooltipContent>View Results</TooltipContent>
+                            <TooltipContent>View Leaderboard</TooltipContent>
                           </Tooltip>
                         </div>
                       </div>
@@ -300,6 +351,74 @@ const AssignBoss = () => {
             </div>
           )}
         </div>
+
+        {/* QR Code Dialog */}
+        <Dialog open={qrDialog.isOpen} onOpenChange={(open) => setQrDialog({ ...qrDialog, isOpen: open })}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <QrCode className="w-5 h-5" />
+                QR Code - {qrDialog.bossName}
+              </DialogTitle>
+              <DialogDescription>
+                Scan this QR code to access the boss battle directly
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="flex flex-col items-center space-y-4 py-4">
+              {/* QR Code Image */}
+              <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+                <img
+                  src="/src/assets/Placeholder/placeholder_image.webp"
+                  alt="QR Code"
+                  className="w-48 h-48 sm:w-56 sm:h-56 object-contain"
+                />
+              </div>
+              
+              {/* URL Display */}
+              <div className="w-full space-y-2">
+                <Label className="text-sm font-medium">Direct Link:</Label>
+                <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                  <code className="flex-1 text-xs break-all">
+                    {qrDialog.qrUrl}
+                  </code>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 shrink-0"
+                    onClick={handleCopyUrl}
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+                {copied && (
+                  <p className="text-xs text-green-600">URL copied to clipboard!</p>
+                )}
+              </div>
+            </div>
+
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setQrDialog({ ...qrDialog, isOpen: false })}
+                className="w-full sm:w-auto"
+              >
+                Close
+              </Button>
+              <Button
+                onClick={handleDownloadQR}
+                className="w-full sm:w-auto"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download QR
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Confirmation Dialog */}
         <AlertDialog open={confirmDialog.isOpen} onOpenChange={cancelRemoveBoss}>

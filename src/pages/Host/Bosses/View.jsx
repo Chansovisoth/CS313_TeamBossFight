@@ -12,7 +12,7 @@ const ViewBosses = () => {
     {
       id: 1,
       name: 'Boss 1',
-      image: 'https://via.placeholder.com/200x150/6366f1/ffffff?text=Boss+1',
+      image: '/src/assets/Placeholder/Falcon.png',
       description: 'A fearsome boss with incredible strength'
     },
     {
@@ -39,9 +39,9 @@ const ViewBosses = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 py-6 max-w-6xl">
+    <div className="container mx-auto max-w-6xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 px-4 sm:px-6 py-6">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <div className="w-1 h-6 bg-primary rounded-full"></div>
@@ -60,7 +60,7 @@ const ViewBosses = () => {
       {/* Content Area */}
       {bosses.length === 0 ? (
         // No Bosses Found State
-        <div className="flex flex-col items-center justify-center py-16">
+        <div className="flex flex-col items-center justify-center py-16 px-4 sm:px-6">
           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
             <Sword className="h-8 w-8 text-muted-foreground" />
           </div>
@@ -77,7 +77,7 @@ const ViewBosses = () => {
         </div>
       ) : (
         // Bosses Grid
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-4 sm:px-6 pb-6">
           {bosses.map((boss) => (
             <Card
               key={boss.id}
@@ -86,15 +86,15 @@ const ViewBosses = () => {
             >
               <CardContent className="p-0">
                 {/* Boss Image */}
-                <div className="relative overflow-hidden rounded-t-lg">
+                <div className="relative overflow-hidden aspect-square">
                   {boss.image ? (
                     <img 
                       src={boss.image} 
                       alt={boss.name}
-                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     />
                   ) : (
-                    <div className="w-full h-48 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                       <div className="text-center">
                         <Sword className="h-12 w-12 text-primary/60 mx-auto mb-2" />
                         <span className="text-sm text-muted-foreground">No Image</span>
