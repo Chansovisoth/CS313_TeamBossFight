@@ -62,75 +62,55 @@ const Authentication = () => {
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-
-    // ===== COMMENTED OUT FOR STATIC VERSION =====
-    // try {
-    //   const response = await apiClient.post("auth/register", {
-    //     fullname: registerData.fullName,
-    //     email: registerData.email,
-    //     password: registerData.password,
-    //   })
-    //   setMessage(response.data.message || "Account created! You can now sign in.");
-    //   setMessageType("success");
-    //   handleFormTransition(true);
-    //   setRegisterData({
-    //     fullName: "",
-    //     email: "",
-    //     password: "",
-    //     confirmPassword: "",
-    //   });
-    // } catch (err) {
-    //   setMessage(err.response?.data?.detail ?? "Signup failed");
-    //   setMessageType("error");
-    // }
-
-    // Static message for demo purposes
-    toast.success("Account created! You can now sign in. (Static Demo)");
-    handleFormTransition(true);
-    setRegisterData({
-      username: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
+    if (registerData.password !== registerData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: registerData.username,
+          email: registerData.email,
+          password: registerData.password,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Signup failed");
+      }
+      toast.success("Account created! You can now sign in.");
+      handleFormTransition(true);
+      setRegisterData({ username: "", email: "", password: "", confirmPassword: "" });
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    // const formData = new URLSearchParams();
-    // formData.append("username", loginData.email);
-    // formData.append("password", loginData.password);
-
-    // ===== COMMENTED OUT FOR STATIC VERSION =====
-    // try {
-    //   const response = await apiClient.post("auth/login", formData, {
-    //     headers: {
-    //       'Content-Type': 'application/x-www-form-urlencoded',
-    //     }
-    //   });
-    //   
-    //   login({
-    //     accessToken: response.data.access_token,
-    //     user: response.data.user
-    //   });
-    //   
-    //   apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
-    //   
-    //   setMessage("Login successful!");
-    //   setMessageType("success");
-    //   navigate("/");
-    // } catch (err) {
-    //   console.error("Login error:", err);
-    //   setMessage(err.response?.data?.detail ?? "Login failed");
-    //   setMessageType("error");
-    // }
-
-    // Static message for demo purposes
-    toast.success("Login successful! (Static Demo)");
-    // Simulate navigation delay
-    setTimeout(() => {
-      navigate("/");
-    }, 1500);
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: loginData.emailOrUsername,
+          password: loginData.password,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+      toast.success("Login successful!");
+      // Optionally store token: localStorage.setItem('token', data.token);
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   return (
