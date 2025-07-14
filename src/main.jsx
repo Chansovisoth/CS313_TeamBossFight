@@ -16,6 +16,7 @@ import "./index.css";
 // ===== MASTER PAGES ===== //
 import App from "./App";
 import AppOP from "./AppOP";
+import AppBattle from "./AppBattle";
 import AppError from "./AppError";
 
 // ===== PLAYER PAGES ===== //
@@ -101,7 +102,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<PlayerBossPreview />} />
             </Route>
 
-            <Route path="/boss-battle" element={<App />}>
+            <Route path="/boss-battle" element={<AppBattle />}>
               <Route index element={<PlayerBossBattle />} />
             </Route>
 

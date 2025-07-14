@@ -125,7 +125,7 @@ const Leaderboard = () => {
             </Card>
 
             {/* Leaderboard Table */}
-            <Card className="relative h-[710px]">
+            <Card className="relative h-[690px]">
                 
                 <CardHeader className="pb-3 sm:pb-6">
                     <CardTitle className="text-2xl sm:text-3xl font-bold">All-time Leaderboard</CardTitle>
@@ -179,37 +179,25 @@ const Leaderboard = () => {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-
                                     {paginatedData.map((player) => {
-                                        let bgClass = "";
-                                        let textClass = "";
-                                        if (player.rank === 1) {
-                                            bgClass = "bg-yellow-500 dark:bg-yellow-700 hover:bg-yellow-500 transition-colors"; // Gold
-                                            textClass = "text-white";
-                                        } else if (player.rank === 2) {
-                                            bgClass = "bg-gray-400 dark:bg-gray-600 hover:bg-gray-400 transition-colors"; // Silver
-                                            textClass = "text-white";
-                                        } else if (player.rank === 3) {
-                                            bgClass = "bg-amber-600 dark:bg-amber-800 hover:bg-amber-600 transition-colors"; // Bronze
-                                            textClass = "text-white";
-                                        }
-
                                         return (
-                                            <TableRow key={player.rank} className={bgClass}>
-                                                <TableCell className={`text-center font-bold ${textClass} p-2`}>
-                                                    {player.rank}
+                                            <TableRow key={player.rank}>
+                                                <TableCell className="text-center font-bold p-2">
+                                                    {player.rank === 1 ? (
+                                                        <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white">1st</Badge>
+                                                    ) : player.rank === 2 ? (
+                                                        <Badge className="bg-gray-400 hover:bg-gray-500 text-white">2nd</Badge>
+                                                    ) : player.rank === 3 ? (
+                                                        <Badge className="bg-amber-600 hover:bg-amber-700 text-white">3rd</Badge>
+                                                    ) : (
+                                                        <span className="text-sm font-medium text-muted-foreground">#{player.rank}</span>
+                                                    )}
                                                 </TableCell>
-                                                <TableCell className={`${textClass} p-2`}>
-                                                    <div className="flex items-center gap-1 min-w-0">
-                                                        <Avatar className="w-6 h-6 border border-gray-200 dark:border-gray-700 flex-shrink-0">
-                                                            <AvatarImage src={player.avatar} alt={player.username} />
-                                                            <AvatarFallback className="text-xs">{player.username[0]}</AvatarFallback>
-                                                        </Avatar>
-                                                        <span className="truncate text-xs">{player.username}</span>
-                                                    </div>
+                                                <TableCell className="p-2">
+                                                    <span className="truncate text-xs font-medium">{player.username}</span>
                                                 </TableCell>
-                                                <TableCell className={`text-right ${textClass} p-2 text-sm`}>{player.dmg.toLocaleString()}</TableCell>
-                                                <TableCell className={`text-right ${textClass} p-2 text-sm`}>{player.correctPercent}%</TableCell>
+                                                <TableCell className="text-right p-2 text-sm">{player.dmg.toLocaleString()}</TableCell>
+                                                <TableCell className="text-right p-2 text-sm">{player.correctPercent}%</TableCell>
                                             </TableRow>
                                         );
                                     })}
