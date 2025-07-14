@@ -16,25 +16,26 @@ import "./index.css";
 // ===== MASTER PAGES ===== //
 import App from "./App";
 import AppOP from "./AppOP";
-import AppOLD from "./AppOLD";
+import AppError from "./AppError";
 
 // ===== PLAYER PAGES ===== //
 import Error from "./pages/Error";
-import PlayerHomeOLD from "./pages/Player/HomeOLD";
+import PlayerAuthentication from "./pages/Player/Authentication";
 import PlayerHome from "./pages/Player/Home";
 import PlayerBadges from "./pages/Player/Badges";
+import PlayerLeaderboard from "./pages/Player/Leaderboard";
 import PlayerAbout from "./pages/Player/About";
-import PlayerAuthentication from "./pages/Player/Authentication";
 import PlayerQR from "./pages/Player/QR";
+// import PlayerBossPreview from "./pages/Player/BossPreview";
 import PlayerBossBattle from "./pages/Player/BossBattle";
 
 // ===== HOST PAGES ===== //
 import HostAuthentication from "./pages/Host/Authentication";
-
+// Bosses
 import HostBossesView from "./pages/Host/Bosses/View";
 import HostBossesCreate from "./pages/Host/Bosses/Create";
 import HostBossesEdit from "./pages/Host/Bosses/Edit";
-
+// Events
 import HostEventsView from "./pages/Host/Events/View";
 import HostEventsAssignBoss from "./pages/Host/Events/AssignBoss";
 import HostEventsBossTemplate from "./pages/Host/Events/BossTemplate";
@@ -43,18 +44,18 @@ import HostEventsEdit from "./pages/Host/Events/Edit";
 import HostEventsPlayerbadges from "./pages/Host/Events/Playerbadges";
 import HostEventsPlayerBadgesEdit from "./pages/Host/Events/Playerbadgesedit";
 import HostEventsLeaderboard from "./pages/Host/Events/Leaderboard";
-
+// Users
 import HostUsersView from "./pages/Host/Users/View";
 import HostUsersEdit from "./pages/Host/Users/Edit";
-
+// Categories
 import HostCategoriesView from "./pages/Host/Categories/View";
 import HostCategoriesCreate from "./pages/Host/Categories/Create";
 import HostCategoriesEdit from "./pages/Host/Categories/Edit";
-
+// Categories Questions
 import HostCategoriesQuesitonsView from "./pages/Host/Categories/Questions/View";
 import HostCategoriesQuestionsCreate from "./pages/Host/Categories/Questions/Create";
 import HostCategoriesQuestionsEdit from "./pages/Host/Categories/Questions/Edit";
-
+// Profile
 import HostProfileView from "./pages/Host/Profile/View";
 import HostProfileEdit from "./pages/Host/Profile/Edit";
 
@@ -80,6 +81,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
             <Route path="/badges" element={<App />}>
               <Route index element={<PlayerBadges />} />
+            </Route>
+
+            <Route path="/leaderboard" element={<App />}>
+              <Route index element={<PlayerLeaderboard />} />
             </Route>
 
             <Route path="/about" element={<App />}>
@@ -202,13 +207,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<HostProfileEdit />} />
             </Route>
 
-            {/* Old Home Page */}
-            <Route path="/old" element={<AppOLD />}>
-              <Route index element={<PlayerHomeOLD />} />
-            </Route>
-
             {/* 404 Error Route */}
-            <Route path="*" element={<App />}>
+            <Route path="*" element={<AppError />}>
               <Route path="*" element={<Error />} />
             </Route>
             

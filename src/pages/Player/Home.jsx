@@ -10,13 +10,14 @@ import { startConfettiCelebration } from "@/lib/Confetti"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-// import EventCarousel from "@/layouts/EventCarousel"
-import EventCarousel2 from "@/layouts/EventCarousel2"
+import EventCarousel from "@/layouts/EventCarousel"
+// import EventCarousel2 from "@/layouts/EventCarousel2"
 import QRButton from "@/layouts/QRButton"
 
 // ===== STYLES ===== //
 import "@/index.css"
-import "@/home.css"
+
+
 
 const Home = () => {
   const navigate = useNavigate()
@@ -73,7 +74,7 @@ const Home = () => {
             {/* Event Carousel */}
             <div className="mb-8 sm:mb-14">
               {/* <EventCarousel /> */}
-              <EventCarousel2 />
+              <EventCarousel />
             </div>
 
             {/* CTA Buttons */}
