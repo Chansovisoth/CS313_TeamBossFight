@@ -47,7 +47,7 @@ export function PageTitle({ className = "text-lg font-semibold text-foreground" 
     if (pathname.includes('/host/bosses/edit')) return 'Bosses';
     if (pathname.includes('/host/categories')) return 'Question Bank';
     if (pathname.includes('/host/questions')) return 'Question Bank';
-    if (pathname.includes('/host/profile/view')) return 'Profile';
+    if (pathname.includes('/host/profile')) return 'Profile';
     if (pathname.includes('/host')) return 'Host Panel';
     if (pathname.includes('/leaderboard')) return 'Leaderboard';
     
