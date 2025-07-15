@@ -1,7 +1,7 @@
 "use client"
 
 // ===== LIBRARIES ===== //
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import {
   Sun,
