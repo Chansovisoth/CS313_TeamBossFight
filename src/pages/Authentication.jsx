@@ -1,7 +1,7 @@
 // ===== LIBRARIES ===== //
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Eye, EyeOff, User, Mail, Lock, VenetianMask } from "lucide-react";
 import { toast } from "sonner";
 
 // ===== COMPONENTS ===== //
@@ -14,12 +14,14 @@ import { Label } from "@/components/ui/label";
 // import { useAuth } from "@/context/useAuth";  // Commented out for static version
 // import { apiClient } from "../api";           // Commented out for static version
 
-
+// ===== STYLES ===== //
+import "@/index.css";
 
 const Authentication = () => {
   // const { login } = useAuth();  // Commented out for static version
 
-  const [isSignIn, setIsSignIn] = useState(false); // State to toggle between forms
+  const [searchParams] = useSearchParams();
+  const [isSignIn, setIsSignIn] = useState(true); // State to toggle between forms
   const [isClosing, setIsClosing] = useState(false); // State to track when form is closing
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Add this state
@@ -36,6 +38,16 @@ const Authentication = () => {
   });
 
   const navigate = useNavigate();
+
+  // ===== DETECT URL PARAMETERS =====
+  useEffect(() => {
+    const mode = searchParams.get('mode');
+    if (mode === 'register') {
+      setIsSignIn(false);
+    } else {
+      setIsSignIn(true);
+    }
+  }, [searchParams]);
 
   // Function to handle form transitions with animation
   const handleFormTransition = (newSignInState) => {
@@ -114,7 +126,7 @@ const Authentication = () => {
   };
 
   return (
-    <main className="purple-gradient flex-grow px-4 pt-6 pb-6 sm:px-12 md:px-20 lg:px-20 xl:px-50 2xl:px-80 flex items-center justify-center min-h-[calc(100vh-200px)]">
+    <main className="flex-grow px-4 pt-6 pb-6 sm:px-12 md:px-20 lg:px-20 xl:px-50 2xl:px-80 flex items-center justify-center min-h-[calc(100vh-200px)]">
       <div className="w-full max-w-5xl flex flex-col md:flex-row items-center justify-center gap-8">
         {/* ===== REGISTER CARD ===== */}
         {!isSignIn && (
@@ -126,7 +138,7 @@ const Authentication = () => {
             }`}
           >
             {/* ===== BANNER SECTION (LEFT) ===== */}
-            <div className="flex-1 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 p-8 flex flex-col justify-center text-white relative">
+            <div className="flex-1 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 p-6 flex flex-col justify-center text-white relative min-h-[160px] md:h-auto">
               {/* Decorative Elements */}
               <div className="absolute inset-0 opacity-20">
                 <div className="absolute top-20 left-10 w-20 h-20 bg-yellow-400 rounded-full transform rotate-45"></div>
@@ -135,7 +147,7 @@ const Authentication = () => {
                 <div className="absolute bottom-20 right-10 w-18 h-5 bg-yellow-300 rounded-full transform rotate-45"></div>
               </div>
 
-              <div className="relative z-10 p-2 lg:p-8">
+              <div className="relative z-10 p-0 lg:p-8">
                 <h1 className="text-4xl font-bold mb-0 sm:mb-4">
                   Welcome to UniRAID
                 </h1>
@@ -149,7 +161,7 @@ const Authentication = () => {
             <div className="flex-1 bg-white dark:bg-zinc-900 p-8 flex flex-col justify-center">
               <div className="max-w-md mx-auto w-full">
                 <CardHeader className="text-center pb-6">
-                  <CardTitle className="text-2xl font-bold mb-2">
+                  <CardTitle className="text-2xl font-bold">
                     Register
                   </CardTitle>
                   <CardDescription>
@@ -259,13 +271,27 @@ const Authentication = () => {
                       </div>
                     </div>
 
-                    <Button
-                      type="submit"
-                      variant="outline"
-                      className="w-full bg-zinc-900 dark:bg-zinc-750 text-white hover:text-white hover:bg-zinc-800 px-6 py-2 rounded-2 mt-6"
-                    >
-                      Create Account
-                    </Button>
+                    <div className="flex gap-3 mt-6">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        onClick={() => {
+                          toast.success("Logging in as guest...");
+                          setTimeout(() => navigate("/"), 1000);
+                        }}
+                      >
+                        <VenetianMask className="w-4 h-4 mr-0" />
+                        Login as Guest
+                      </Button>
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        className="flex-1 bg-zinc-900 dark:bg-zinc-750 text-white hover:text-white hover:bg-zinc-800 px-0 py-2 rounded-2"
+                      >
+                        Create Account
+                      </Button>
+                    </div>
                   </form>
 
                   <div className="mt-6 text-center text-sm text-muted-foreground">
@@ -286,14 +312,14 @@ const Authentication = () => {
         {/* ===== LOGIN CARD ===== */}
         {isSignIn && (
           <Card
-            className={`flex flex-col md:flex-row overflow-hidden min-h-[600px] py-0 gap-0 ${
+            className={`border-0 flex flex-col md:flex-row overflow-hidden min-h-[600px] py-0 gap-0 ${
               isClosing
                 ? "animated-fadeOut-down-fast"
                 : "animated-fadeIn-down-fast"
             }`}
           >
             {/* ===== BANNER SECTION (LEFT) ===== */}
-            <div className="flex-1 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 p-8 flex flex-col justify-center text-white relative h-40 md:h-auto">
+            <div className="flex-1 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 p-6 flex flex-col justify-center text-white relative min-h-[160px] md:h-auto">
               {/* Decorative Elements */}
               <div className="absolute inset-0 opacity-20">
                 <div className="absolute top-20 left-10 w-20 h-20 bg-cyan-400 rounded-full transform rotate-45"></div>
@@ -302,8 +328,10 @@ const Authentication = () => {
                 <div className="absolute bottom-20 right-10 w-18 h-5 bg-cyan-300 rounded-full transform rotate-45"></div>
               </div>
 
-              <div className="relative z-10 p-2 lg:p-8">
-                <h1 className="text-4xl font-bold mb-0 sm:mb-4">Welcome Back, Warrior!</h1>
+              <div className="relative z-10 p-0 lg:p-8">
+                <h1 className="text-4xl font-bold mb-0 sm:mb-4">
+                  Welcome Back, Warrior!
+                </h1>
                 {/* <p className="hidden md:block text-lg opacity-90 leading-relaxed">
                   Ready for another epic boss battle? Sign back into UniRAID and rejoin your team to take on legendary bosses and claim victory!
                 </p> */}
@@ -380,13 +408,27 @@ const Authentication = () => {
                       </span>
                     </div> */}
 
-                    <Button
-                      type="submit"
-                      variant="outline"
-                      className="w-full bg-zinc-900 dark:bg-zinc-750 text-white hover:text-white hover:bg-zinc-800 px-6 py-2 rounded-2 mt-6"
-                    >
-                      Login
-                    </Button>
+                    <div className="flex gap-3 mt-6">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        onClick={() => {
+                          toast.success("Logging in as guest...");
+                          setTimeout(() => navigate("/"), 1000);
+                        }}
+                      >
+                        <VenetianMask className="w-4 h-4 mr-0" />
+                        Login as Guest
+                      </Button>
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        className="flex-1 bg-zinc-900 dark:bg-zinc-750 text-white hover:text-white hover:bg-zinc-800 px-6 py-2 rounded-2"
+                      >
+                        Login
+                      </Button>
+                    </div>
                   </form>
 
                   <div className="mt-6 text-center text-sm text-muted-foreground">

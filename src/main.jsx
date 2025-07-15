@@ -14,18 +14,22 @@ import { MessageProvider } from "./context/MessageProvider";
 import "./index.css";
 
 // ===== MASTER PAGES ===== //
+import AppLanding from "./AppLanding";
 import App from "./App";
 import AppOP from "./AppOP";
 import AppBattle from "./AppBattle";
 import AppError from "./AppError";
 
+// ===== LANDING PAGES ===== //
+import Landing from "./pages/Landing";
+import About from "./pages/About";
+import Authentication from "./pages/Authentication";
+
 // ===== PLAYER PAGES ===== //
 import Error from "./pages/Error";
-import PlayerAuthentication from "./pages/Player/Authentication";
 import PlayerHome from "./pages/Player/Home";
 import PlayerBadges from "./pages/Player/Badges";
 import PlayerLeaderboard from "./pages/Player/Leaderboard";
-import PlayerAbout from "./pages/Player/About";
 import PlayerProfile from "./pages/Player/Profile";
 import PlayerQR from "./pages/Player/QR";
 import PlayerBossPreview from "./pages/Player/BossPreview";
@@ -69,6 +73,21 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <MessageProvider>
           <Routes>
+
+            {/* ===== LANDING ROUTES ===== */}
+            <Route path="/landing" element={<AppLanding />}>
+              <Route index element={<Landing />} />
+            </Route>
+
+            <Route path="/about" element={<AppLanding />}>
+              <Route index element={<About />} />
+            </Route>
+
+            <Route path="/auth" element={<AppLanding />}>
+              <Route index element={<Authentication />} />
+            </Route>
+
+            
             {/* ===== PLAYER ROUTES ===== */}
             <Route path="/" element={<App />}>
               <Route index element={<PlayerHome />} />
@@ -86,16 +105,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<PlayerLeaderboard />} />
             </Route>
 
-            <Route path="/about" element={<App />}>
-              <Route index element={<PlayerAbout />} />
-            </Route>
-
             <Route path="/profile" element={<App />}>
               <Route index element={<PlayerProfile />} />
-            </Route>
-
-            <Route path="/auth" element={<App />}>
-              <Route index element={<PlayerAuthentication />} />
             </Route>
 
             <Route path="/boss-preview" element={<App />}>
@@ -214,16 +225,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<HostProfileEdit />} />
             </Route>
 
-            {/* 404 Error Route */}
-            <Route path="*" element={<AppError />}>
-              <Route path="*" element={<Error />} />
-            </Route>
-
             {/* Admin Events Create */}
             <Route path="/admin/events/create" element={<AppOP />}>
               <Route index element={<HostEventsCreate />} />
             </Route>
-
+            
+            {/* ===== ADMIN ROUTES ===== */}
             {/* Admin Events Edit */}
             <Route path="/host/events/edit" element={<AppOP />}>
               <Route index element={<HostEventsEdit />} />
@@ -237,6 +244,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             {/* Admin Users Edit */}
             <Route path="/admin/users/edit" element={<AppOP />}>
               <Route index element={<HostUsersEdit />} />
+            </Route>
+
+            {/* ===== 404 Error Route ===== */}
+            <Route path="*" element={<AppError />}>
+              <Route path="*" element={<Error />} />
             </Route>
 
           </Routes>
