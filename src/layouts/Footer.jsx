@@ -6,7 +6,7 @@ const Footer = () => {
 
     return (
         <footer className="bg-[#18181b] text-white border-t border-gray-700">
-            <div className="container mx-auto px-6 py-12">
+            <div className="container mx-auto px-6 py-9">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
@@ -25,9 +25,9 @@ const Footer = () => {
                                 <p className="text-sm text-gray-400">Group Boss Battle</p>
                             </div>
                         </div>
-                        <p className="text-sm text-gray-400 text-center md:text-left max-w-xs">
+                        {/* <p className="text-sm text-gray-400 text-center md:text-left max-w-xs">
                             Epic multiplayer boss battles for university students. Challenge yourself and compete for glory!
-                        </p>
+                        </p> */}
                     </div>
 
                     {/* Project Info */}
