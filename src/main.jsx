@@ -63,8 +63,7 @@ import HostCategoriesQuesitonsView from "./pages/Host/Categories/Questions/View"
 import HostCategoriesQuestionsCreate from "./pages/Host/Categories/Questions/Create";
 import HostCategoriesQuestionsEdit from "./pages/Host/Categories/Questions/Edit";
 // Profile
-import HostProfileView from "./pages/Host/Profile/View";
-import HostProfileEdit from "./pages/Host/Profile/Edit";
+import HostProfile from "./pages/Host/Profile/Profile";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -215,14 +214,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route index element={<HostCategoriesQuestionsEdit />} />
             </Route>
 
-            {/* Host Profile View */}
-            <Route path="/host/profile/view" element={<AppOP />}>
-              <Route index element={<HostProfileView />} />
-            </Route>
-
-            {/* Host Profile Edit */}
-            <Route path="/host/profile/edit" element={<AppOP />}>
-              <Route index element={<HostProfileEdit />} />
+            {/* Host Profile */}
+            <Route path="/host/profile" element={<AppOP />}>
+              <Route index element={<HostProfile />} />
             </Route>
 
             {/* Admin Events Create */}
