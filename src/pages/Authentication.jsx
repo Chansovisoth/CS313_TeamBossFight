@@ -16,9 +16,16 @@ import { apiClient } from "@/api";
 
 
 const Authentication = () => {
-  const { login } = useAuth();
+  const { login, setupAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Setup API interceptors when component mounts
+  useEffect(() => {
+    if (setupAuth) {
+      setupAuth(navigate);
+    }
+  }, [setupAuth, navigate]);
 
   // Determine initial form state from URL
   const params = new URLSearchParams(location.search);

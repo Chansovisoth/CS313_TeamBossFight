@@ -116,8 +116,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </Route>
 
               {/* ===== HOST ROUTES (Protected for host and admin roles) ===== */}
-              {/* <Route path="/host" element={<ProtectedRoute allowedRoles={['host', 'admin']} />}> */}
-              <Route path="/host">
+              <Route path="/host" element={<ProtectedRoute allowedRoles={['host', 'admin']} />}>
+              {/* <Route path="/host"> */}
                 {/* Host Bosses Routes */}
                 <Route path="bosses/create" element={<AppOP />}>
                   <Route index element={<HostBossesCreate />} />
@@ -185,7 +185,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                   <Route index element={<HostCategoriesCreate />} />
                 </Route>
                 
-                <Route path="questionbank/categories/edit/:id" element={<AppOP />}>
+                <Route path="questionbank/categories/edit" element={<AppOP />}>
                   <Route index element={<HostCategoriesEdit />} />
                 </Route>
                 
