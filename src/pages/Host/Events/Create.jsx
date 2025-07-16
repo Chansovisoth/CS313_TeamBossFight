@@ -1,89 +1,173 @@
-import React from 'react';
-import { Menu } from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Calendar, Clock, FileText, Type, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 
 const CreateEvent = () => {
+  const navigate = useNavigate();
+  
+  const [eventData, setEventData] = useState({
+    name: '',
+    description: '',
+    startDate: '',
+    endDate: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (field, value) => {
+    setEventData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log('Creating event:', eventData);
+    setIsSubmitting(false);
+  };
+
+  const handleCancel = () => {
+    // Navigate back to events view
+    navigate('/host/events/view');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
-      <div className="max-w-md mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          {/* Header */}
-          <div className="flex items-center mb-6">
-            <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400 mr-3" />
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Create Event</h1>
-          </div>
-
-          {/* Form Fields */}
-          <div className="space-y-4 mb-6">
-            {/* Event Name Field */}
-            <div>
-              <Label htmlFor="event-name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Event Name
-              </Label>
-              <Input
-                id="event-name"
-                type="text"
-                className="mt-1 w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                placeholder=""
-              />
-            </div>
-
-            {/* Description Field */}
-            <div>
-              <Label htmlFor="description" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Description
-              </Label>
-              <textarea
-                id="description"
-                className="mt-1 w-full min-h-[80px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder=""
-              />
-            </div>
-
-            {/* Start Date & Time Field */}
-            <div>
-              <Label htmlFor="start-datetime" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Start Date & Time
-              </Label>
-              <Input
-                id="start-datetime"
-                type="text"
-                className="mt-1 w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                placeholder="--/--/---- 08:00AM"
-              />
-            </div>
-
-            {/* End Date & Time Field */}
-            <div>
-              <Label htmlFor="end-datetime" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                End Date & Time
-              </Label>
-              <Input
-                id="end-datetime"
-                type="text"
-                className="mt-1 w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                placeholder="--/--/---- 05:00PM"
-              />
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <Button 
-              variant="outline" 
-              className="flex-1 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCancel}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
             >
-              Cancel
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
-            <Button 
-              className="flex-1 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-            >
-              Create
-            </Button>
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-black dark:bg-white rounded-full"></div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  Create New Event
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Set up your event details and schedule
+                </p>
+              </div>
+            </div>
           </div>
         </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="max-w-2xl mx-auto space-y-6">
+            
+            {/* Event Information Card */}
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6 space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="event-name" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    Event Name *
+                  </Label>
+                  <Input
+                    id="event-name"
+                    value={eventData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    placeholder="Enter event name..."
+                    className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    Description
+                  </Label>
+                  <textarea
+                    id="description"
+                    value={eventData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    placeholder="Describe your event..."
+                    rows={4}
+                    className="w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 resize-none transition-colors"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="start-datetime" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      Start Date & Time *
+                    </Label>
+                    <Input
+                      id="start-datetime"
+                      type="datetime-local"
+                      value={eventData.startDate}
+                      onChange={(e) => handleInputChange('startDate', e.target.value)}
+                      className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="end-datetime" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      End Date & Time *
+                    </Label>
+                    <Input
+                      id="end-datetime"
+                      type="datetime-local"
+                      value={eventData.endDate}
+                      onChange={(e) => handleInputChange('endDate', e.target.value)}
+                      className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                      required
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Action Buttons */}
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    onClick={handleCancel}
+                    className="flex-1 h-11 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit"
+                    className="flex-1 h-11 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 shadow-lg"
+                    disabled={isSubmitting || !eventData.name.trim() || !eventData.startDate || !eventData.endDate}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white dark:border-black border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Creating...
+                      </>
+                    ) : (
+                      'Create Event'
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </form>
       </div>
     </div>
   );
