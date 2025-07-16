@@ -53,12 +53,12 @@ const QuestionBankView = () => {
 
   // Static data
   const categories = [
-    { id: 1, name: 'ARC', fullName: 'Architecture', author: 'Chanreach [Admin]', questionCount: 15, color: 'bg-blue-500' },
-    { id: 2, name: 'ART', fullName: 'Art History', author: 'Sovitep [Admin]', questionCount: 12, color: 'bg-purple-500' },
-    { id: 3, name: 'BUS', fullName: 'Business', author: 'Chanreach [Admin]', questionCount: 20, color: 'bg-green-500' },
-    { id: 4, name: 'CS', fullName: 'Computer Science', author: 'Sovitep [Admin]', questionCount: 25, color: 'bg-orange-500' },
-    { id: 5, name: 'MIS', fullName: 'Management Information Systems', author: 'Sovitep [Admin]', questionCount: 18, color: 'bg-red-500' },
-    { id: 6, name: 'ABA Bank', fullName: 'ABA Banking', author: 'Chomroeun [Host]', questionCount: 8, color: 'bg-cyan-500' }
+    { id: 1, name: 'ARC', fullName: 'Architecture', author: 'Chanreach [Admin]', questionCount: 15 },
+    { id: 2, name: 'ART', fullName: 'Art History', author: 'Sovitep [Admin]', questionCount: 12 },
+    { id: 3, name: 'BUS', fullName: 'Business', author: 'Chanreach [Admin]', questionCount: 20 },
+    { id: 4, name: 'CS', fullName: 'Computer Science', author: 'Sovitep [Admin]', questionCount: 25 },
+    { id: 5, name: 'MIS', fullName: 'Management Information Systems', author: 'Sovitep [Admin]', questionCount: 18 },
+    { id: 6, name: 'ABA Bank', fullName: 'ABA Banking', author: 'Chomroeun [Host]', questionCount: 8 }
   ];
 
   const questions = [
@@ -262,7 +262,6 @@ const QuestionBankView = () => {
                 <CardContent className="p-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div className={`w-3 h-3 rounded-full ${category.color} flex-shrink-0`}></div>
                       <div className="min-w-0 flex-1">
                         <h3 className="font-semibold text-sm text-gray-900 dark:text-white truncate">{category.name}</h3>
                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{category.fullName}</p>
