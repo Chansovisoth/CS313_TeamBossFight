@@ -44,7 +44,7 @@ const mainNavItems = [
   },
   {
     title: "Question Bank",
-    url: "/host/categories/view",
+    url: "/host/questionbank/categories/view",
     icon: BookOpen,
   },
   {
@@ -189,7 +189,7 @@ const NavOP = (props) => {
                   </>
                 ) : (
                   <>
-                    <DropdownMenuItem onClick={() => navigate("/host/profile/view")}>
+                    <DropdownMenuItem onClick={() => navigate("/host/profile")}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>

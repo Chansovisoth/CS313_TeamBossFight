@@ -79,12 +79,6 @@ export function NavSidebar({ ...props }) {
             icon: House,
             isActive: location.pathname === "/",
           },
-          // {
-          //   title: "Events",
-          //   url: "/events",
-          //   icon: Flame,
-          //   isActive: location.pathname === "/events",
-          // },
           {
             title: "Badges",
             url: "/badges",
@@ -105,23 +99,17 @@ export function NavSidebar({ ...props }) {
           },  
         ],
       },
-      {
-        title: "Information",
-        items: [
-          {
-            title: "About",
-            url: "/about",
-            icon: BookA,
-            isActive: location.pathname === "/about",
-          },
-          // {
-          //   title: "Help",
-          //   url: "/help",
-          //   icon: Shield,
-          //   isActive: location.pathname === "/help",
-          // },
-        ],
-      },
+      // {
+      //   title: "Information",
+      //   items: [
+      //     {
+      //       title: "About",
+      //       url: "/about",
+      //       icon: BookA,
+      //       isActive: location.pathname === "/about",
+      //     },
+      //   ],
+      // },
     ],
     [location.pathname],
   )
@@ -143,7 +131,7 @@ export function NavSidebar({ ...props }) {
               {/* LOGO */}
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">UniRAID</span>
-                <span className="truncate text-xs text-muted-foreground">Boss Fight Arena</span>
+                <span className="truncate text-xs text-muted-foreground">Group Boss Battle</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
