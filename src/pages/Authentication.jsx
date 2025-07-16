@@ -1,7 +1,7 @@
 // ===== LIBRARIES ===== //
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, VenetianMask } from "lucide-react";
 import { toast } from "sonner";
 
 // ===== COMPONENTS ===== //
