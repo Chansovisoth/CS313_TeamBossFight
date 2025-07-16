@@ -8,7 +8,7 @@ import {
   Moon,
   Flame,
   Badge,
-  HomeIcon as House,
+  House,
   BookA,
   LogOut,
   User,
@@ -44,6 +44,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import AlertLogout from "./AlertLogout"
 
 // ===== CONTEXTS ===== //
 import { useThemeColor } from "@/theme/theme-provider"
@@ -54,6 +55,7 @@ export function NavSidebar({ ...props }) {
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   // ===== AUTHENTICATION HANDLERS ===== //
   const { logout } = useAuth();
@@ -220,45 +222,38 @@ export function NavSidebar({ ...props }) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
-                {!user ? (
-                  <>
-                    <DropdownMenuItem onClick={() => navigate("/auth")}>
-                      <BookA className="mr-2 h-4 w-4" />
-                      <span>Login</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/auth?mode=register")}>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Sign Up</span>
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <>
-                    <DropdownMenuItem onClick={() => navigate("/profile")}>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
-                    {/* User Management for admin/host only */}
-                    {(user.role === "admin" || user.role === "host") && (
-                      <DropdownMenuItem onClick={() => navigate("/host/events/view")}>
-                        <Users className="mr-2 h-4 w-4" />
-                        <span>View as Host</span>
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={handleLogout}
-                      className="text-red-600 focus:text-red-600"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Logout</span>
-                    </DropdownMenuItem>
-                  </>
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                {/* User Management for admin/host only */}
+                {(user?.role === "admin" || user?.role === "host") && (
+                  <DropdownMenuItem onClick={() => navigate("/host/events/view")}>
+                    <Users className="mr-2 h-4 w-4" />
+                    <span>View as Host</span>
+                  </DropdownMenuItem>
                 )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setShowLogoutDialog(true)}
+                  className="text-red-600 focus:text-red-600"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
+      {/* Logout Confirmation Dialog */}
+      <AlertLogout
+        open={showLogoutDialog}
+        onOpenChange={setShowLogoutDialog}
+        onConfirm={handleLogout}
+      />
+
       <SidebarRail />
     </Sidebar>
   )

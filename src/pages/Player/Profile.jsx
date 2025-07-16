@@ -1,7 +1,7 @@
 // ===== LIBRARIES ===== //
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, Lock, Camera, Edit, Save, X, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { User, Mail, Lock, Camera, Edit, Save, X, Eye, EyeOff, ArrowLeft, LogOut } from "lucide-react";
 
 // ===== COMPONENTS (Shadcn.ui) ===== //
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,18 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import AlertLogout from "@/layouts/AlertLogout";
+
+// ===== CONTEXTS ===== //
+import { useAuth } from "@/context/useAuth";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [profileData, setProfileData] = useState({
     profilePic: "/src/assets/Placeholder/Profile1.jpg",
     username: "PlayerOne",
@@ -73,6 +79,15 @@ const Profile = () => {
     navigate("/"); // Go to home page
   };
 
+  const handleLogout = async () => {
+    try {
+      logout();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   const handleCancel = () => {
     setIsEditing(false);
     setShowPassword(false);
@@ -108,9 +123,14 @@ const Profile = () => {
     <div className="container mx-auto p-3 sm:p-6 max-w-4xl">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <Button onClick={handleBack} variant="outline" className="mb-4">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button onClick={handleBack} variant="outline">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+          </Button>
+          <Button onClick={() => setShowLogoutDialog(true)} variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+            <LogOut className="w-4 h-4 mr-2" /> Logout
+          </Button>
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">Profile Settings</h1>
@@ -302,8 +322,8 @@ const Profile = () => {
 
               {isEditing && (
                 <>
-                  <Separator />
-                  <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg">
+                  {/* <Separator /> */}
+                  <div className="bg-background p-4 rounded-lg">
                     <h4 className="font-medium text-sm mb-2">Password Requirements:</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• At least 8 characters long</li>
@@ -315,7 +335,7 @@ const Profile = () => {
               )}
 
               {/* Action Buttons */}
-              <Separator />
+              {/* <Separator /> */}
               <div className="flex gap-2">
                 {isEditing ? (
                   <>
@@ -345,6 +365,13 @@ const Profile = () => {
           </Card>
         </div>
       </div>
+
+      {/* Logout Confirmation Dialog */}
+      <AlertLogout
+        open={showLogoutDialog}
+        onOpenChange={setShowLogoutDialog}
+        onConfirm={handleLogout}
+      />
 
     </div>
   );
