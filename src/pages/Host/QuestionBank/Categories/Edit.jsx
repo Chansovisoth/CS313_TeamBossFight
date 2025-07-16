@@ -23,26 +23,24 @@ const EditCategory = () => {
   const categoryId = searchParams.get('id');
   
   const [categoryName, setCategoryName] = useState('');
-  const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [errors, setErrors] = useState({});
 
   // Mock data - replace with actual API call
   const mockCategories = {
-    1: { name: 'ARC', fullName: 'Architecture', author: 'Chanreach [Admin]' },
-    2: { name: 'ART', fullName: 'Art History', author: 'Sovitep [Admin]' },
-    3: { name: 'BUS', fullName: 'Business', author: 'Chanreach [Admin]' },
-    4: { name: 'CS', fullName: 'Computer Science', author: 'Sovitep [Admin]' },
-    5: { name: 'MIS', fullName: 'Management Information Systems', author: 'Sovitep [Admin]' },
-    6: { name: 'ABA Bank', fullName: 'ABA Banking', author: 'Chomroeun [Host]' }
+    1: { name: 'ARC', author: 'Chanreach' },
+    2: { name: 'ART', author: 'Sovitep' },
+    3: { name: 'BUS', author: 'Chanreach' },
+    4: { name: 'CS', author: 'Sovitep' },
+    5: { name: 'MIS', author: 'Sovitep' },
+    6: { name: 'ABA Bank', author: 'Chomroeun' }
   };
 
   const currentCategory = mockCategories[categoryId] || mockCategories[4]; // Default to CS
 
   useEffect(() => {
     setCategoryName(currentCategory.name);
-    setFullName(currentCategory.fullName);
   }, [categoryId]);
 
   const validateForm = () => {
@@ -52,12 +50,6 @@ const EditCategory = () => {
       newErrors.categoryName = 'Category name is required';
     } else if (categoryName.length > 10) {
       newErrors.categoryName = 'Category name must be 10 characters or less';
-    }
-    
-    if (!fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    } else if (fullName.length > 50) {
-      newErrors.fullName = 'Full name must be 50 characters or less';
     }
     
     setErrors(newErrors);
@@ -71,7 +63,7 @@ const EditCategory = () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Saving category:', { id: categoryId, name: categoryName, fullName: fullName });
+      console.log('Saving category:', { id: categoryId, name: categoryName });
       navigate('/host/questionbank/categories/view');
     } catch (error) {
       console.error('Error saving category:', error);
@@ -152,7 +144,7 @@ const EditCategory = () => {
               {/* Category Name */}
               <div className="space-y-2">
                 <Label htmlFor="categoryName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Category Name (Short Code) <span className="text-red-500">*</span>
+                  Category Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="categoryName"
@@ -168,36 +160,6 @@ const EditCategory = () => {
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {categoryName.length}/10 characters
                 </p>
-              </div>
-
-              {/* Full Name */}
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Full Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g., Computer Science, Art History, Business"
-                  maxLength={50}
-                  className={`${errors.fullName ? 'border-red-500 focus:border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
-                />
-                {errors.fullName && (
-                  <p className="text-red-500 text-xs">{errors.fullName}</p>
-                )}
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {fullName.length}/50 characters
-                </p>
-              </div>
-
-              {/* Category Badge Preview - Below Input */}
-              <div className="flex justify-center pt-2">
-                <Badge 
-                  className="bg-gray-600 text-white px-4 py-2 text-sm font-medium"
-                >
-                  {categoryName || currentCategory.name}
-                </Badge>
               </div>
 
               {/* Author Info (Read-only) */}
