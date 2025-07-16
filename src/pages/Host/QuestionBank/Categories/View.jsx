@@ -134,15 +134,7 @@ const QuestionBankView = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = currentData.slice(startIndex, endIndex);
 
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case 'Easy': return 'bg-green-100 text-green-700 border-green-200';
-      case 'Medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'Hard': return 'bg-red-100 text-red-700 border-red-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
-  };
-
+  
   const getAuthorBadgeColor = (author) => {
     if (author.includes('[Admin]')) return 'bg-blue-100 text-blue-700 border-blue-200';
     if (author.includes('[Host]')) return 'bg-purple-100 text-purple-700 border-purple-200';

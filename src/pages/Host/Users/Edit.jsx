@@ -374,7 +374,6 @@ const Edit = () => {
                   <SelectContent>
                     <SelectItem value="player">Player</SelectItem>
                     <SelectItem value="host">Host</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
                 {validationErrors.role && (
