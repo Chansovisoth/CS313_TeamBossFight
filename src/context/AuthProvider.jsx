@@ -16,10 +16,10 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const parsedUser = JSON.parse(storedUser);
-        apiClient.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${parsedUser.accessToken}`;
-
+        // Set token in Axios BEFORE making the request
+        if (parsedUser.accessToken) {
+          apiClient.defaults.headers.common["Authorization"] = `Bearer ${parsedUser.accessToken}`;
+        }
         const response = await apiClient.get("/auth/me");
         setUser({ ...response.data, accessToken: parsedUser.accessToken });
       } catch (error) {

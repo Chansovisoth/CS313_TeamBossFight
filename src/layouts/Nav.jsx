@@ -47,11 +47,13 @@ import {
 
 // ===== CONTEXTS ===== //
 import { useThemeColor } from "@/theme/theme-provider"
+import { useAuth } from "@/context/useAuth";
 
 export function NavSidebar({ ...props }) {
   const { colorScheme, toggleColorScheme } = useThemeColor()
   const navigate = useNavigate()
   const location = useLocation()
+  const { user } = useAuth();
 
   // ===== AUTHENTICATION HANDLERS ===== //
   // const { user, logout } = useAuth()
@@ -64,14 +66,6 @@ export function NavSidebar({ ...props }) {
   //     console.error("Logout failed:", error)
   //   }
   // }, [logout, navigate])
-
-  // Mock user data - replace with actual user context
-  const user = { // Set to logged in state since sidebar is visible
-    name: "UwU",
-    email: "uwu@gmail.com",
-    avatar: "/src/assets/placeholder/Profile1.jpg",
-  }
-  const mockUser = user
 
   // ===== NAVIGATION DATA ===== //
   const navigationItems = useMemo(
@@ -194,14 +188,14 @@ export function NavSidebar({ ...props }) {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={mockUser.avatar || "/placeholder.svg"} alt={mockUser.name} />
+                    <AvatarImage src={user?.avatar || "/placeholder.svg"} alt={user?.name || "User"} />
                     <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-white">
                       BF
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{mockUser.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">{mockUser.email}</span>
+                    <span className="truncate font-semibold">{user?.name || "User"}</span>
+                    <span className="truncate text-xs text-muted-foreground">{user?.email || ""}</span>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -214,14 +208,14 @@ export function NavSidebar({ ...props }) {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={mockUser.avatar || "/placeholder.svg"} alt={mockUser.name} />
+                      <AvatarImage src={user?.avatar || "/placeholder.svg"} alt={user?.name || "User"} />
                       <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-white">
                         BF
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{mockUser.name}</span>
-                      <span className="truncate text-xs text-muted-foreground">{mockUser.email}</span>
+                      <span className="truncate font-semibold">{user?.name || "User"}</span>
+                      <span className="truncate text-xs text-muted-foreground">{user?.email || ""}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
@@ -244,11 +238,20 @@ export function NavSidebar({ ...props }) {
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
+                    {/* User Management for admin/host only */}
+                    {(user.role === "admin" || user.role === "host") && (
+                      <DropdownMenuItem onClick={() => navigate("/host/events/view")}>
+                        <Users className="mr-2 h-4 w-4" />
+                        <span>View as Host</span>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => {
-                        // handleLogout()
-                        navigate("/auth")
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        // handleLogout(); // if using context
+                        navigate("/auth");
                       }}
                       className="text-red-600 focus:text-red-600"
                     >

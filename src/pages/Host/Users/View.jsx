@@ -3,14 +3,40 @@ import { Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useNavigate } from 'react-router-dom';
+import { apiClient } from '@/api';
+import { useEffect, useState } from 'react';
 
 const View = () => {
   // Static user data
-  const users = [
-    { id: 1, username: 'Chansovisoth' },
-    { id: 2, username: 'Sovitep' },
-    { id: 3, username: 'Chanreach' }
-  ];
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const res = await apiClient.get('/users');
+        setUsers(res.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading users...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500 dark:text-red-400">{error}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
@@ -52,6 +78,7 @@ const View = () => {
                         variant="outline" 
                         size="sm"
                         className="text-xs px-3 py-1 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600"
+                        onClick={() => navigate(`/host/users/edit/${user.id}`)}
                       >
                         Edit
                       </Button>

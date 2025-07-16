@@ -52,6 +52,11 @@ const mainNavItems = [
     url: "/host/all_leaderboard",
     icon: BarChart3,
   },
+  {
+    title: "User Management",
+    url: "/host/users/view",
+    icon: User,
+  },
 ];
 
 // Mock host user data
@@ -195,8 +200,10 @@ const NavOP = (props) => {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => {
-                        // handleLogout()
-                        navigate("/host/auth")
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        // handleLogout(); // if using context
+                        navigate("/host/auth");
                       }}
                       className="text-red-600 focus:text-red-600"
                     >
