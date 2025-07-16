@@ -1,7 +1,7 @@
 "use client"
 
 // ===== LIBRARIES ===== //
-import { useMemo, useState, useEffect } from "react"
+import { useMemo, useState, useEffect, useCallback } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import {
   Sun,
@@ -56,16 +56,15 @@ export function NavSidebar({ ...props }) {
   const { user } = useAuth();
 
   // ===== AUTHENTICATION HANDLERS ===== //
-  // const { user, logout } = useAuth()
-  // const handleLogout = useCallback(async () => {
-  //   try {
-  //     await apiClient.post("/auth/logout")
-  //     logout()
-  //     navigate("/auth")
-  //   } catch (error) {
-  //     console.error("Logout failed:", error)
-  //   }
-  // }, [logout, navigate])
+  const { logout } = useAuth();
+  const handleLogout = useCallback(async () => {
+    try {
+      logout();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  }, [logout, navigate]);
 
   // ===== NAVIGATION DATA ===== //
   const navigationItems = useMemo(
@@ -247,12 +246,7 @@ export function NavSidebar({ ...props }) {
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('user');
-                        // handleLogout(); // if using context
-                        navigate("/auth");
-                      }}
+                      onClick={handleLogout}
                       className="text-red-600 focus:text-red-600"
                     >
                       <LogOut className="mr-2 h-4 w-4" />

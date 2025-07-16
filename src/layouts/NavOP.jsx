@@ -29,6 +29,7 @@ import { Separator } from "@/components/ui/separator";
 
 // ===== CONTEXTS ===== //
 import { useThemeColor } from "@/theme/theme-provider";
+import { useAuth } from "@/context/useAuth";
 
 // ===== NAVIGATION DATA ===== //
 const mainNavItems = [
@@ -70,9 +71,15 @@ const NavOP = (props) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { colorScheme, toggleColorScheme } = useThemeColor();
+  const { user: authUser, logout } = useAuth();
   
-  // For now, assume host is always logged in
-  const user = mockHostUser;
+  // Use authenticated user or fallback to mock user
+  const user = authUser || mockHostUser;
+
+  const handleLogout = () => {
+    logout();
+    navigate("/auth");
+  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -199,12 +206,7 @@ const NavOP = (props) => {
                       <span>Back to Player</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('user');
-                        // handleLogout(); // if using context
-                        navigate("/host/auth");
-                      }}
+                      onClick={handleLogout}
                       className="text-red-600 focus:text-red-600"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
