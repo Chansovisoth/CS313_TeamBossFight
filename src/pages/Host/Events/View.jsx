@@ -42,11 +42,18 @@ const ViewEvents = () => {
   return (
       <div className="container mx-auto px-4 sm:px-6 py-6 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <div className="w-1 h-6 bg-primary rounded-full"></div>
             <h1 className="text-2xl font-bold tracking-tight">Events</h1>
           </div>
+          <Button 
+            onClick={() => navigate('/host/events/create')}
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Create Event
+          </Button>
         </div>
 
         {/* Events List - Vertical Stack */}
