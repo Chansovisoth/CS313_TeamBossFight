@@ -30,12 +30,12 @@ const EditCategory = () => {
 
   // Mock data - replace with actual API call
   const mockCategories = {
-    1: { name: 'ARC', fullName: 'Architecture', author: 'Chanreach [Admin]', color: 'bg-blue-500' },
-    2: { name: 'ART', fullName: 'Art History', author: 'Sovitep [Admin]', color: 'bg-purple-500' },
-    3: { name: 'BUS', fullName: 'Business', author: 'Chanreach [Admin]', color: 'bg-green-500' },
-    4: { name: 'CS', fullName: 'Computer Science', author: 'Sovitep [Admin]', color: 'bg-orange-500' },
-    5: { name: 'MIS', fullName: 'Management Information Systems', author: 'Sovitep [Admin]', color: 'bg-red-500' },
-    6: { name: 'ABA Bank', fullName: 'ABA Banking', author: 'Chomroeun [Host]', color: 'bg-cyan-500' }
+    1: { name: 'ARC', fullName: 'Architecture', author: 'Chanreach [Admin]' },
+    2: { name: 'ART', fullName: 'Art History', author: 'Sovitep [Admin]' },
+    3: { name: 'BUS', fullName: 'Business', author: 'Chanreach [Admin]' },
+    4: { name: 'CS', fullName: 'Computer Science', author: 'Sovitep [Admin]' },
+    5: { name: 'MIS', fullName: 'Management Information Systems', author: 'Sovitep [Admin]' },
+    6: { name: 'ABA Bank', fullName: 'ABA Banking', author: 'Chomroeun [Host]' }
   };
 
   const currentCategory = mockCategories[categoryId] || mockCategories[4]; // Default to CS
@@ -194,7 +194,7 @@ const EditCategory = () => {
               {/* Category Badge Preview - Below Input */}
               <div className="flex justify-center pt-2">
                 <Badge 
-                  className={`${currentCategory.color} text-white px-4 py-2 text-sm font-medium`}
+                  className="bg-gray-600 text-white px-4 py-2 text-sm font-medium"
                 >
                   {categoryName || currentCategory.name}
                 </Badge>
