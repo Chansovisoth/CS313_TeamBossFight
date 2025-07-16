@@ -418,55 +418,6 @@ const Badges = () => {
   return (
     <div className="container mx-auto p-3 sm:p-6 max-w-7xl">
 
-      {/* ===== HEADER ===== */}
-      <div className="mb-6 sm:mb-8">
-
-        {/* ===== STATS ===== */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
-
-          {/* EARNED */}
-          <Card>
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
-                <Trophy className="h-8 w-8 sm:h-5 sm:w-5 text-yellow-600 mb-2 sm:mb-0 mx-auto sm:mx-0" />
-                <div className="text-center sm:text-left">
-                  <p className="text-lg sm:text-2xl font-bold ms-0 sm:ms-3">{earnedBadges.length}</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground ms-0 sm:ms-3">Earned</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* TOTAL */}
-          <Card>
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
-                <Award className="h-8 w-8 sm:h-5 sm:w-5 text-blue-600 mb-2 sm:mb-0 mx-auto sm:mx-0" />
-                <div className="text-center sm:text-left">
-                  <p className="text-lg sm:text-2xl font-bold ms-0 sm:ms-3">{totalBadges}</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground ms-0 sm:ms-3">Total</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* PROGRESS */}
-          <Card>
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
-                <Star className="h-8 w-8 sm:h-5 sm:w-5 text-green-600 mb-2 sm:mb-0 mx-auto sm:mx-0" />
-                <div className="text-center sm:text-left">
-                  <p className="text-lg sm:text-2xl font-bold ms-0 sm:ms-3">
-                    {Math.round((earnedBadges.length / totalBadges) * 100)}%
-                  </p>
-                  <p className="text-xs sm:text-sm text-muted-foreground ms-0 sm:ms-3">Done</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
       {/* ===== EVENTS FILTERS ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
 
