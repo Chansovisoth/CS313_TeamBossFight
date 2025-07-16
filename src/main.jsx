@@ -211,19 +211,25 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 </Route>
 
                 {/* Host Users Routes - Admin Only */}
-                <Route path="users/view" element={
+                {/* <Route path="users/view" element={
                   <AdminRoute>
                     <AppOP />
                   </AdminRoute>
                 }>
                   <Route index element={<HostUsersView />} />
+                </Route> */}
+                <Route path="users/view" element={<AppOP />}>
+                  <Route index element={<HostUsersView />} />
                 </Route>
 
-                <Route path="users/edit/:id" element={
+                {/* <Route path="users/edit/:id" element={
                   <AdminRoute>
                     <AppOP />
                   </AdminRoute>
                 }>
+                  <Route index element={<HostUsersEdit />} />
+                </Route> */}
+                <Route path="users/edit/:id" element={<AppOP />}>
                   <Route index element={<HostUsersEdit />} />
                 </Route>
                </Route>
