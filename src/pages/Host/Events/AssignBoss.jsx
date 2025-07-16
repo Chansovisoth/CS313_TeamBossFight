@@ -230,11 +230,11 @@ const AssignBoss = () => {
                   <Card key={boss.id} className="overflow-hidden hover:shadow-md transition-shadow">
                     <CardContent className="p-0">
                       {/* Boss Image */}
-                      <div className="relative h-32 bg-gradient-to-br from-primary/20 to-primary/5">
+                      <div className="relative bg-gradient-to-br from-primary/20 to-primary/5">
                         <img
                           src={boss.image}
                           alt={boss.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-[270px] object-cover"
                         />
                         <div className="absolute top-2 left-2">
                           {boss.status === 'Active' ? (

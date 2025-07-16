@@ -34,6 +34,7 @@ import PlayerProfile from "./pages/Player/Profile";
 import PlayerQR from "./pages/Player/QR";
 import PlayerBossPreview from "./pages/Player/BossPreview";
 import PlayerBossBattle from "./pages/Player/BossBattle";
+import PlayerBossPodium from "./pages/Player/BossPodium";
 
 // ===== HOST PAGES ===== //
 // Bosses
@@ -113,6 +114,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
               <Route path="/boss-battle" element={<AppBattle />}>
                 <Route index element={<PlayerBossBattle />} />
+              </Route>
+
+              <Route path="/boss-podium" element={<AppBattle />}>
+                <Route index element={<PlayerBossPodium />} />
               </Route>
 
               {/* ===== HOST ROUTES (Protected for host and admin roles) ===== */}
@@ -211,19 +216,25 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 </Route>
 
                 {/* Host Users Routes - Admin Only */}
-                <Route path="users/view" element={
+                {/* <Route path="users/view" element={
                   <AdminRoute>
                     <AppOP />
                   </AdminRoute>
                 }>
                   <Route index element={<HostUsersView />} />
+                </Route> */}
+                <Route path="users/view" element={<AppOP />}>
+                  <Route index element={<HostUsersView />} />
                 </Route>
 
-                <Route path="users/edit/:id" element={
+                {/* <Route path="users/edit/:id" element={
                   <AdminRoute>
                     <AppOP />
                   </AdminRoute>
                 }>
+                  <Route index element={<HostUsersEdit />} />
+                </Route> */}
+                <Route path="users/edit/:id" element={<AppOP />}>
                   <Route index element={<HostUsersEdit />} />
                 </Route>
                </Route>

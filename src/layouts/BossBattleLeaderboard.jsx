@@ -20,9 +20,9 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
       team: 'Kangaroo', 
       dmg: 450, 
       players: [
-        { name: 'Player_Alpha', dmg: 200 },
-        { name: 'Player_Beta', dmg: 150 },
-        { name: 'Player_Gamma', dmg: 100 }
+        { name: 'Player_Alpha', username: '@alpha123', dmg: 200 },
+        { name: 'Player_Beta', username: '@beta456', dmg: 150 },
+        { name: 'Player_Gamma', username: '@gamma789', dmg: 100 }
       ]
     },
     { 
@@ -30,9 +30,9 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
       team: 'Koala', 
       dmg: 380, 
       players: [
-        { name: 'PlayerOne', dmg: 180 },
-        { name: 'PlayerTwo', dmg: 120 },
-        { name: 'PlayerThree', dmg: 80 }
+        { name: 'PlayerOne', username: '@player1', dmg: 180 },
+        { name: 'PlayerTwo', username: '@player2', dmg: 120 },
+        { name: 'PlayerThree', username: '@player3', dmg: 80 }
       ]
     },
     { 
@@ -40,9 +40,9 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
       team: 'Shellfish', 
       dmg: 320, 
       players: [
-        { name: 'User123', dmg: 170 },
-        { name: 'User456', dmg: 90 },
-        { name: 'User789', dmg: 60 }
+        { name: 'User123', username: '@user123', dmg: 170 },
+        { name: 'User456', username: '@user456', dmg: 90 },
+        { name: 'User789', username: '@user789', dmg: 60 }
       ]
     },
     { 
@@ -50,9 +50,9 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
       team: 'Dolphins', 
       dmg: 280, 
       players: [
-        { name: 'Dolphin_A', dmg: 160 },
-        { name: 'Dolphin_B', dmg: 70 },
-        { name: 'Dolphin_C', dmg: 50 }
+        { name: 'Dolphin_A', username: '@dolphin_a', dmg: 160 },
+        { name: 'Dolphin_B', username: '@dolphin_b', dmg: 70 },
+        { name: 'Dolphin_C', username: '@dolphin_c', dmg: 50 }
       ]
     },
     { 
@@ -60,9 +60,9 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
       team: 'Eagles', 
       dmg: 250, 
       players: [
-        { name: 'Eagle_One', dmg: 140 },
-        { name: 'Eagle_Two', dmg: 65 },
-        { name: 'Eagle_Three', dmg: 45 }
+        { name: 'Eagle_One', username: '@eagle1', dmg: 140 },
+        { name: 'Eagle_Two', username: '@eagle2', dmg: 65 },
+        { name: 'Eagle_Three', username: '@eagle3', dmg: 45 }
       ]
     },
     { 
@@ -70,9 +70,9 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
       team: 'Lions', 
       dmg: 220, 
       players: [
-        { name: 'Lion_King', dmg: 130 },
-        { name: 'Lion_Queen', dmg: 55 },
-        { name: 'Lion_Cub', dmg: 35 }
+        { name: 'Lion_King', username: '@lionking', dmg: 130 },
+        { name: 'Lion_Queen', username: '@lionqueen', dmg: 55 },
+        { name: 'Lion_Cub', username: '@lioncub', dmg: 35 }
       ]
     },
     { 
@@ -80,9 +80,9 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
       team: 'Tigers', 
       dmg: 190, 
       players: [
-        { name: 'Tiger_Roar', dmg: 110 },
-        { name: 'Tiger_Claw', dmg: 50 },
-        { name: 'Tiger_Stripe', dmg: 30 }
+        { name: 'Tiger_Roar', username: '@tigerroar', dmg: 110 },
+        { name: 'Tiger_Claw', username: '@tigerclaw', dmg: 50 },
+        { name: 'Tiger_Stripe', username: '@tigerstripe', dmg: 30 }
       ]
     },
     { 
@@ -90,9 +90,9 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
       team: 'Bears', 
       dmg: 160, 
       players: [
-        { name: 'Bear_Paw', dmg: 90 },
-        { name: 'Bear_Cub', dmg: 40 },
-        { name: 'Bear_Den', dmg: 30 }
+        { name: 'Bear_Paw', username: '@bearpaw', dmg: 90 },
+        { name: 'Bear_Cub', username: '@bearcub', dmg: 40 },
+        { name: 'Bear_Den', username: '@bearден', dmg: 30 }
       ]
     },
   ];
@@ -144,14 +144,14 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
       {/* Backdrop */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/20 z-40 md:hidden"
+          className="fixed inset-0 bg-black/20 z-40 md:hidden backdrop-blur-[1px]"
           onClick={onClose}
         />
       )}
 
       {/* Leaderboard Panel */}
       <div className={`
-        fixed top-0 right-0 h-full w-72 max-w-[85vw] bg-background/75 backdrop-blur-sm border-l border-border z-50
+        fixed top-0 right-0 h-full w-72 max-w-[85vw] bg-background/93 backdrop-blur-[1px] border-l border-border z-50
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : 'translate-x-full'}
         shadow-2xl
@@ -244,7 +244,10 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
                           >
                             {/* Player Name */}
                             <div className="col-span-7 pl-4">
-                              <p className="text-xs font-medium truncate text-muted-foreground">{player.name}</p>
+                              <div className="flex flex-col">
+                                <p className="text-xs font-medium truncate text-muted-foreground">{player.name}</p>
+                                <p className="text-xs truncate text-muted-foreground/70">{player.username}</p>
+                              </div>
                             </div>
 
                             {/* Player Damage */}
@@ -263,7 +266,6 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
             {/* Footer Info */}
             <div className="mt-4 pt-3 border-t border-border">
               <div className="text-center text-xs text-muted-foreground">
-                <p>Updates every 3s</p>
                 <p className="mt-1">Teams: {sortedLeaderboardData.length}</p>
                 <p className="mt-1">Players: {sortedLeaderboardData.reduce((total, team) => total + team.players.length, 0)}</p>
               </div>
