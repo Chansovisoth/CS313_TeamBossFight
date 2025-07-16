@@ -50,14 +50,15 @@ import HostEventsAllLeaderboard from "./pages/Host/Events/AllLeaderboard";
 // Users
 import HostUsersView from "./pages/Host/Users/View";
 import HostUsersEdit from "./pages/Host/Users/Edit";
-// Categories
-import HostCategoriesView from "./pages/Host/Categories/View";
-import HostCategoriesCreate from "./pages/Host/Categories/Create";
-import HostCategoriesEdit from "./pages/Host/Categories/Edit";
-// Categories Questions
-import HostCategoriesQuesitonsView from "./pages/Host/Categories/Questions/View";
-import HostCategoriesQuestionsCreate from "./pages/Host/Categories/Questions/Create";
-import HostCategoriesQuestionsEdit from "./pages/Host/Categories/Questions/Edit";
+// QuestionBank - Categories
+import HostCategoriesView from "./pages/Host/QuestionBank/Categories/View";
+import HostCategoriesCreate from "./pages/Host/QuestionBank/Categories/Create";
+import HostCategoriesEdit from "./pages/Host/QuestionBank/Categories/Edit";
+// QuestionBank - Questions
+import HostQuestionsIndex from "./pages/Host/QuestionBank/Questions/index";
+import HostCategoriesQuesitonsView from "./pages/Host/QuestionBank/Questions/View";
+import HostCategoriesQuestionsCreate from "./pages/Host/QuestionBank/Questions/Create";
+import HostCategoriesQuestionsEdit from "./pages/Host/QuestionBank/Questions/Edit";
 // Profile
 import HostProfile from "./pages/Host/Profile/Profile";
 
@@ -170,36 +171,40 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/host/users/edit" element={<AppOP />}>
               <Route index element={<HostUsersEdit />} />
             </Route>
-
             
 
-            {/* Host Categories View */}
-            <Route path="/host/categories/view" element={<AppOP />}>
+            {/* Host QuestionBank Categories View */}
+            <Route path="/host/questionbank/categories/view" element={<AppOP />}>
               <Route index element={<HostCategoriesView />} />
             </Route>
 
-            {/* Host Categories Create */}
-            <Route path="/host/categories/create" element={<AppOP />}>
+            {/* Host QuestionBank Categories Create */}
+            <Route path="/host/questionbank/categories/create" element={<AppOP />}>
               <Route index element={<HostCategoriesCreate />} />
             </Route>
 
-            {/* Host Categories Edit */}
-            <Route path="/host/categories/edit" element={<AppOP />}>
+            {/* Host QuestionBank Categories Edit */}
+            <Route path="/host/questionbank/categories/edit" element={<AppOP />}>
               <Route index element={<HostCategoriesEdit />} />
             </Route>
 
-            {/* Host Categories Questions View */}
-            <Route path="/host/categories/questions/view" element={<AppOP />}>
+            {/* Host QuestionBank Questions Index */}
+            <Route path="/host/questionbank/questions" element={<AppOP />}>
+              <Route index element={<HostQuestionsIndex />} />
+            </Route>
+
+            {/* Host QuestionBank Questions View */}
+            <Route path="/host/questionbank/questions/view" element={<AppOP />}>
               <Route index element={<HostCategoriesQuesitonsView />} />
             </Route>
 
-            {/* Host Categories Questions Create */}
-            <Route path="/host/categories/questions/create" element={<AppOP />}>
+            {/* Host QuestionBank Questions Create */}
+            <Route path="/host/questionbank/questions/create" element={<AppOP />}>
               <Route index element={<HostCategoriesQuestionsCreate />} />
             </Route>
 
-            {/* Host Categories Questions Edit */}
-            <Route path="/host/categories/questions/edit" element={<AppOP />}>
+            {/* Host QuestionBank Questions Edit */}
+            <Route path="/host/questionbank/questions/edit" element={<AppOP />}>
               <Route index element={<HostCategoriesQuestionsEdit />} />
             </Route>
 

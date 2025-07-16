@@ -44,7 +44,7 @@ const mainNavItems = [
   },
   {
     title: "Question Bank",
-    url: "/host/categories/view",
+    url: "/host/questionbank/categories/view",
     icon: BookOpen,
   },
   {
