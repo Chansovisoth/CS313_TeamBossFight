@@ -16,9 +16,16 @@ import { apiClient } from "@/api";
 
 
 const Authentication = () => {
-  const { login } = useAuth();
+  const { login, setupAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Setup API interceptors when component mounts
+  useEffect(() => {
+    if (setupAuth) {
+      setupAuth(navigate);
+    }
+  }, [setupAuth, navigate]);
 
   // Determine initial form state from URL
   const params = new URLSearchParams(location.search);
@@ -81,24 +88,23 @@ const Authentication = () => {
       return;
     }
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: registerData.username,
-          email: registerData.email,
-          password: registerData.password,
-        }),
+      const response = await apiClient.post("/auth/signup", {
+        username: registerData.username,
+        email: registerData.email,
+        password: registerData.password,
       });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Signup failed");
-      }
+      const data = response.data;
       toast.success("Account created! You can now sign in.");
       handleFormTransition(true);
       setRegisterData({ username: "", email: "", password: "", confirmPassword: "" });
     } catch (err) {
-      toast.error(err.message);
+      let message = "Signup failed";
+      if (err.response && err.response.data && err.response.data.message) {
+        message = err.response.data.message;
+      } else if (err.message) {
+        message = err.message;
+      }
+      toast.error(message);
     }
   };
 

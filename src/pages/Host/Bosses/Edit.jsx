@@ -199,7 +199,7 @@ const EditBoss = () => {
                           className="flex items-center gap-2"
                         >
                           <X className="w-4 h-4" />
-                          Remove Image
+                          Remove
                         </Button>
                         <Button
                           type="button"
@@ -211,7 +211,7 @@ const EditBoss = () => {
                           }}
                         >
                           <Upload className="w-4 h-4 mr-2" />
-                          Change Image
+                          Change
                         </Button>
                       </div>
                     </div>

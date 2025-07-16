@@ -86,7 +86,7 @@ const QuestionBankView = () => {
   };
 
   const handleCategoryFilterChange = (value) => {
-    setCategoryFilter(value);
+    setCategoryFilter(value === 'all' ? '' : value);
     setCurrentPage(1);
   };
 
@@ -110,6 +110,11 @@ const QuestionBankView = () => {
     }
   };
 
+  const handleCategoryClick = (categoryName) => {
+    // Navigate to questions with the category filter
+    navigate(`/host/questionbank/questions?category=${categoryName}`);
+  };
+
   // Filter categories based on search query
   const filteredCategories = categories.filter(category => 
     category.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -118,7 +123,7 @@ const QuestionBankView = () => {
   // Filter questions based on search query AND category filter
   const filteredQuestions = questions.filter(question => {
     const matchesSearch = question.question.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === '' || question.tag === categoryFilter;
+    const matchesCategory = categoryFilter === '' || categoryFilter === 'all' || question.tag === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
@@ -211,12 +216,12 @@ const QuestionBankView = () => {
               {viewMode === 'question' && (
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-gray-400" />
-                  <Select value={categoryFilter} onValueChange={handleCategoryFilterChange}>
+                  <Select value={categoryFilter === '' ? 'all' : categoryFilter} onValueChange={handleCategoryFilterChange}>
                     <SelectTrigger className="w-36">
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Categories</SelectItem>
+                      <SelectItem value="all">All Categories</SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.name}>
                           {category.name}
@@ -257,7 +262,8 @@ const QuestionBankView = () => {
           // Categories Grid View - Compact Cards
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
             {paginatedData.map((category) => (
-              <Card key={category.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 group">
+              <Card key={category.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 group cursor-pointer"
+                    onClick={() => handleCategoryClick(category.name)}>
                 <CardContent className="p-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -268,7 +274,10 @@ const QuestionBankView = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      onClick={() => handleEdit(category.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(category.id);
+                      }}
                       className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
                     >
                       <Edit3 className="h-3.5 w-3.5" />

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
@@ -26,11 +26,30 @@ import {
 
 const QuestionsIndex = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   
+  const [viewMode] = useState('question'); // Always question view for this component
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+
+  // Check for category filter from URL params on component mount
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl) {
+      setCategoryFilter(categoryFromUrl);
+    }
+  }, [searchParams]);
+
+  const handleViewModeChange = (value) => {
+    if (value === 'category') {
+      navigate('/host/questionbank/categories/view');
+    } else if (value === 'question') {
+      navigate('/host/questionbank/questions');
+    }
+  };
 
   const handleBack = () => {
     navigate('/host/questionbank/categories/view');
@@ -54,7 +73,7 @@ const QuestionsIndex = () => {
   };
 
   const handleCategoryFilterChange = (value) => {
-    setCategoryFilter(value);
+    setCategoryFilter(value === 'all' ? '' : value);
     setCurrentPage(1);
   };
 
@@ -70,87 +89,276 @@ const QuestionsIndex = () => {
 
   // Mock data - Questions
   const questions = [
-    { id: 1, question: 'What does CPU stand for?', tag: 'CS', difficulty: 'Easy', author: 'Sovitep [Admin]', timeLimit: '30s', lastModified: '2024-01-15' },
-    { id: 2, question: 'What is a relational database?', tag: 'CS', difficulty: 'Medium', author: 'Chanreach [Admin]', timeLimit: '45s', lastModified: '2024-01-14' }, 
-    { id: 3, question: 'Why do we use MIS in business?', tag: 'MIS', difficulty: 'Easy', author: 'Chanreach [Admin]', timeLimit: '30s', lastModified: '2024-01-13' },
-    { id: 4, question: 'How do you implement object-oriented programming?', tag: 'CS', difficulty: 'Hard', author: 'Sovitep [Admin]', timeLimit: '60s', lastModified: '2024-01-12' },
-    { id: 5, question: 'What are the principles of modern architecture?', tag: 'ARC', difficulty: 'Medium', author: 'Chanreach [Admin]', timeLimit: '45s', lastModified: '2024-01-11' },
-    { id: 6, question: 'Describe Renaissance art characteristics', tag: 'ART', difficulty: 'Medium', author: 'Sovitep [Admin]', timeLimit: '40s', lastModified: '2024-01-10' },
-    { id: 7, question: 'What is supply chain management?', tag: 'BUS', difficulty: 'Easy', author: 'Jerry [Admin]', timeLimit: '35s', lastModified: '2024-01-09' },
-    { id: 8, question: 'How does machine learning work?', tag: 'CS', difficulty: 'Hard', author: 'Sovitep [Admin]', timeLimit: '90s', lastModified: '2024-01-08' }
+    { id: 1, question: 'What does CPU stand for?', tag: 'CS', difficulty: 'Easy', author: 'Sovitep', timeLimit: '30s', lastModified: '2024-01-15' },
+    { id: 2, question: 'What is a relational database?', tag: 'CS', difficulty: 'Medium', author: 'Chanreach', timeLimit: '45s', lastModified: '2024-01-14' }, 
+    { id: 3, question: 'Why do we use MIS in business?', tag: 'MIS', difficulty: 'Easy', author: 'Chanreach', timeLimit: '30s', lastModified: '2024-01-13' },
+    { id: 4, question: 'How do you implement object-oriented programming?', tag: 'CS', difficulty: 'Hard', author: 'Sovitep', timeLimit: '60s', lastModified: '2024-01-12' },
+    { id: 5, question: 'What are the principles of modern architecture?', tag: 'ARC', difficulty: 'Medium', author: 'Chanreach', timeLimit: '45s', lastModified: '2024-01-11' },
+    { id: 6, question: 'Describe Renaissance art characteristics', tag: 'ART', difficulty: 'Medium', author: 'Sovitep', timeLimit: '40s', lastModified: '2024-01-10' },
+    { id: 7, question: 'What is supply chain management?', tag: 'BUS', difficulty: 'Easy', author: 'Jerry', timeLimit: '35s', lastModified: '2024-01-09' },
+    { id: 8, question: 'How does machine learning work?', tag: 'CS', difficulty: 'Hard', author: 'Sovitep', timeLimit: '90s', lastModified: '2024-01-08' }
   ];
 
+  // Filter questions based on search query AND category filter
+  const filteredQuestions = questions.filter(question => {
+    const matchesSearch = question.question.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === '' || categoryFilter === 'all' || question.tag === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  // Get current data for pagination
+  const currentData = filteredQuestions;
+  const totalPages = Math.ceil(currentData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = currentData.slice(startIndex, endIndex);
+
+  const getAuthorBadgeColor = (author) => {
+    return 'bg-blue-100 text-blue-700 border-blue-200';
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-3 sm:px-4 py-4 max-w-7xl">
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleBack}
-              className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back
-            </button>
+              <span className="hidden sm:inline">Back</span>
+            </Button>
             <div className="flex items-center gap-3">
-              <div className="w-1 h-6 bg-black rounded-full"></div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Questions</h1>
+              <div className="w-1 h-5 bg-primary rounded-full"></div>
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                Question Bank
+              </h1>
             </div>
           </div>
-          <button 
-            onClick={handleAddNew}
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 dark:bg-black dark:hover:bg-gray-900"
-          >
+          <Button onClick={handleAddNew} className="flex items-center gap-2 shadow-sm text-sm">
             <Plus className="h-4 w-4" />
-            Create Question
-          </button>
+            <span className="hidden sm:inline">Add Question</span>
+          </Button>
         </div>
 
-        {/* Questions List */}
-        <div className="space-y-3">
-          {questions.map((question) => (
-            <div 
-              key={question.id} 
-              className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => handleQuestionClick(question.id)}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="w-3 h-3 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <h3 className="font-medium mb-2 text-gray-900 dark:text-white">Q: {question.question}</h3>
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded border border-gray-200 dark:border-gray-600">
-                        {question.tag}
-                      </span>
-                      <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded border border-blue-200 dark:border-blue-700">
-                        {question.author.split(' ')[0]}
-                      </span>
-                      <span className="px-2 py-1 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs rounded border border-blue-200 dark:border-blue-700">
-                        {question.timeLimit}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      By {question.author}
-                    </p>
-                  </div>
-                </div>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleQuestionClick(question.id);
-                  }}
-                  className="flex-shrink-0 p-2 text-gray-400 hover:text-blue-600 dark:text-gray-500 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950 rounded-md transition-colors"
-                  aria-label="View question"
-                >
-                  <Edit3 className="h-4 w-4" />
-                </button>
+        {/* Controls */}
+        <Card className="mb-4 border-0 shadow-sm">
+          <CardContent className="p-3">
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* View Mode Select */}
+              <div className="flex items-center gap-2">
+                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                  View:
+                </Label>
+                <Select value={viewMode} onValueChange={handleViewModeChange}>
+                  <SelectTrigger className="w-28">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="category">Categories</SelectItem>
+                    <SelectItem value="question">Questions</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Search Input */}
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search questions..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="pl-10 h-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                />
+              </div>
+
+              {/* Category Filter */}
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-gray-400" />
+                <Select value={categoryFilter === '' ? 'all' : categoryFilter} onValueChange={handleCategoryFilterChange}>
+                  <SelectTrigger className="w-36">
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.name}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-          ))}
-        </div>
+          </CardContent>
+        </Card>
+
+        {/* Content Area */}
+        {paginatedData.length === 0 ? (
+          // Empty State
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-8 text-center">
+              <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                <List className="h-6 w-6 text-gray-400" />
+              </div>
+              <h3 className="text-base font-medium text-gray-900 dark:text-white mb-2">
+                No Questions Found
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                {searchQuery || categoryFilter
+                  ? 'Try adjusting your search or filter criteria.'
+                  : 'No questions have been created yet.'
+                }
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          // Questions List View - Compact Layout
+          <div className="space-y-3 mb-6">
+            {/* Desktop Table */}
+            <div className="hidden md:block">
+              <Card className="border-0 shadow-sm">
+                <CardHeader className="border-b bg-gray-50 dark:bg-gray-800/50 py-2 px-4">
+                  <div className="grid grid-cols-12 gap-3 text-xs font-medium text-gray-700 dark:text-gray-300">
+                    <div className="col-span-7">Question</div>
+                    <div className="col-span-2 text-center">Category</div>
+                    <div className="col-span-2 text-center">Author</div>
+                    <div className="col-span-1 text-center">Edit</div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {paginatedData.map((question) => (
+                      <div key={question.id} className="grid grid-cols-12 gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
+                           onClick={() => handleQuestionClick(question.id)}>
+                        <div className="col-span-7">
+                          <p className="font-medium text-sm text-gray-900 dark:text-white truncate" title={question.question}>
+                            {question.question}
+                          </p>
+                        </div>
+                        <div className="col-span-2 flex justify-center">
+                          <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                            {question.tag}
+                          </Badge>
+                        </div>
+                        <div className="col-span-2 flex justify-center">
+                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(question.author)}`}>
+                            {question.author}
+                          </Badge>
+                        </div>
+                        <div className="col-span-1 flex justify-center">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(question.id);
+                            }}
+                            className="h-7 w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
+                          >
+                            <Edit3 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Mobile Card Layout */}
+            <div className="md:hidden space-y-2">
+              {paginatedData.map((question) => (
+                <Card key={question.id} className="border-0 shadow-sm" onClick={() => handleQuestionClick(question.id)}>
+                  <CardContent className="p-3">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm text-gray-900 dark:text-white leading-tight mb-1.5">
+                          {question.question}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 mb-1.5">
+                          <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                            {question.tag}
+                          </Badge>
+                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(question.author)}`}>
+                            {question.author}
+                          </Badge>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(question.id);
+                        }}
+                        className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
+                      >
+                        <Edit3 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Pagination - Compact */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-gray-700 dark:text-gray-300 text-center sm:text-left">
+              Showing {startIndex + 1} to {Math.min(endIndex, currentData.length)} of {currentData.length} results
+            </p>
+            <div className="flex items-center gap-1">
+              <Button 
+                variant="outline" 
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+                className="h-7 w-7 p-0"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </Button>
+              
+              {Array.from({ length: Math.min(totalPages, 3) }, (_, i) => {
+                const page = currentPage <= 2 ? i + 1 : currentPage - 1 + i;
+                if (page > totalPages) return null;
+                return (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className="h-7 w-7 p-0 text-xs"
+                  >
+                    {page}
+                  </Button>
+                );
+              })}
+              
+              {totalPages > 3 && currentPage < totalPages - 1 && (
+                <span className="text-gray-400 text-xs px-1">...</span>
+              )}
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+                className="h-7 w-7 p-0"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -6,8 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // ===== COMPONENTS ===== //
 import { ThemeProvider } from "./theme/theme-provider";
 import { AuthProvider } from "./context/AuthProvider";
-// import { GuestRoute } from "./components/GuestRoute";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import { MessageProvider } from "./context/MessageProvider";
 
 // ===== STYLES ===== //
@@ -69,7 +69,7 @@ import HostProfile from "./pages/Host/Profile/Profile";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
-      <AuthProvider>
+      <AuthProvider> 
         <BrowserRouter>
           <MessageProvider>
             <Routes>
@@ -115,126 +115,124 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <Route index element={<PlayerBossBattle />} />
               </Route>
 
-              {/* ===== HOST ROUTES ===== */}
-              {/* Host Bosses/Create */}
-              <Route path="/host/bosses/create" element={<AppOP />}>
-                <Route index element={<HostBossesCreate />} />
-              </Route>
+              {/* ===== HOST ROUTES (Protected for host and admin roles) ===== */}
+              {/* <Route path="/host" element={<ProtectedRoute allowedRoles={['host', 'admin']} />}> */}
+              <Route path="/host">
+                {/* Host Bosses Routes */}
+                <Route path="bosses/create" element={<AppOP />}>
+                  <Route index element={<HostBossesCreate />} />
+                </Route>
+                
+                <Route path="bosses/edit" element={<AppOP />}>
+                  <Route index element={<HostBossesEdit />} />
+                </Route>
+                
+                <Route path="bosses/view" element={<AppOP />}>
+                  <Route index element={<HostBossesView />} />
+                </Route>
 
-              {/* Host Bosses Edit */}
-              <Route path="/host/bosses/edit" element={<AppOP />}>
-                <Route index element={<HostBossesEdit />} />
-              </Route>
+                {/* Host Events Routes */}
+                <Route path="events/view" element={<AppOP />}>
+                  <Route index element={<HostEventsView />} />
+                </Route>
+                
+                <Route path="events/assign_boss" element={<AppOP />}>
+                  <Route index element={<HostEventsAssignBoss />} />
+                </Route>
+                
+                <Route path="events/boss_template" element={<AppOP />}>
+                  <Route index element={<HostEventsBossTemplate />} />
+                </Route>
+                
+                <Route path="events/player_badges" element={<AppOP />}>
+                  <Route index element={<HostEventsPlayerbadges />} />
+                </Route>
+                
+                <Route path="events/player_badges_edit" element={<AppOP />}>
+                  <Route index element={<HostEventsPlayerBadgesEdit />} />
+                </Route>
+                
+                <Route path="events/leaderboard" element={<AppOP />}>
+                  <Route index element={<HostEventsLeaderboard />} />
+                </Route>
+                
+                <Route path="all_leaderboard" element={<AppOP />}>
+                  <Route index element={<HostEventsAllLeaderboard />} />
+                </Route>
+                
+                <Route path="events/create" element={
+                  <AdminRoute>
+                    <AppOP />
+                  </AdminRoute>
+                }>
+                  <Route index element={<HostEventsCreate />} />
+                </Route>
+                
+                <Route path="events/edit" element={
+                  <AdminRoute>
+                    <AppOP />
+                  </AdminRoute>
+                }>
+                  <Route index element={<HostEventsEdit />} />
+                </Route>
 
-              {/* Host Bosses View */}
-              <Route path="/host/bosses/view" element={<AppOP />}>
-                <Route index element={<HostBossesView />} />
-              </Route>
+                {/* Host QuestionBank Routes */}
+                <Route path="questionbank/categories/view" element={<AppOP />}>
+                  <Route index element={<HostCategoriesView />} />
+                </Route>
+                
+                <Route path="questionbank/categories/create" element={<AppOP />}>
+                  <Route index element={<HostCategoriesCreate />} />
+                </Route>
+                
+                <Route path="questionbank/categories/edit" element={<AppOP />}>
+                  <Route index element={<HostCategoriesEdit />} />
+                </Route>
+                
+                <Route path="questionbank/questions" element={<AppOP />}>
+                  <Route index element={<HostQuestionsIndex />} />
+                </Route>
+                
+                <Route path="questionbank/questions/view" element={<AppOP />}>
+                  <Route index element={<HostCategoriesQuesitonsView />} />
+                </Route>
+                
+                <Route path="questionbank/questions/create" element={<AppOP />}>
+                  <Route index element={<HostCategoriesQuestionsCreate />} />
+                </Route>
+                
+                <Route path="questionbank/questions/edit" element={<AppOP />}>
+                  <Route index element={<HostCategoriesQuestionsEdit />} />
+                </Route>
 
-              {/* Host Events View */}
-              <Route path="/host/events/view" element={<AppOP />}>
-                <Route index element={<HostEventsView />} />
-              </Route>
+                {/* Host Profile */}
+                <Route path="profile" element={<AppOP />}>
+                  <Route index element={<HostProfile />} />
+                </Route>
 
-              {/* Host Events Assign Boss */}
-              <Route path="/host/events/assign_boss" element={<AppOP />}>
-                <Route index element={<HostEventsAssignBoss />} />
-              </Route>
+                {/* Host Users Routes - Admin Only */}
+                {/* <Route path="users/view" element={
+                  <AdminRoute>
+                    <AppOP />
+                  </AdminRoute>
+                }>
+                  <Route index element={<HostUsersView />} />
+                </Route> */}
+                <Route path="users/view" element={<AppOP />}>
+                  <Route index element={<HostUsersView />} />
+                </Route>
 
-              {/* Host Events Boss Template */}
-              <Route path="/host/events/boss_template" element={<AppOP />}>
-                <Route index element={<HostEventsBossTemplate />} />
-              </Route>
-
-              {/* Host Events Player Badges */}
-              <Route path="/host/events/player_badges" element={<AppOP />}>
-                <Route index element={<HostEventsPlayerbadges />} />
-              </Route>
-
-              {/* Host Events Player Badges Edit */}
-              <Route path="/host/events/player_badges_edit" element={<AppOP />}>
-                <Route index element={<HostEventsPlayerBadgesEdit />} />
-              </Route>
-
-              {/* Host Events Leaderboard */}
-              <Route path="/host/events/leaderboard" element={<AppOP />}>
-                <Route index element={<HostEventsLeaderboard />} />
-              </Route>
-
-              {/* Host Events All Leaderboard */}
-              <Route path="/host/all_leaderboard" element={<AppOP />}>
-                <Route index element={<HostEventsAllLeaderboard />} />
-              </Route>
-
-              {/* Host Users View */}
-              <Route path="/host/users/view" element={<AppOP />}>
-                <Route index element={<HostUsersView />} />
-              </Route>
-
-              {/* Host Users Edit */}
-              <Route path="/host/users/edit" element={<AppOP />}>
-                <Route index element={<HostUsersEdit />} />
-              </Route>
-
-              {/* Host QuestionBank Categories View */}
-              <Route path="/host/questionbank/categories/view" element={<AppOP />}>
-                <Route index element={<HostCategoriesView />} />
-              </Route>
-
-              {/* Host QuestionBank Categories Create */}
-              <Route path="/host/questionbank/categories/create" element={<AppOP />}>
-                <Route index element={<HostCategoriesCreate />} />
-              </Route>
-
-              {/* Host QuestionBank Categories Edit */}
-              <Route path="/host/questionbank/categories/edit" element={<AppOP />}>
-                <Route index element={<HostCategoriesEdit />} />
-              </Route>
-
-              {/* Host QuestionBank Questions Index */}
-              <Route path="/host/questionbank/questions" element={<AppOP />}>
-                <Route index element={<HostQuestionsIndex />} />
-              </Route>
-
-              {/* Host QuestionBank Questions View */}
-              <Route path="/host/questionbank/questions/view" element={<AppOP />}>
-                <Route index element={<HostCategoriesQuesitonsView />} />
-              </Route>
-
-              {/* Host QuestionBank Questions Create */}
-              <Route path="/host/questionbank/questions/create" element={<AppOP />}>
-                <Route index element={<HostCategoriesQuestionsCreate />} />
-              </Route>
-
-              {/* Host QuestionBank Questions Edit */}
-              <Route path="/host/questionbank/questions/edit" element={<AppOP />}>
-                <Route index element={<HostCategoriesQuestionsEdit />} />
-              </Route>
-
-              {/* Host Profile */}
-              <Route path="/host/profile" element={<AppOP />}>
-                <Route index element={<HostProfile />} />
-              </Route>
-
-              {/* Admin Events Create */}
-              <Route path="/admin/events/create" element={<AppOP />}>
-                <Route index element={<HostEventsCreate />} />
-              </Route>
-
-              {/* Admin Events Edit */}
-              <Route path="/host/events/edit" element={<AppOP />}>
-                <Route index element={<HostEventsEdit />} />
-              </Route>
-
-              {/* Admin Users View */}
-              <Route path="/admin/users/view" element={<AppOP />}>
-                <Route index element={<HostUsersView />} />
-              </Route>
-
-              {/* Admin Users Edit */}
-              <Route path="/admin/users/edit" element={<AppOP />}>
-                <Route index element={<HostUsersEdit />} />
-              </Route>
+                {/* <Route path="users/edit/:id" element={
+                  <AdminRoute>
+                    <AppOP />
+                  </AdminRoute>
+                }>
+                  <Route index element={<HostUsersEdit />} />
+                </Route> */}
+                <Route path="users/edit/:id" element={<AppOP />}>
+                  <Route index element={<HostUsersEdit />} />
+                </Route>
+               </Route>
 
               {/* 404 Error Route */}
               <Route path="/error" element={<Error />} />
@@ -244,7 +242,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </Routes>
           </MessageProvider>
         </BrowserRouter>
-      </AuthProvider>
+       </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

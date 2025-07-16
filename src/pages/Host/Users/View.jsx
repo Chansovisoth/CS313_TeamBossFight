@@ -1,108 +1,241 @@
 import React from 'react';
-import { Menu, Search } from 'lucide-react';
+import { Search, Edit, Users, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useNavigate } from 'react-router-dom';
-import { apiClient } from '@/api';
+// import { apiClient } from '@/api';
 import { useEffect, useState } from 'react';
+// import { toast } from 'sonner';
 
 const View = () => {
-  // Static user data
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Static data for testing
+  const staticUsers = [
+    { id: 1, username: 'admin_user', email: 'admin@example.com', role: 'admin' },
+    { id: 2, username: 'host_user', email: 'host@example.com', role: 'host' },
+    { id: 3, username: 'player1', email: 'player1@example.com', role: 'player' },
+    { id: 4, username: 'player2', email: 'player2@example.com', role: 'player' },
+    { id: 5, username: 'test_host', email: 'testhost@example.com', role: 'host' }
+  ];
+
+  const [users, setUsers] = useState(staticUsers);
+  const [loading, setLoading] = useState(false); // Set to false for static data
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const navigate = useNavigate();
 
+  // Commented out API fetch function
+  /*
+  const fetchUsers = async (search = '') => {
+    try {
+      setLoading(true);
+      const params = search ? { search } : {};
+      const res = await apiClient.get('/users', { params });
+      
+      // Handle both old format (array) and new format (object with users array)
+      const userData = res.data.users || res.data;
+      setUsers(Array.isArray(userData) ? userData : []);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to fetch users');
+      toast.error('Failed to fetch users');
+    } finally {
+      setLoading(false);
+    }
+  };
+  */
+
+  // Static filter function for search
+  const filterUsers = (search = '') => {
+    if (!search) {
+      setUsers(staticUsers);
+      return;
+    }
+    
+    const filtered = staticUsers.filter(user => 
+      user.username.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase())
+    );
+    setUsers(filtered);
+  };
+
+  // Commented out useEffect for API calls
+  /*
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const res = await apiClient.get('/users');
-        setUsers(res.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchUsers();
   }, []);
+  */
 
-  if (loading) {
-    return <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading users...</div>;
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    
+    // Use static filter instead of API call
+    filterUsers(value);
+    
+    // Commented out debounced API search
+    /*
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      fetchUsers(value);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+    */
+  };
+
+  const getRoleBadgeVariant = (role) => {
+    switch (role) {
+      case 'admin': return 'destructive';
+      case 'host': return 'default';
+      case 'player': return 'secondary';
+      default: return 'secondary';
+    }
+  };
+
+  if (loading && users.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+        <div className="container mx-auto max-w-4xl">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="text-gray-500 dark:text-gray-400">Loading users...</div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
-  if (error) {
-    return <div className="text-center py-8 text-red-500 dark:text-red-400">{error}</div>;
+  if (error && users.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+        <div className="container mx-auto max-w-4xl">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
+              <Button onClick={() => filterUsers()} variant="outline">
+                Try Again
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
-      <div className="max-w-md mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          {/* Header */}
-          <div className="flex items-center mb-6">
-            <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400 mr-3" />
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Assign Role</h1>
-          </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="container mx-auto max-w-4xl space-y-6">
+        
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <div className="w-1 h-6 bg-primary rounded-full"></div>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            User Management
+          </h1>
+        </div>
 
-          {/* Search Input */}
-          <div className="relative mb-6">
-            <Input
-              type="text"
-              placeholder="Search"
-              className="pr-10 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-            />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-          </div>
+        {/* Search Card */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search users by username or email..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="pl-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Username Section */}
-          <div className="space-y-4">
-            <Label className="text-base font-semibold text-gray-900 dark:text-white">
-              Username
-            </Label>
+        {/* Users Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Users ({users.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {loading && users.length > 0 && (
+              <div className="text-center py-4 text-gray-500 dark:text-gray-400 text-sm border-b">
+                Searching...
+              </div>
+            )}
 
-            {/* Conditional rendering based on users array */}
             {users.length > 0 ? (
-              /* User List */
-              <div className="space-y-3">
+              <div className="divide-y divide-gray-200 dark:divide-gray-700">
                 {users.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between gap-2 border border-gray-200 dark:border-gray-600 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {user.username}
-                    </span>
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="text-xs px-3 py-1 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600"
-                        onClick={() => navigate(`/host/users/edit/${user.id}`)}
-                      >
-                        Edit
-                      </Button>
-                      <Button 
-                        variant="destructive" 
-                        size="sm"
-                        className="text-xs px-3 py-1 bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-800 text-white"
-                      >
-                        Delete
-                      </Button>
+                  <div key={user.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                            {user.username.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-medium text-gray-900 dark:text-white truncate">
+                              {user.username}
+                            </h3>
+                            <Badge variant={getRoleBadgeVariant(user.role)} className="text-xs">
+                              {user.role}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate(`/host/users/edit/${user.id}`)}
+                          className="h-8 px-3"
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              /* No users message */
-              <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">
+              <div className="p-8 text-center">
+                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                   No Users Found
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">
+                  {searchTerm ? 'No users found matching your search criteria.' : 'No users have been created yet.'}
                 </p>
+                {searchTerm && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setSearchTerm('');
+                      filterUsers('');
+                    }}
+                  >
+                    Clear Search
+                  </Button>
+                )}
               </div>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
