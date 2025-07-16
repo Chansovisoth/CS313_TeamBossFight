@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2, AlertTriangle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,56 +22,85 @@ import {
 
 const EditCategory = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const categoryId = searchParams.get('id');
+  const { id: categoryId } = useParams();
+  const { user } = useAuth();
   
   const [categoryName, setCategoryName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [category, setCategory] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Mock data - replace with actual API call
-  const mockCategories = {
-    1: { name: 'ARC', author: 'Chanreach' },
-    2: { name: 'ART', author: 'Sovitep' },
-    3: { name: 'BUS', author: 'Chanreach' },
-    4: { name: 'CS', author: 'Sovitep' },
-    5: { name: 'MIS', author: 'Sovitep' },
-    6: { name: 'ABA Bank', author: 'Chomroeun' }
+  // Check if user can edit this category
+  const canEdit = () => {
+    return user?.role === 'admin' || category?.creatorId === user?.id;
   };
 
-  const currentCategory = mockCategories[categoryId] || mockCategories[4]; // Default to CS
-
+  // Fetch category data
   useEffect(() => {
-    setCategoryName(currentCategory.name);
-  }, [categoryId]);
+    const fetchCategory = async () => {
+      try {
+        setIsLoading(true);
+        const response = await apiClient.get(`/categories/${categoryId}`);
+        const categoryData = response.data;
+        setCategory(categoryData);
+        setCategoryName(categoryData.name);
+      } catch (err) {
+        console.error('Error fetching category:', err);
+        toast.error('Failed to fetch category');
+        navigate('/host/questionbank/categories/view');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (categoryId) {
+      fetchCategory();
+    }
+  }, [categoryId, navigate]);
 
   const validateForm = () => {
     const newErrors = {};
     
     if (!categoryName.trim()) {
       newErrors.categoryName = 'Category name is required';
-    } else if (categoryName.length > 10) {
-      newErrors.categoryName = 'Category name must be 10 characters or less';
+    } else if (categoryName.trim().length < 3) {
+      newErrors.categoryName = 'Category name must be at least 3 characters';
+    } else if (categoryName.trim().length > 50) {
+      newErrors.categoryName = 'Category name must be 50 characters or less';
     }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Check if form is valid for button styling (same as Create)
+  const isFormValid = categoryName.trim().length >= 3;
+
   const handleSave = async () => {
-    if (!validateForm()) return;
+    if (!validateForm() || !canEdit()) return;
     
-    setIsLoading(true);
+    setIsSaving(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Saving category:', { id: categoryId, name: categoryName });
+      await apiClient.put(`/categories/${categoryId}`, {
+        name: categoryName.trim()
+      });
+      
+      toast.success('Category updated successfully');
       navigate('/host/questionbank/categories/view');
     } catch (error) {
-      console.error('Error saving category:', error);
+      console.error('Error updating category:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to update category';
+      toast.error(errorMessage);
+      
+      // Handle validation errors from server
+      if (error.response?.data?.errors) {
+        setErrors({ categoryName: error.response.data.errors.join(', ') });
+      }
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -77,33 +109,48 @@ const EditCategory = () => {
   };
 
   const handleDelete = async () => {
-    setIsLoading(true);
+    if (!canEdit()) return;
+    
+    setIsDeleting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Deleting category:', categoryId);
+      await apiClient.delete(`/categories/${categoryId}`);
+      toast.success('Category deleted successfully');
       setShowDeleteDialog(false);
       navigate('/host/questionbank/categories/view');
     } catch (error) {
       console.error('Error deleting category:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to delete category';
+      toast.error(errorMessage);
     } finally {
-      setIsLoading(false);
+      setIsDeleting(false);
     }
   };
 
-  const handleInputChange = (field, value) => {
-    if (field === 'categoryName') {
-      setCategoryName(value);
-    }
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center py-8 text-gray-500">Loading category...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!category || !canEdit()) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center py-8">
+            <p className="text-red-500 mb-4">Category not found or access denied</p>
+            <Button onClick={() => navigate('/host/questionbank/categories/view')} variant="outline">
+              Back to Categories
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-2xl mx-auto">
@@ -120,7 +167,7 @@ const EditCategory = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Category</h1>
-              <p className="text-sm text-gray-600">Update category information</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Update category information</p>
             </div>
           </div>
           
@@ -137,67 +184,85 @@ const EditCategory = () => {
         </div>
 
         {/* Main Form Card */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <div className="p-6 space-y-6">
-            {/* Form Fields */}
-            <div className="space-y-4">
-              {/* Category Name */}
-              <div className="space-y-2">
-                <Label htmlFor="categoryName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Category Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="categoryName"
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
-                  placeholder="e.g., CS, ART, BUS"
-                  maxLength={10}
-                  className={`${errors.categoryName ? 'border-red-500 focus:border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
-                />
-                {errors.categoryName && (
-                  <p className="text-red-500 text-xs">{errors.categoryName}</p>
-                )}
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {categoryName.length}/10 characters
-                </p>
-              </div>
+        <Card className="shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+          <CardHeader className="border-b border-gray-200 dark:border-gray-600">
+            <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <Save className="h-5 w-5" />
+              Category Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            
+            {/* Category Name */}
+            <div className="space-y-2">
+              <Label htmlFor="categoryName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Category Name <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="categoryName"
+                value={categoryName}
+                onChange={(e) => {
+                  setCategoryName(e.target.value);
+                  if (errors.categoryName) {
+                    setErrors(prev => ({ ...prev, categoryName: '' }));
+                  }
+                }}
+                placeholder="e.g., Computer Science, Art, Business"
+                maxLength={50}
+                className={`${errors.categoryName ? 'border-red-500 focus:border-red-500' : isFormValid ? 'border-green-500 focus:border-green-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors`}
+              />
+              {errors.categoryName && (
+                <p className="text-sm text-red-500">{errors.categoryName}</p>
+              )}
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {categoryName.length}/50 characters {isFormValid && !errors.categoryName && <span className="text-green-600">✓ Valid</span>}
+              </p>
+            </div>
 
-              {/* Author Info (Read-only) */}
-              <div className="space-y-2 pt-4">
-                <Label className="text-sm font-medium text-gray-700">
-                  Created By
-                </Label>
-                <div className="p-3 bg-gray-50 rounded-md border">
-                  <p className="text-sm text-gray-600">{currentCategory.author}</p>
-                </div>
+            {/* Author Info (Read-only) */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Created By
+              </Label>
+              <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {category?.creator?.username || 'Unknown'}
+                </p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t">
-              {/* Cancel & Save Buttons */}
+            <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
               <Button
                 variant="outline"
                 onClick={handleCancel}
                 className="flex-1"
-                disabled={isLoading}
+                disabled={isSaving || isDeleting}
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSave}
-                className="flex items-center gap-2 flex-1"
-                disabled={isLoading}
+                className={`flex items-center gap-2 flex-1 transition-all duration-300 ${
+                  isFormValid && !isSaving && !isDeleting
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/25 scale-105'
+                    : 'bg-gray-400 hover:bg-gray-500 cursor-not-allowed'
+                } dark:${
+                  isFormValid && !isSaving && !isDeleting
+                    ? 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+                    : 'bg-gray-600 hover:bg-gray-700'
+                }`}
+                disabled={!isFormValid || isSaving || isDeleting}
               >
-                {isLoading ? (
+                {isSaving ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                {isLoading ? 'Saving...' : 'Save Changes'}
+                {isSaving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
-          </div>
+          </CardContent>
         </Card>
 
         {/* Delete Confirmation Dialog */}

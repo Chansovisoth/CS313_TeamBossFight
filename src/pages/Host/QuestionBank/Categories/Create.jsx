@@ -6,40 +6,54 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { apiClient } from '@/api';
+import { toast } from 'sonner';
 
 const CreateCategory = () => {
   const navigate = useNavigate();
   
-  const [categoryName, setCategoryName] = useState('');
+  const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
     const newErrors = {};
     
-    if (!categoryName.trim()) {
-      newErrors.categoryName = 'Category name is required';
-    } else if (categoryName.length > 10) {
-      newErrors.categoryName = 'Category name must be 10 characters or less';
+    if (!name.trim()) {
+      newErrors.name = 'Category name is required';
+    } else if (name.trim().length < 2) {
+      newErrors.name = 'Category name must be at least 2 characters';
+    } else if (name.trim().length > 50) {
+      newErrors.name = 'Category name must be 50 characters or less';
     }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Check if form is valid for button styling
+  const isFormValid = name.trim().length >= 2;
+
   const handleCreate = async () => {
     if (!validateForm()) return;
     
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Creating category:', {
-        name: categoryName
+      const response = await apiClient.post('/categories', {
+        name: name.trim()
       });
+      
+      toast.success('Category created successfully');
       navigate('/host/questionbank/categories/view');
     } catch (error) {
       console.error('Error creating category:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to create category';
+      toast.error(errorMessage);
+      
+      // Handle validation errors from server
+      if (error.response?.data?.errors) {
+        setErrors({ name: error.response.data.errors.join(', ') });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -91,32 +105,27 @@ const CreateCategory = () => {
               </Label>
               <Input
                 id="categoryName"
-                value={categoryName}
+                value={name}
                 onChange={(e) => {
-                  setCategoryName(e.target.value.toUpperCase());
-                  clearErrors('categoryName');
+                  setName(e.target.value);
+                  if (errors.name) {
+                    setErrors(prev => ({ ...prev, name: '' }));
+                  }
                 }}
-                placeholder="e.g., CS, ART, BUS"
-                maxLength={10}
-                className={`${errors.categoryName ? 'border-red-500 focus:border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono text-center text-lg`}
+                placeholder="e.g., Computer Science, Art, Business"
+                maxLength={50}
+                className={`${errors.name ? 'border-red-500 focus:border-red-500' : isFormValid ? 'border-green-500 focus:border-green-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors`}
               />
-              {errors.categoryName && (
-                <p className="text-red-500 text-xs">{errors.categoryName}</p>
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name}</p>
               )}
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {categoryName.length}/10 characters
+                {name.length}/50 characters {isFormValid && !errors.name && <span className="text-green-600">✓ Valid</span>}
               </p>
             </div>
 
-            {/* Author Info */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Category Author
-              </Label>
-              <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
-                <p className="text-sm text-gray-600 dark:text-gray-400">Sovitep</p>
-              </div>
-            </div>
+
+
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
@@ -130,8 +139,16 @@ const CreateCategory = () => {
               </Button>
               <Button
                 onClick={handleCreate}
-                className="flex items-center gap-2 flex-1 bg-black hover:bg-gray-800 dark:bg-black dark:hover:bg-gray-900"
-                disabled={isLoading}
+                className={`flex items-center gap-2 flex-1 transition-all duration-300 ${
+                  isFormValid && !isLoading
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/25 scale-105'
+                    : 'bg-gray-400 hover:bg-gray-500 cursor-not-allowed'
+                } dark:${
+                  isFormValid && !isLoading
+                    ? 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+                    : 'bg-gray-600 hover:bg-gray-700'
+                }`}
+                disabled={!isFormValid || isLoading}
               >
                 {isLoading ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />

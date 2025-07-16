@@ -120,7 +120,13 @@ const Authentication = () => {
         throw new Error("Invalid login response from server");
       }
       login({ accessToken: data.token, user: data.user });
-      navigate("/");
+      
+      // Redirect based on user role
+      if (data.user.role === 'admin' || data.user.role === 'host') {
+        navigate("/host/events/view");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       let message = "Login failed";
       if (err.response && err.response.data && err.response.data.message) {

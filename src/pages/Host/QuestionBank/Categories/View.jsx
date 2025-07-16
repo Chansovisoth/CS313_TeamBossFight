@@ -1,101 +1,78 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  Plus, 
-  Search, 
-  ChevronLeft, 
-  ChevronRight, 
-  ArrowLeft,
-  Filter,
-  Grid3X3,
-  List,
-  Edit3
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Plus, Search, Edit3, Trash2, Grid3X3 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 
 const QuestionBankView = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { user } = useAuth();
   
-  // Determine initial view mode based on current route
-  const getInitialViewMode = () => {
-    if (location.pathname.includes('/questions/')) return 'question';
-    return 'category';
-  };
-  
-  const [viewMode, setViewMode] = useState(getInitialViewMode());
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [deleting, setDeleting] = useState(null);
   const itemsPerPage = 8;
 
-  // Update view mode when route changes
-  useEffect(() => {
-    const newViewMode = getInitialViewMode();
-    if (newViewMode !== viewMode) {
-      setViewMode(newViewMode);
-      setSearchQuery('');
-      setCategoryFilter('');
-      setCurrentPage(1);
-    }
-  }, [location.pathname]);
-
-  // Static data
-  const categories = [
-    { id: 1, name: 'ARC', author: 'Chanreach [Admin]', questionCount: 15 },
-    { id: 2, name: 'ART', author: 'Sovitep [Admin]', questionCount: 12 },
-    { id: 3, name: 'BUS', author: 'Chanreach [Admin]', questionCount: 20 },
-    { id: 4, name: 'CS', author: 'Sovitep [Admin]', questionCount: 25 },
-    { id: 5, name: 'MIS', author: 'Sovitep [Admin]', questionCount: 18 },
-    { id: 6, name: 'ABA Bank', author: 'Chomroeun [Host]', questionCount: 8 }
-  ];
-
-  const questions = [
-    { id: 1, question: 'CPU full word?', tag: 'CS', difficulty: 'Easy', author: 'Sovitep [Admin]', lastModified: '2024-01-15' },
-    { id: 2, question: 'What is database?', tag: 'CS', difficulty: 'Medium', author: 'Chanreach [Admin]', lastModified: '2024-01-14' },
-    { id: 3, question: 'Why use MIS?', tag: 'MIS', difficulty: 'Easy', author: 'Chanreach [Admin]', lastModified: '2024-01-13' },
-    { id: 4, question: 'How to code?', tag: 'CS', difficulty: 'Hard', author: 'Sovitep [Admin]', lastModified: '2024-01-12' },
-    { id: 5, question: 'Is programming hard?', tag: 'CS', difficulty: 'Easy', author: 'Sovitep [Admin]', lastModified: '2024-01-11' },
-    { id: 6, question: 'What is marketing?', tag: 'BUS', difficulty: 'Medium', author: 'Jerry [Admin]', lastModified: '2024-01-10' },
-    { id: 7, question: 'Define architecture', tag: 'ARC', difficulty: 'Medium', author: 'Chanreach [Admin]', lastModified: '2024-01-09' },
-    { id: 8, question: 'Art history basics', tag: 'ART', difficulty: 'Easy', author: 'Sovitep [Admin]', lastModified: '2024-01-08' }
-  ];
-
-  const handleViewModeChange = (value) => {
-    if (value === 'category') {
-      navigate('/host/questionbank/categories/view');
-    } else if (value === 'question') {
-      navigate('/host/questionbank/questions');
+  // Fetch categories from API
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiClient.get('/categories');
+      setCategories(response.data);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      const errorMessage = err.response?.data?.message || 'Failed to fetch categories';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Delete category
+  const handleDeleteCategory = async (categoryId) => {
+    if (!canEditCategory(categories.find(c => c.id === categoryId))) return;
+    
+    setDeleting(categoryId);
+    try {
+      await apiClient.delete(`/categories/${categoryId}`);
+      toast.success('Category deleted successfully');
+      setCategories(categories.filter(c => c.id !== categoryId));
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to delete category';
+      toast.error(errorMessage);
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  // Check if user can edit category
+  const canEditCategory = (category) => {
+    return user?.role === 'admin' || category.authorId === user?.id;
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
   };
 
-  const handleCategoryFilterChange = (value) => {
-    setCategoryFilter(value === 'all' ? '' : value);
-    setCurrentPage(1);
-  };
-
   const handleAddNew = () => {
-    if (viewMode === 'category') {
-      navigate('/host/questionbank/categories/create');
-    } else {
-      navigate('/host/questionbank/questions/create');
-    }
+    navigate('/host/questionbank/categories/create');
   };
 
   const handleBack = () => {
@@ -103,16 +80,12 @@ const QuestionBankView = () => {
   };
 
   const handleEdit = (id) => {
-    if (viewMode === 'category') {
-      navigate(`/host/questionbank/categories/edit?id=${id}`);
-    } else {
-      navigate(`/host/questionbank/questions/edit?id=${id}`);
-    }
+    navigate(`/host/questionbank/categories/edit/${id}`);
   };
 
   const handleCategoryClick = (categoryName) => {
-    // Navigate to questions with the category filter
-    navigate(`/host/questionbank/questions?category=${categoryName}`);
+    // Navigate to questions view for this category
+    navigate(`/host/questionbank/questions/view?category=${categoryName}`);
   };
 
   // Filter categories based on search query
@@ -120,15 +93,8 @@ const QuestionBankView = () => {
     category.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Filter questions based on search query AND category filter
-  const filteredQuestions = questions.filter(question => {
-    const matchesSearch = question.question.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === '' || categoryFilter === 'all' || question.tag === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
-
-  // Get current data based on view mode
-  const currentData = viewMode === 'category' ? filteredCategories : filteredQuestions;
+  // Get current data for categories only
+  const currentData = filteredCategories;
   const totalPages = Math.ceil(currentData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -143,115 +109,79 @@ const QuestionBankView = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-3 sm:px-4 py-4 max-w-7xl">
-        
+      <div className="container mx-auto p-4">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Back</span>
-            </Button>
-            <div className="flex items-center gap-3">
-              <div className="w-1 h-5 bg-primary rounded-full"></div>
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Question Bank
-              </h1>
-            </div>
-          </div>
-          <Button onClick={handleAddNew} className="flex items-center gap-2 shadow-sm text-sm">
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">
-              Add {viewMode === 'category' ? 'Category' : 'Question'}
-            </span>
-          </Button>
-        </div>
-
-        {/* Controls */}
         <Card className="mb-4 border-0 shadow-sm">
-          <CardContent className="p-3">
-            <div className="flex flex-col sm:flex-row gap-3">
-              {/* View Mode Select */}
-              <div className="flex items-center gap-2">
-                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  View:
-                </Label>
-                <Select value={viewMode} onValueChange={handleViewModeChange}>
-                  <SelectTrigger className="w-28">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="category">Categories</SelectItem>
-                    <SelectItem value="question">Questions</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Search Input */}
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder={viewMode === 'category' ? 'Search categories...' : 'Search questions...'}
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="pl-10 h-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                />
-              </div>
-
-              {/* Category Filter (Only for Question view) */}
-              {viewMode === 'question' && (
-                <div className="flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-gray-400" />
-                  <Select value={categoryFilter === '' ? 'all' : categoryFilter} onValueChange={handleCategoryFilterChange}>
-                    <SelectTrigger className="w-36">
-                      <SelectValue placeholder="All Categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+          <CardContent className="p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleBack}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Categories</h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Manage your question categories</p>
                 </div>
-              )}
+              </div>
+              <Button onClick={handleAddNew} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Category
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Search */}
+        <Card className="mb-4 border-0 shadow-sm">
+          <CardContent className="p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search categories..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="pl-10 h-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+              />
             </div>
           </CardContent>
         </Card>
 
         {/* Content Area */}
-        {paginatedData.length === 0 ? (
-          // Empty State
+        {loading ? (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-8 text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-400">Loading categories...</p>
+            </CardContent>
+          </Card>
+        ) : error ? (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-8 text-center">
+              <p className="text-red-500 mb-4">{error}</p>
+              <Button onClick={fetchCategories} variant="outline">Try Again</Button>
+            </CardContent>
+          </Card>
+        ) : paginatedData.length === 0 ? (
           <Card className="border-0 shadow-sm">
             <CardContent className="p-8 text-center">
               <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                {viewMode === 'category' ? (
-                  <Grid3X3 className="h-6 w-6 text-gray-400" />
-                ) : (
-                  <List className="h-6 w-6 text-gray-400" />
-                )}
+                <Grid3X3 className="h-6 w-6 text-gray-400" />
               </div>
               <h3 className="text-base font-medium text-gray-900 dark:text-white mb-2">
-                No {viewMode === 'category' ? 'Categories' : 'Questions'} Found
+                No Categories Found
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-                {searchQuery || categoryFilter
-                  ? 'Try adjusting your search or filter criteria.'
-                  : `No ${viewMode === 'category' ? 'categories' : 'questions'} have been created yet.`
-                }
+                {searchQuery ? 'Try adjusting your search criteria.' : 'No categories have been created yet.'}
               </p>
             </CardContent>
           </Card>
-        ) : viewMode === 'category' ? (
-          // Categories Grid View - Compact Cards
+        ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
             {paginatedData.map((category) => (
               <Card key={category.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 group cursor-pointer"
@@ -261,180 +191,80 @@ const QuestionBankView = () => {
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <div className="min-w-0 flex-1">
                         <h3 className="font-semibold text-sm text-gray-900 dark:text-white truncate">{category.name}</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {category.questionsCount || 0} questions
+                        </p>
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(category.id);
-                      }}
-                      className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
-                    >
-                      <Edit3 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                  <div className="flex items-center justify-between gap-2 mt-2">
-                    <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
-                      {category.questionCount} questions
-                    </Badge>
-                    <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(category.author)} truncate max-w-20`}>
-                      {category.author.split(' ')[0]}
-                    </Badge>
+                    <div className="flex gap-1">
+                      {canEditCategory(category) && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(category.id);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0"
+                        >
+                          <Edit3 className="h-3 w-3" />
+                        </Button>
+                      )}
+                      {canEditCategory(category) && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteCategory(category.id);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0 text-red-600 hover:text-red-700"
+                          disabled={deleting === category.id}
+                        >
+                          {deleting === category.id ? (
+                            <div className="h-3 w-3 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+                          ) : (
+                            <Trash2 className="h-3 w-3" />
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-        ) : (
-          // Questions List View - Compact Layout
-          <div className="space-y-3 mb-6">
-            {/* Desktop Table */}
-            <div className="hidden md:block">
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="border-b bg-gray-50 dark:bg-gray-800/50 py-2 px-4">
-                  <div className="grid grid-cols-12 gap-3 text-xs font-medium text-gray-700 dark:text-gray-300">
-                    <div className="col-span-5">Question</div>
-                    <div className="col-span-2 text-center">Category</div>
-                    <div className="col-span-2 text-center">Difficulty</div>
-                    <div className="col-span-2 text-center">Author</div>
-                    <div className="col-span-1 text-center">Edit</div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {paginatedData.map((question) => (
-                      <div key={question.id} className="grid grid-cols-12 gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                        <div className="col-span-5">
-                          <p className="font-medium text-sm text-gray-900 dark:text-white truncate" title={question.question}>
-                            {question.question}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            Modified: {question.lastModified}
-                          </p>
-                        </div>
-                        <div className="col-span-2 flex justify-center">
-                          <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-                            {question.tag}
-                          </Badge>
-                        </div>
-                        <div className="col-span-2 flex justify-center">
-                          <Badge variant="secondary" className={`text-xs px-1.5 py-0.5 ${getDifficultyColor(question.difficulty)}`}>
-                            {question.difficulty}
-                          </Badge>
-                        </div>
-                        <div className="col-span-2 flex justify-center">
-                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(question.author)}`}>
-                            {question.author.split(' ')[0]}
-                          </Badge>
-                        </div>
-                        <div className="col-span-1 flex justify-center">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleEdit(question.id)}
-                            className="h-7 w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
-                          >
-                            <Edit3 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Mobile Card Layout */}
-            <div className="md:hidden space-y-2">
-              {paginatedData.map((question) => (
-                <Card key={question.id} className="border-0 shadow-sm">
-                  <CardContent className="p-3">
-                    <div className="flex justify-between items-start gap-2">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-gray-900 dark:text-white leading-tight mb-1.5">
-                          {question.question}
-                        </p>
-                        <div className="flex flex-wrap gap-1.5 mb-1.5">
-                          <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-                            {question.tag}
-                          </Badge>
-                          <Badge variant="secondary" className={`text-xs px-1.5 py-0.5 ${getDifficultyColor(question.difficulty)}`}>
-                            {question.difficulty}
-                          </Badge>
-                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(question.author)}`}>
-                            {question.author.split(' ')[0]}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Modified: {question.lastModified}
-                        </p>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleEdit(question.id)}
-                        className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
-                      >
-                        <Edit3 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
         )}
 
-        {/* Pagination - Compact */}
+        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-gray-700 dark:text-gray-300 text-center sm:text-left">
-              Showing {startIndex + 1} to {Math.min(endIndex, currentData.length)} of {currentData.length} results
-            </p>
-            <div className="flex items-center gap-1">
-              <Button 
-                variant="outline" 
-                size="sm"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-                className="h-7 w-7 p-0"
-              >
-                <ChevronLeft className="h-3.5 w-3.5" />
-              </Button>
-              
-              {Array.from({ length: Math.min(totalPages, 3) }, (_, i) => {
-                const page = currentPage <= 2 ? i + 1 : currentPage - 1 + i;
-                if (page > totalPages) return null;
-                return (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Showing {startIndex + 1} to {Math.min(endIndex, currentData.length)} of {currentData.length} categories
+                </p>
+                <div className="flex gap-2">
                   <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
+                    variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(page)}
-                    className="h-7 w-7 p-0 text-xs"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
                   >
-                    {page}
+                    Previous
                   </Button>
-                );
-              })}
-              
-              {totalPages > 3 && currentPage < totalPages - 1 && (
-                <span className="text-gray-400 text-xs px-1">...</span>
-              )}
-              
-              <Button 
-                variant="outline" 
-                size="sm"
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
-                className="h-7 w-7 p-0"
-              >
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>

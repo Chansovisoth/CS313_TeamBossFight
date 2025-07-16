@@ -121,8 +121,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </Route>
 
               {/* ===== HOST ROUTES (Protected for host and admin roles) ===== */}
-              {/* <Route path="/host" element={<ProtectedRoute allowedRoles={['host', 'admin']} />}> */}
-              <Route path="/host">
+              <Route path="/host" element={<ProtectedRoute allowedRoles={['host', 'admin']} />}>
+              {/* <Route path="/host"> */}
                 {/* Host Bosses Routes */}
                 <Route path="bosses/create" element={<AppOP />}>
                   <Route index element={<HostBossesCreate />} />

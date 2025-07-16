@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,65 +24,89 @@ const EditQuestion = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const questionId = searchParams.get('id');
+  const { user } = useAuth();
   
+  const [categories, setCategories] = useState([]);
+  const [question, setQuestion] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [timeLimit, setTimeLimit] = useState('');
+  const [timeLimit, setTimeLimit] = useState('30');
   const [questionText, setQuestionText] = useState('');
   const [answers, setAnswers] = useState([]);
   const [correctAnswerId, setCorrectAnswerId] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const categories = [
-    { value: 'CS', label: 'CS - Computer Science' },
-    { value: 'ART', label: 'ART - Art History' },
-    { value: 'BUS', label: 'BUS - Business' },
-    { value: 'ARC', label: 'ARC - Architecture' },
-    { value: 'MIS', label: 'MIS - Management Information Systems' },
-    { value: 'ABA Bank', label: 'ABA Bank - ABA Banking' }
-  ];
-
-  // Mock data for questions
-  const mockQuestions = {
-    1: {
-      id: 1,
-      question: 'CPU full word?',
-      category: 'CS',
-      timeLimit: '30s',
-      answers: [
-        { id: 1, text: 'Central Processing Unit', isCorrect: true },
-        { id: 2, text: 'Central Peppero', isCorrect: false },
-        { id: 3, text: 'Cinnamon Peprik', isCorrect: false },
-        { id: 4, text: 'Cloud Processing', isCorrect: false },
-        { id: 5, text: 'Cappuccino Palm', isCorrect: false },
-        { id: 6, text: 'Centre Processin', isCorrect: false },
-        { id: 7, text: 'Crippling Pain Un', isCorrect: false },
-        { id: 8, text: 'Corn Plantation', isCorrect: false }
-      ]
-    }
+  // Check if user can edit this question
+  const canEdit = () => {
+    return user?.role === 'admin' || question?.authorId === user?.id;
   };
 
-  const currentQuestion = mockQuestions[questionId] || mockQuestions[1];
-
+  // Fetch categories and question data
   useEffect(() => {
-    setSelectedCategory(currentQuestion.category);
-    setTimeLimit(currentQuestion.timeLimit);
-    setQuestionText(currentQuestion.question);
-    setAnswers(currentQuestion.answers);
-    const correctAnswer = currentQuestion.answers.find(a => a.isCorrect);
-    if (correctAnswer) {
-      setCorrectAnswerId(correctAnswer.id);
-    }
-  }, [questionId]);
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Fetch categories
+        const categoriesResponse = await apiClient.get('/categories');
+        // Extract categories from response object
+        const categoriesData = categoriesResponse.data?.categories || categoriesResponse.data;
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+        
+        // Fetch question
+        const questionResponse = await apiClient.get(`/questions/${questionId}`);
+        const questionData = questionResponse.data;
+        setQuestion(questionData);
+        
+        // Populate form fields
+        setSelectedCategory(questionData.categoryId?.toString() || '');
+        setTimeLimit(questionData.timeLimit?.toString() || '30');
+        setQuestionText(questionData.questionText || ''); // Fixed: use questionText not text
+        
+        // Populate answers with 8 slots
+        const answerChoices = questionData.answerChoices || [];
+        const formattedAnswers = Array.from({ length: 8 }, (_, index) => {
+          const choice = answerChoices[index];
+          return {
+            id: index + 1,
+            text: choice?.choiceText || '', // Fixed: use choiceText not text
+            isCorrect: choice?.isCorrect || false
+          };
+        });
+        setAnswers(formattedAnswers);
+        
+        // Set correct answer ID
+        const correctChoice = answerChoices.find(choice => choice.isCorrect);
+        if (correctChoice) {
+          const correctIndex = answerChoices.indexOf(correctChoice);
+          setCorrectAnswerId(correctIndex + 1);
+        }
+        
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        toast.error('Failed to fetch question data');
+        navigate(-1); // Go back to previous page instead of forcing categories view
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    if (questionId) {
+      fetchData();
+    }
+  }, [questionId, navigate]);
   const handleAnswerChange = (answerId, newText) => {
+    if (!canEdit()) return;
     setAnswers(prev => prev.map(answer => 
       answer.id === answerId ? { ...answer, text: newText } : answer
     ));
   };
 
   const handleCorrectAnswerChange = (answerId) => {
+    if (!canEdit()) return;
     setCorrectAnswerId(parseInt(answerId));
   };
 
@@ -90,8 +117,8 @@ const EditQuestion = () => {
       newErrors.category = 'Category is required';
     }
     
-    if (!timeLimit.trim()) {
-      newErrors.timeLimit = 'Time limit is required';
+    if (!timeLimit || timeLimit < 5 || timeLimit > 300) {
+      newErrors.timeLimit = 'Time limit must be between 5 and 300 seconds';
     }
     
     if (!questionText.trim()) {
@@ -108,46 +135,89 @@ const EditQuestion = () => {
   };
 
   const handleSave = async () => {
-    if (!validateForm()) return;
+    if (!validateForm() || !canEdit()) return;
     
-    setIsLoading(true);
+    setIsSaving(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Saving question:', {
-        id: questionId,
-        category: selectedCategory,
-        timeLimit,
-        question: questionText,
-        answers,
-        correctAnswerId
-      });
+      const answerChoices = answers.map((answer, index) => ({
+        choiceText: answer.text.trim(), // Fixed: use choiceText not text
+        isCorrect: answer.id === correctAnswerId
+      }));
+
+      const questionData = {
+        categoryId: selectedCategory, // Fixed: don't parseInt UUID
+        questionText: questionText.trim(), // Fixed: use questionText not text
+        timeLimit: parseInt(timeLimit),
+        answerChoices
+      };
+
+      await apiClient.put(`/questions/${questionId}`, questionData);
+      toast.success('Question updated successfully!');
       navigate(`/host/questionbank/questions/view?id=${questionId}`);
     } catch (error) {
-      console.error('Error saving question:', error);
+      console.error('Error updating question:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to update question';
+      toast.error(errorMessage);
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!canEdit()) return;
+    
+    setIsDeleting(true);
+    try {
+      await apiClient.delete(`/questions/${questionId}`);
+      toast.success('Question deleted successfully');
+      setShowDeleteDialog(false);
+      // Navigate back to previous page or default to categories view
+      navigate(-1);
+    } catch (error) {
+      console.error('Error deleting question:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to delete question';
+      toast.error(errorMessage);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const handleCancel = () => {
-    navigate(`/host/questionbank/questions/view?id=${questionId}`);
+    // Navigate back to the previous page
+    navigate(-1);
   };
 
-  const handleDelete = async () => {
-    setIsLoading(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Deleting question:', questionId);
-      setShowDeleteDialog(false);
-      navigate('/host/questionbank/questions');
-    } catch (error) {
-      console.error('Error deleting question:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4" />
+          <p className="text-gray-600">Loading question...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!question) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Question not found</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!canEdit()) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">You don't have permission to edit this question</p>
+          <Button onClick={handleCancel} className="mt-4">Go Back</Button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-2xl mx-auto">
@@ -158,7 +228,7 @@ const EditQuestion = () => {
               variant="ghost" 
               size="sm" 
               onClick={handleCancel}
-              className="p-2 hover:bg-white/50"
+              className="p-2 hover:bg-white/50 dark:hover:bg-gray-800/50"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -193,9 +263,9 @@ const EditQuestion = () => {
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
+                    {(categories || []).map((category) => (
+                      <SelectItem key={category.id} value={category.id.toString()}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -206,15 +276,18 @@ const EditQuestion = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="time-limit" className="text-sm font-medium text-gray-700">
-                  Time Limit
+                <Label htmlFor="time-limit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Time Limit (seconds)
                 </Label>
                 <Input
                   id="time-limit"
+                  type="number"
+                  min="5"
+                  max="300"
                   value={timeLimit}
                   onChange={(e) => setTimeLimit(e.target.value)}
-                  placeholder="e.g., 30s"
-                  className={`${errors.timeLimit ? 'border-red-500' : ''}`}
+                  placeholder="30"
+                  className={`${errors.timeLimit ? 'border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
                 />
                 {errors.timeLimit && (
                   <p className="text-red-500 text-xs">{errors.timeLimit}</p>
@@ -224,17 +297,20 @@ const EditQuestion = () => {
 
             {/* Question Author (Read-only) */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700">
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Question Author
               </Label>
-              <div className="p-3 bg-gray-50 rounded-md border">
-                <p className="text-sm text-gray-600">Sovitep [Admin] (You)</p>
+              <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {question?.creator?.username || 'Unknown'} [{question?.creator?.role || 'User'}]
+                  {question?.authorId === user?.id ? ' (You)' : ''}
+                </p>
               </div>
             </div>
 
             {/* Question Input */}
             <div className="space-y-2">
-              <Label htmlFor="question" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="question" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Question <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -242,7 +318,7 @@ const EditQuestion = () => {
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
                 placeholder="Enter your question here"
-                className={`${errors.question ? 'border-red-500' : ''}`}
+                className={`${errors.question ? 'border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
               />
               {errors.question && (
                 <p className="text-red-500 text-xs">{errors.question}</p>
@@ -251,14 +327,14 @@ const EditQuestion = () => {
 
             {/* Answer Options */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-gray-700">
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Answer Options <span className="text-red-500">*</span>
               </Label>
               {errors.answers && (
                 <p className="text-red-500 text-xs">{errors.answers}</p>
               )}
               
-              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-3">
+              <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700 space-y-3">
                 {answers.map((answer, index) => (
                   <div key={answer.id} className="flex items-center gap-3">
                     <div className="flex-1">
@@ -266,7 +342,7 @@ const EditQuestion = () => {
                         value={answer.text}
                         onChange={(e) => handleAnswerChange(answer.id, e.target.value)}
                         placeholder={`A${index + 1}: Enter answer option`}
-                        className="text-sm bg-white"
+                        className="text-sm bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                       />
                     </div>
                     <input
@@ -280,13 +356,13 @@ const EditQuestion = () => {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Select the radio button next to the correct answer
               </p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
               <Button
                 variant="outline"
                 onClick={handleCancel}
@@ -298,14 +374,14 @@ const EditQuestion = () => {
               <Button
                 onClick={handleSave}
                 className="flex items-center gap-2 flex-1"
-                disabled={isLoading}
+                disabled={isSaving}
               >
-                {isLoading ? (
+                {isSaving ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                {isLoading ? 'Saving...' : 'Save Changes'}
+                {isSaving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </div>
@@ -332,16 +408,16 @@ const EditQuestion = () => {
             <AlertDialogFooter className="gap-2">
               <AlertDialogCancel 
                 onClick={() => setShowDeleteDialog(false)}
-                disabled={isLoading}
+                disabled={isDeleting}
               >
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
                 className="bg-red-600 hover:bg-red-700 text-white"
-                disabled={isLoading}
+                disabled={isDeleting}
               >
-                {isLoading ? (
+                {isDeleting ? (
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     Deleting...

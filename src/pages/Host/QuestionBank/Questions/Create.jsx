@@ -1,17 +1,25 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 
 const CreateQuestion = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   
+  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [timeLimit, setTimeLimit] = useState('');
+  const [categoryFromUrl, setCategoryFromUrl] = useState('');
+  const [isCategoryLocked, setIsCategoryLocked] = useState(false);
+  const [timeLimit, setTimeLimit] = useState('30');
   const [questionText, setQuestionText] = useState('');
   const [answers, setAnswers] = useState([
     { id: 1, text: '', isCorrect: false },
@@ -27,14 +35,35 @@ const CreateQuestion = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const categories = [
-    { value: 'CS', label: 'CS - Computer Science' },
-    { value: 'ART', label: 'ART - Art History' },
-    { value: 'BUS', label: 'BUS - Business' },
-    { value: 'ARC', label: 'ARC - Architecture' },
-    { value: 'MIS', label: 'MIS - Management Information Systems' },
-    { value: 'ABA Bank', label: 'ABA Bank - ABA Banking' }
-  ];
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apiClient.get('/categories');
+        // Extract categories from response object
+        const categoriesData = response.data?.categories || response.data;
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+        
+        // Check for category parameter in URL
+        const categoryParam = searchParams.get('category');
+        if (categoryParam) {
+          setCategoryFromUrl(categoryParam);
+          setIsCategoryLocked(true);
+          
+          // Find and set the category ID based on the category name
+          const matchingCategory = categoriesData.find(cat => cat.name === categoryParam);
+          if (matchingCategory) {
+            setSelectedCategory(matchingCategory.id.toString());
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+        toast.error('Failed to fetch categories');
+      }
+    };
+
+    fetchCategories();
+  }, [searchParams]);
 
   const handleAnswerChange = (answerId, newText) => {
     setAnswers(prev => prev.map(answer => 
@@ -49,12 +78,12 @@ const CreateQuestion = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!selectedCategory) {
+    if (!selectedCategory || selectedCategory === '') {
       newErrors.category = 'Category is required';
     }
     
-    if (!timeLimit.trim()) {
-      newErrors.timeLimit = 'Time limit is required';
+    if (!timeLimit || timeLimit < 5 || timeLimit > 300) {
+      newErrors.timeLimit = 'Time limit must be between 5 and 300 seconds';
     }
     
     if (!questionText.trim()) {
@@ -71,29 +100,47 @@ const CreateQuestion = () => {
   };
 
   const handleCreate = async () => {
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
     
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Creating question:', {
-        category: selectedCategory,
-        timeLimit,
-        question: questionText,
-        answers,
-        correctAnswerId
-      });
-      navigate('/host/questionbank/questions');
+      const answerChoices = answers.map((answer, index) => ({
+        choiceText: answer.text.trim(),
+        isCorrect: answer.id === correctAnswerId
+      }));
+
+      const questionData = {
+        categoryId: selectedCategory,
+        questionText: questionText.trim(),
+        timeLimit: parseInt(timeLimit),
+        answerChoices
+      };
+
+      await apiClient.post('/questions', questionData);
+      toast.success('Question created successfully!');
+      
+      // Navigate back to the filtered questions view if we came from a category filter
+      const returnUrl = categoryFromUrl 
+        ? `/host/questionbank/questions?category=${encodeURIComponent(categoryFromUrl)}`
+        : '/host/questionbank/categories/view';
+      navigate(returnUrl);
     } catch (error) {
       console.error('Error creating question:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to create question';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleCancel = () => {
-    navigate('/host/questionbank/questions');
+    // Navigate back to the filtered questions view if we came from a category filter
+    const returnUrl = categoryFromUrl 
+      ? `/host/questionbank/questions?category=${encodeURIComponent(categoryFromUrl)}`
+      : '/host/questionbank/categories/view';
+    navigate(returnUrl);
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -122,19 +169,33 @@ const CreateQuestion = () => {
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Category <span className="text-red-500">*</span>
+                  {isCategoryLocked && (
+                    <span className="ml-2 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                      Auto-selected from {categoryFromUrl}
+                    </span>
+                  )}
                 </Label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className={`${errors.category ? 'border-red-500' : ''}`}>
+                <Select 
+                  value={selectedCategory} 
+                  onValueChange={isCategoryLocked ? undefined : setSelectedCategory}
+                  disabled={isCategoryLocked}
+                >
+                  <SelectTrigger className={`${errors.category ? 'border-red-500' : ''} ${isCategoryLocked ? 'bg-gray-50 cursor-not-allowed opacity-75' : ''}`}>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
+                    {(categories || []).map((category) => (
+                      <SelectItem key={category.id} value={category.id.toString()}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {isCategoryLocked && (
+                  <p className="text-xs text-gray-500">
+                    Category is automatically set because you're creating a question from the {categoryFromUrl} category filter.
+                  </p>
+                )}
                 {errors.category && (
                   <p className="text-red-500 text-xs">{errors.category}</p>
                 )}
@@ -142,13 +203,16 @@ const CreateQuestion = () => {
               
               <div className="space-y-2">
                 <Label htmlFor="time-limit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Time Limit <span className="text-red-500">*</span>
+                  Time Limit (seconds) <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="time-limit"
+                  type="number"
+                  min="5"
+                  max="300"
                   value={timeLimit}
                   onChange={(e) => setTimeLimit(e.target.value)}
-                  placeholder="e.g., 30s"
+                  placeholder="30"
                   className={`${errors.timeLimit ? 'border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
                 />
                 {errors.timeLimit && (
@@ -163,7 +227,9 @@ const CreateQuestion = () => {
                 Question Author
               </Label>
               <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
-                <p className="text-sm text-gray-600 dark:text-gray-400">Sovitep [Admin] (You)</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {user?.username || 'Unknown'} [{user?.role || 'User'}] (You)
+                </p>
               </div>
             </div>
 
