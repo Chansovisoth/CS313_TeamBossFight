@@ -23,10 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 
 const QuestionBankView = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   
   // Determine initial view mode based on current route
   const getInitialViewMode = () => {
@@ -38,6 +42,11 @@ const QuestionBankView = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [categories, setCategories] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [questionsLoading, setQuestionsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const itemsPerPage = 8;
 
   // Update view mode when route changes
@@ -48,35 +57,110 @@ const QuestionBankView = () => {
       setSearchQuery('');
       setCategoryFilter('');
       setCurrentPage(1);
+      
+      // Fetch questions when switching to question view
+      if (newViewMode === 'question') {
+        fetchQuestions();
+      }
     }
   }, [location.pathname]);
 
-  // Static data
-  const categories = [
-    { id: 1, name: 'ARC', author: 'Chanreach [Admin]', questionCount: 15 },
-    { id: 2, name: 'ART', author: 'Sovitep [Admin]', questionCount: 12 },
-    { id: 3, name: 'BUS', author: 'Chanreach [Admin]', questionCount: 20 },
-    { id: 4, name: 'CS', author: 'Sovitep [Admin]', questionCount: 25 },
-    { id: 5, name: 'MIS', author: 'Sovitep [Admin]', questionCount: 18 },
-    { id: 6, name: 'ABA Bank', author: 'Chomroeun [Host]', questionCount: 8 }
-  ];
+  // Fetch categories when component mounts
+  useEffect(() => {
+    fetchCategories();
+    fetchQuestions();
+  }, []);
 
-  const questions = [
-    { id: 1, question: 'CPU full word?', tag: 'CS', difficulty: 'Easy', author: 'Sovitep [Admin]', lastModified: '2024-01-15' },
-    { id: 2, question: 'What is database?', tag: 'CS', difficulty: 'Medium', author: 'Chanreach [Admin]', lastModified: '2024-01-14' },
-    { id: 3, question: 'Why use MIS?', tag: 'MIS', difficulty: 'Easy', author: 'Chanreach [Admin]', lastModified: '2024-01-13' },
-    { id: 4, question: 'How to code?', tag: 'CS', difficulty: 'Hard', author: 'Sovitep [Admin]', lastModified: '2024-01-12' },
-    { id: 5, question: 'Is programming hard?', tag: 'CS', difficulty: 'Easy', author: 'Sovitep [Admin]', lastModified: '2024-01-11' },
-    { id: 6, question: 'What is marketing?', tag: 'BUS', difficulty: 'Medium', author: 'Jerry [Admin]', lastModified: '2024-01-10' },
-    { id: 7, question: 'Define architecture', tag: 'ARC', difficulty: 'Medium', author: 'Chanreach [Admin]', lastModified: '2024-01-09' },
-    { id: 8, question: 'Art history basics', tag: 'ART', difficulty: 'Easy', author: 'Sovitep [Admin]', lastModified: '2024-01-08' }
-  ];
+  // Fetch categories from API
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiClient.get('/categories');
+      
+      // Extract categories from response object
+      const categoriesData = response.data?.categories || response.data;
+      const categories = Array.isArray(categoriesData) ? categoriesData : [];
+      
+      // Fetch question counts for each category using the dedicated count endpoint
+      const categoriesWithCounts = await Promise.all(
+        categories.map(async (category) => {
+          try {
+            const countResponse = await apiClient.get(`/questions/category/${category.id}/count`);
+            const questionCount = countResponse.data?.count || 0;
+            return {
+              ...category,
+              questionCount: questionCount
+            };
+          } catch (error) {
+            console.error(`Error fetching question count for category ${category.id}:`, error);
+            return {
+              ...category,
+              questionCount: 0
+            };
+          }
+        })
+      );
+      
+      setCategories(categoriesWithCounts);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      console.log('Token in localStorage:', localStorage.getItem('accessToken'));
+      console.log('Response status:', err.response?.status);
+      console.log('Response data:', err.response?.data);
+      const errorMessage = err.response?.data?.message || 'Failed to fetch categories';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check if user can edit category
+  const canEditCategory = (category) => {
+    return user?.role === 'admin' || category?.creatorId === user?.id;
+  };
+
+  // Get author name from category
+  const getCategoryAuthor = (category) => {
+    // The API returns creator object with username
+    if (category.creator?.username) {
+      return category.creator.username;
+    }
+    return 'Unknown';
+  };
+
+  // Fetch questions from API
+  const fetchQuestions = async () => {
+    try {
+      setQuestionsLoading(true);
+      const response = await apiClient.get('/questions');
+
+      
+      // Extract questions from response object
+      const questionsData = response.data?.questions || response.data;
+      setQuestions(Array.isArray(questionsData) ? questionsData : []);
+    } catch (err) {
+      console.error('Error fetching questions:', err);
+      console.log('Token in localStorage:', localStorage.getItem('accessToken'));
+      console.log('Response status:', err.response?.status);
+      console.log('Response data:', err.response?.data);
+      const errorMessage = err.response?.data?.message || 'Failed to fetch questions';
+      toast.error(errorMessage);
+    } finally {
+      setQuestionsLoading(false);
+    }
+  };
 
   const handleViewModeChange = (value) => {
     if (value === 'category') {
       navigate('/host/questionbank/categories/view');
     } else if (value === 'question') {
       navigate('/host/questionbank/questions');
+      // Fetch questions when switching to question view
+      if (questions.length === 0) {
+        fetchQuestions();
+      }
     }
   };
 
@@ -94,7 +178,11 @@ const QuestionBankView = () => {
     if (viewMode === 'category') {
       navigate('/host/questionbank/categories/create');
     } else {
-      navigate('/host/questionbank/questions/create');
+      // Pass the current category filter to the create page if one is active
+      const createUrl = categoryFilter && categoryFilter !== 'all' 
+        ? `/host/questionbank/questions/create?category=${encodeURIComponent(categoryFilter)}`
+        : '/host/questionbank/questions/create';
+      navigate(createUrl);
     }
   };
 
@@ -104,7 +192,7 @@ const QuestionBankView = () => {
 
   const handleEdit = (id) => {
     if (viewMode === 'category') {
-      navigate(`/host/questionbank/categories/edit?id=${id}`);
+      navigate(`/host/questionbank/categories/edit/${id}`);
     } else {
       navigate(`/host/questionbank/questions/edit?id=${id}`);
     }
@@ -115,15 +203,23 @@ const QuestionBankView = () => {
     navigate(`/host/questionbank/questions?category=${categoryName}`);
   };
 
+  // Get author name from question
+  const getQuestionAuthor = (question) => {
+    if (question.creator?.username) {
+      return `${question.creator.username} [${user?.role === 'admin' ? 'Admin' : 'Host'}]`;
+    }
+    return 'Unknown';
+  };
+
   // Filter categories based on search query
-  const filteredCategories = categories.filter(category => 
+  const filteredCategories = (categories || []).filter(category => 
     category.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Filter questions based on search query AND category filter
-  const filteredQuestions = questions.filter(question => {
-    const matchesSearch = question.question.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === '' || categoryFilter === 'all' || question.tag === categoryFilter;
+  const filteredQuestions = (questions || []).filter(question => {
+    const matchesSearch = question.questionText?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === '' || categoryFilter === 'all' || question.category?.name === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
@@ -134,15 +230,6 @@ const QuestionBankView = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = currentData.slice(startIndex, endIndex);
 
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case 'Easy': return 'bg-green-100 text-green-700 border-green-200';
-      case 'Medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'Hard': return 'bg-red-100 text-red-700 border-red-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
-  };
-
   const getAuthorBadgeColor = (author) => {
     if (author.includes('[Admin]')) return 'bg-blue-100 text-blue-700 border-blue-200';
     if (author.includes('[Host]')) return 'bg-purple-100 text-purple-700 border-purple-200';
@@ -150,7 +237,7 @@ const QuestionBankView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-3 sm:px-4 py-4 max-w-7xl">
         
         {/* Header */}
@@ -236,7 +323,23 @@ const QuestionBankView = () => {
         </Card>
 
         {/* Content Area */}
-        {paginatedData.length === 0 ? (
+        {(loading || (viewMode === 'question' && questionsLoading)) ? (
+          // Loading State
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-8 text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-400">Loading {viewMode === 'category' ? 'categories' : 'questions'}...</p>
+            </CardContent>
+          </Card>
+        ) : error ? (
+          // Error State
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-8 text-center">
+              <p className="text-red-500 mb-4">{error}</p>
+              <Button onClick={() => viewMode === 'category' ? fetchCategories() : fetchQuestions()} variant="outline">Try Again</Button>
+            </CardContent>
+          </Card>
+        ) : paginatedData.length === 0 ? (
           // Empty State
           <Card className="border-0 shadow-sm">
             <CardContent className="p-8 text-center">
@@ -271,6 +374,7 @@ const QuestionBankView = () => {
                         <h3 className="font-semibold text-sm text-gray-900 dark:text-white truncate">{category.name}</h3>
                       </div>
                     </div>
+                    {canEditCategory(category) && (
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -282,13 +386,14 @@ const QuestionBankView = () => {
                     >
                       <Edit3 className="h-3.5 w-3.5" />
                     </Button>
+                    )}
                   </div>
                   <div className="flex items-center justify-between gap-2 mt-2">
                     <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
-                      {category.questionCount} questions
+                      {category.questionsCount || category.questionCount || 0} questions
                     </Badge>
-                    <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(category.author)} truncate max-w-20`}>
-                      {category.author.split(' ')[0]}
+                    <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(getCategoryAuthor(category) + ' [Admin]')} truncate max-w-20`}>
+                      {getCategoryAuthor(category)}
                     </Badge>
                   </div>
                 </CardContent>
@@ -305,7 +410,7 @@ const QuestionBankView = () => {
                   <div className="grid grid-cols-12 gap-3 text-xs font-medium text-gray-700 dark:text-gray-300">
                     <div className="col-span-5">Question</div>
                     <div className="col-span-2 text-center">Category</div>
-                    <div className="col-span-2 text-center">Difficulty</div>
+                    <div className="col-span-2 text-center">Time Limit</div>
                     <div className="col-span-2 text-center">Author</div>
                     <div className="col-span-1 text-center">Edit</div>
                   </div>
@@ -315,26 +420,26 @@ const QuestionBankView = () => {
                     {paginatedData.map((question) => (
                       <div key={question.id} className="grid grid-cols-12 gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                         <div className="col-span-5">
-                          <p className="font-medium text-sm text-gray-900 dark:text-white truncate" title={question.question}>
-                            {question.question}
+                          <p className="font-medium text-sm text-gray-900 dark:text-white truncate" title={question.questionText}>
+                            {question.questionText}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            Modified: {question.lastModified}
+                            Modified: {new Date(question.updatedAt).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="col-span-2 flex justify-center">
                           <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-                            {question.tag}
+                            {question.category?.name || 'No Category'}
                           </Badge>
                         </div>
                         <div className="col-span-2 flex justify-center">
-                          <Badge variant="secondary" className={`text-xs px-1.5 py-0.5 ${getDifficultyColor(question.difficulty)}`}>
-                            {question.difficulty}
+                          <Badge variant="secondary" className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 border-blue-200">
+                            {question.timeLimit}s
                           </Badge>
                         </div>
                         <div className="col-span-2 flex justify-center">
-                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(question.author)}`}>
-                            {question.author.split(' ')[0]}
+                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(getQuestionAuthor(question))}`}>
+                            {getQuestionAuthor(question).split(' ')[0]}
                           </Badge>
                         </div>
                         <div className="col-span-1 flex justify-center">
@@ -362,21 +467,21 @@ const QuestionBankView = () => {
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm text-gray-900 dark:text-white leading-tight mb-1.5">
-                          {question.question}
+                          {question.questionText}
                         </p>
                         <div className="flex flex-wrap gap-1.5 mb-1.5">
                           <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-                            {question.tag}
+                            {question.category?.name || 'No Category'}
                           </Badge>
-                          <Badge variant="secondary" className={`text-xs px-1.5 py-0.5 ${getDifficultyColor(question.difficulty)}`}>
-                            {question.difficulty}
+                          <Badge variant="secondary" className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 border-blue-200">
+                            {question.timeLimit}s
                           </Badge>
-                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(question.author)}`}>
-                            {question.author.split(' ')[0]}
+                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(getQuestionAuthor(question))}`}>
+                            {getQuestionAuthor(question).split(' ')[0]}
                           </Badge>
                         </div>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Modified: {question.lastModified}
+                          Modified: {new Date(question.updatedAt).toLocaleDateString()}
                         </p>
                       </div>
                       <Button 

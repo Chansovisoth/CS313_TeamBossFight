@@ -9,7 +9,7 @@ export const ProtectedRoute = ({ allowedRoles = [] }) => {
     return <div className="text-center">Loading...</div>;
   }
   if (!user) {
-    return <Navigate to="/error" replace />;
+    return <Navigate to="/auth" replace />;
   }
   if (
     allowedRoles.length > 0 &&

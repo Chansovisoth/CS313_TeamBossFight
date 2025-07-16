@@ -16,16 +16,9 @@ import { apiClient } from "@/api";
 
 
 const Authentication = () => {
-  const { login, setupAuth } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Setup API interceptors when component mounts
-  useEffect(() => {
-    if (setupAuth) {
-      setupAuth(navigate);
-    }
-  }, [setupAuth, navigate]);
 
   // Determine initial form state from URL
   const params = new URLSearchParams(location.search);
@@ -120,7 +113,13 @@ const Authentication = () => {
         throw new Error("Invalid login response from server");
       }
       login({ accessToken: data.token, user: data.user });
-      navigate("/");
+      
+      // Redirect based on user role
+      if (data.user.role === 'admin' || data.user.role === 'host') {
+        navigate("/host/events/view");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       let message = "Login failed";
       if (err.response && err.response.data && err.response.data.message) {

@@ -23,16 +23,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 
 const QuestionsIndex = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   
   const [viewMode] = useState('question'); // Always question view for this component
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [categories, setCategories] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const itemsPerPage = 8;
 
   // Check for category filter from URL params on component mount
@@ -41,6 +49,8 @@ const QuestionsIndex = () => {
     if (categoryFromUrl) {
       setCategoryFilter(categoryFromUrl);
     }
+    fetchCategories();
+    fetchQuestions();
   }, [searchParams]);
 
   const handleViewModeChange = (value) => {
@@ -56,7 +66,11 @@ const QuestionsIndex = () => {
   };
 
   const handleAddNew = () => {
-    navigate('/host/questionbank/questions/create');
+    // Pass the current category filter to the create page if one is active
+    const createUrl = categoryFilter && categoryFilter !== 'all' 
+      ? `/host/questionbank/questions/create?category=${encodeURIComponent(categoryFilter)}`
+      : '/host/questionbank/questions/create';
+    navigate(createUrl);
   };
 
   const handleQuestionClick = (questionId) => {
@@ -77,32 +91,61 @@ const QuestionsIndex = () => {
     setCurrentPage(1);
   };
 
-  // Categories for filter
-  const categories = [
-    { id: 1, name: 'ARC', fullName: 'Architecture' },
-    { id: 2, name: 'ART', fullName: 'Art History' },
-    { id: 3, name: 'BUS', fullName: 'Business' },
-    { id: 4, name: 'CS', fullName: 'Computer Science' },
-    { id: 5, name: 'MIS', fullName: 'Management Information Systems' },
-    { id: 6, name: 'ABA Bank', fullName: 'ABA Banking' }
-  ];
+  // Fetch categories from API
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get('/categories');
+      const categoriesData = response.data?.categories || response.data;
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      const errorMessage = err.response?.data?.message || 'Failed to fetch categories';
+      toast.error(errorMessage);
+    }
+  };
 
-  // Mock data - Questions
-  const questions = [
-    { id: 1, question: 'What does CPU stand for?', tag: 'CS', difficulty: 'Easy', author: 'Sovitep', timeLimit: '30s', lastModified: '2024-01-15' },
-    { id: 2, question: 'What is a relational database?', tag: 'CS', difficulty: 'Medium', author: 'Chanreach', timeLimit: '45s', lastModified: '2024-01-14' }, 
-    { id: 3, question: 'Why do we use MIS in business?', tag: 'MIS', difficulty: 'Easy', author: 'Chanreach', timeLimit: '30s', lastModified: '2024-01-13' },
-    { id: 4, question: 'How do you implement object-oriented programming?', tag: 'CS', difficulty: 'Hard', author: 'Sovitep', timeLimit: '60s', lastModified: '2024-01-12' },
-    { id: 5, question: 'What are the principles of modern architecture?', tag: 'ARC', difficulty: 'Medium', author: 'Chanreach', timeLimit: '45s', lastModified: '2024-01-11' },
-    { id: 6, question: 'Describe Renaissance art characteristics', tag: 'ART', difficulty: 'Medium', author: 'Sovitep', timeLimit: '40s', lastModified: '2024-01-10' },
-    { id: 7, question: 'What is supply chain management?', tag: 'BUS', difficulty: 'Easy', author: 'Jerry', timeLimit: '35s', lastModified: '2024-01-09' },
-    { id: 8, question: 'How does machine learning work?', tag: 'CS', difficulty: 'Hard', author: 'Sovitep', timeLimit: '90s', lastModified: '2024-01-08' }
-  ];
+  // Fetch questions from API
+  const fetchQuestions = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiClient.get('/questions');
+      
+      // Extract questions from response object
+      const questionsData = response.data?.questions || response.data;
+      setQuestions(Array.isArray(questionsData) ? questionsData : []);
+    } catch (err) {
+      console.error('Error fetching questions:', err);
+      const errorMessage = err.response?.data?.message || 'Failed to fetch questions';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get author name from question
+  const getQuestionAuthor = (question) => {
+    if (question.creator?.username) {
+      return `${question.creator.username} [${user?.role === 'admin' ? 'Admin' : 'Host'}]`;
+    }
+    return 'Unknown';
+  };
+
+  // Check if user can edit question
+  const canEditQuestion = (question) => {
+    // Admin can edit any question
+    if (user?.role === 'admin') {
+      return true;
+    }
+    // User can only edit their own questions
+    return question.creator?.id === user?.id;
+  };
 
   // Filter questions based on search query AND category filter
-  const filteredQuestions = questions.filter(question => {
-    const matchesSearch = question.question.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === '' || categoryFilter === 'all' || question.tag === categoryFilter;
+  const filteredQuestions = (questions || []).filter(question => {
+    const matchesSearch = question.questionText?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === '' || categoryFilter === 'all' || question.category?.name === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
@@ -118,7 +161,7 @@ const QuestionsIndex = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-3 sm:px-4 py-4 max-w-7xl">
         
         {/* Header */}
@@ -200,7 +243,23 @@ const QuestionsIndex = () => {
         </Card>
 
         {/* Content Area */}
-        {paginatedData.length === 0 ? (
+        {loading ? (
+          // Loading State
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-8 text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-400">Loading questions...</p>
+            </CardContent>
+          </Card>
+        ) : error ? (
+          // Error State
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-8 text-center">
+              <p className="text-red-500 mb-4">{error}</p>
+              <Button onClick={fetchQuestions} variant="outline">Try Again</Button>
+            </CardContent>
+          </Card>
+        ) : paginatedData.length === 0 ? (
           // Empty State
           <Card className="border-0 shadow-sm">
             <CardContent className="p-8 text-center">
@@ -238,32 +297,34 @@ const QuestionsIndex = () => {
                       <div key={question.id} className="grid grid-cols-12 gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
                            onClick={() => handleQuestionClick(question.id)}>
                         <div className="col-span-7">
-                          <p className="font-medium text-sm text-gray-900 dark:text-white truncate" title={question.question}>
-                            {question.question}
+                          <p className="font-medium text-sm text-gray-900 dark:text-white truncate" title={question.questionText}>
+                            {question.questionText}
                           </p>
                         </div>
                         <div className="col-span-2 flex justify-center">
                           <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-                            {question.tag}
+                            {question.category?.name || 'No Category'}
                           </Badge>
                         </div>
                         <div className="col-span-2 flex justify-center">
-                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(question.author)}`}>
-                            {question.author}
+                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(getQuestionAuthor(question))}`}>
+                            {getQuestionAuthor(question).split(' ')[0]}
                           </Badge>
                         </div>
                         <div className="col-span-1 flex justify-center">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEdit(question.id);
-                            }}
-                            className="h-7 w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
-                          >
-                            <Edit3 className="h-3.5 w-3.5" />
-                          </Button>
+                          {canEditQuestion(question) && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(question.id);
+                              }}
+                              className="h-7 w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
+                            >
+                              <Edit3 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -280,28 +341,30 @@ const QuestionsIndex = () => {
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm text-gray-900 dark:text-white leading-tight mb-1.5">
-                          {question.question}
+                          {question.questionText}
                         </p>
                         <div className="flex flex-wrap gap-1.5 mb-1.5">
                           <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-                            {question.tag}
+                            {question.category?.name || 'No Category'}
                           </Badge>
-                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(question.author)}`}>
-                            {question.author}
+                          <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(getQuestionAuthor(question))}`}>
+                            {getQuestionAuthor(question).split(' ')[0]}
                           </Badge>
                         </div>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(question.id);
-                        }}
-                        className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
-                      >
-                        <Edit3 className="h-3.5 w-3.5" />
-                      </Button>
+                      {canEditQuestion(question) && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(question.id);
+                          }}
+                          className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
+                        >
+                          <Edit3 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -364,4 +427,4 @@ const QuestionsIndex = () => {
   );
 };
 
-export default QuestionsIndex;                                                                                                                                            
+export default QuestionsIndex;

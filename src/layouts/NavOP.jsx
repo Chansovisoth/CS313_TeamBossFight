@@ -1,4 +1,5 @@
 // ===== LIBRARIES ===== //
+import { useCallback } from "react";
 import { Calendar, Sword, BookOpen, Settings, Home, Moon, Sun, User, LogOut, BarChart3 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -71,15 +72,32 @@ const NavOP = (props) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { colorScheme, toggleColorScheme } = useThemeColor();
-  const { user: authUser, logout } = useAuth();
+  const { user: authUser, logout, isAuthenticated } = useAuth();
   
   // Use authenticated user or fallback to mock user
   const user = authUser || mockHostUser;
 
-  const handleLogout = () => {
-    logout();
-    navigate("/auth");
-  };
+  // Filter navigation items based on user role
+  const filteredNavItems = mainNavItems.filter(item => {
+    // Only show User Management for admin users
+    if (item.title === "User Management") {
+      return authUser?.role === 'admin';
+    }
+    return true;
+  });
+
+  const handleLogout = useCallback(async () => {
+    try {
+      logout();
+      // Small delay to ensure logout is processed
+      await new Promise(resolve => setTimeout(resolve, 100));
+      navigate("/auth", { replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Still navigate to auth even if logout fails
+      navigate("/auth", { replace: true });
+    }
+  }, [logout, navigate]);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -110,7 +128,7 @@ const NavOP = (props) => {
           <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavItems.map((item) => (
+              {filteredNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
@@ -154,14 +172,14 @@ const NavOP = (props) => {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={mockHostUser.avatar || "/placeholder.svg"} alt={mockHostUser.name} />
+                    <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.username || user.name} />
                     <AvatarFallback className="rounded-lg bg-orange-500 text-white">
-                      H
+                      {(user.username || user.name || 'H').charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{mockHostUser.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">{mockHostUser.email}</span>
+                    <span className="truncate font-semibold">{user.username || user.name}</span>
+                    <span className="truncate text-xs text-muted-foreground">{user.email}</span>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -174,22 +192,22 @@ const NavOP = (props) => {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={mockHostUser.avatar || "/placeholder.svg"} alt={mockHostUser.name} />
+                      <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.username || user.name} />
                       <AvatarFallback className="rounded-lg bg-orange-500 text-white">
-                        H
+                        {(user.username || user.name || 'H').charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{mockHostUser.name}</span>
-                      <span className="truncate text-xs text-muted-foreground">{mockHostUser.email}</span>
+                      <span className="truncate font-semibold">{user.username || user.name}</span>
+                      <span className="truncate text-xs text-muted-foreground">{user.email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
-                {!user ? (
+                {!isAuthenticated ? (
                   <>
-                    <DropdownMenuItem onClick={() => navigate("/host/auth")}>
+                    <DropdownMenuItem onClick={() => navigate("/auth")}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Login</span>
                     </DropdownMenuItem>
