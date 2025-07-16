@@ -15,6 +15,10 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 // ===== UTILITIES ===== //
 import { startConfettiCelebration } from "@/lib/Confetti";
 
+// ===== AUDIOS ===== //
+import victoryDrumsSound from "@/assets/Audio/victory-drums.mp3";
+import victoryThemeSound from "@/assets/Audio/victory-theme.mp3";
+
 // ===== STYLES ===== //
 import "@/index.css";
 
@@ -122,8 +126,35 @@ const BossPodium = () => {
   // Top 3 individual players for podium
   const podiumPlayers = individualLeaderboard.slice(0, 3);
 
-  // Confetti celebration on component mount
+  // Audio
+  const victoryDrumsAudio = new Audio(victoryDrumsSound);
+  const victoryThemeAudio = new Audio(victoryThemeSound);
+  victoryDrumsAudio.volume = 0.03;
+  victoryThemeAudio.volume = 0.02;
+
+  // Confetti celebration and victory sounds on component mount
   useEffect(() => {
+    const playVictorySounds = async () => {
+      try {
+        // Play victory drums first
+        console.log("Playing victory drums...");
+        victoryDrumsAudio.currentTime = 0;
+        await victoryDrumsAudio.play();
+
+        // Play victory theme 3 seconds after drums start
+        setTimeout(async () => {
+          console.log("Playing victory theme...");
+          victoryThemeAudio.currentTime = 0;
+          victoryThemeAudio.loop = false; // Ensure no loop
+          await victoryThemeAudio.play();
+          console.log("Victory sounds sequence complete!");
+        }, 3800); // 4 seconds delay
+
+      } catch (error) {
+        console.log("Victory audio play failed:", error);
+      }
+    };
+
     const triggerVictoryConfetti = async () => {
       // Start confetti celebration with 3 bursts
       await startConfettiCelebration({
@@ -136,13 +167,21 @@ const BossPodium = () => {
       });
     };
 
-    // Trigger confetti after a short delay to let the page render
-    const confettiTimer = setTimeout(() => {
-      triggerVictoryConfetti();
-    }, 500); // 0.5 second delay
+    // Start victory sounds immediately and confetti after a short delay
+    const effectTimer = setTimeout(() => {
+      playVictorySounds(); // Start sounds immediately
+      triggerVictoryConfetti(); // Start confetti
+    }, 100); // Very short delay to let the page render
 
     // Cleanup
-    return () => clearTimeout(confettiTimer);
+    return () => {
+      clearTimeout(effectTimer);
+      // Stop and cleanup audio if component unmounts
+      victoryDrumsAudio.pause();
+      victoryDrumsAudio.currentTime = 0;
+      victoryThemeAudio.pause();
+      victoryThemeAudio.currentTime = 0;
+    };
   }, []); // Empty dependency array - only run once on mount
 
   // Pagination component
@@ -220,10 +259,14 @@ const BossPodium = () => {
               {podiumPlayers.map((player, idx) => {
                 // Height for podium effect
                 let height = player.rank === 1 ? 120 : player.rank === 2 ? 80 : 60;
+                // Animation classes based on rank - only for the avatar
+                let animationClass = player.rank === 1 ? "animate-bounce-excited-first" : 
+                                   player.rank === 2 ? "animate-bounce-excited-second" : 
+                                   "animate-bounce-excited-third";
                 return (
                   <div key={player.rank} className={`flex flex-col items-center ${idx === 0 ? "order-2" : idx === 1 ? "order-1" : "order-3"}`}>
                     <div className="mb-2 relative">
-                      <Avatar className="w-20 h-20 md:w-24 md:h-24 border-4 border-gray-200 dark:border-gray-700 shadow-lg">
+                      <Avatar className={`w-20 h-20 md:w-24 md:h-24 border-4 border-gray-200 dark:border-gray-700 shadow-lg ${animationClass}`}>
                         <AvatarImage src={player.avatar} alt={player.player} />
                         <AvatarFallback>{player.player[0]}</AvatarFallback>
                       </Avatar>

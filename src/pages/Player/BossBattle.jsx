@@ -1,5 +1,5 @@
 // ===== LIBRARIES ===== //
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Users, Heart, Timer, Trophy, LogOut, Sun, Moon, Smartphone, Ambulance, Skull } from "lucide-react";
 
@@ -20,6 +20,7 @@ import "@/index.css";
 import punchSound from "@/assets/Audio/punch1.mp3";
 import hurtSound1 from "@/assets/Audio/hurt1.mp3";
 import hurtSound2 from "@/assets/Audio/hurt2.mp3";
+import heartbeatsSound from "@/assets/Audio/heartbeats.mp3";
 
 const BossBattle = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const BossBattle = () => {
   // ===== TIMING CONFIGURATION ===== //
   const BOSS_DEFEAT_MESSAGE_DELAY_MS = 1000;
   const BOSS_DEFEAT_COUNTDOWN_DELAY_MS = 1000;
-  const BOSS_DEFEAT_COUNTDOWN_DURATION_SECONDS = 6;
+  const BOSS_DEFEAT_COUNTDOWN_DURATION_SECONDS = 5;
   
   // ===== BOSS CONFIGURATION (Backend Integration Ready) ===== //
   // This will be replaced with data from the bosses API endpoint
@@ -121,22 +122,62 @@ const BossBattle = () => {
 
   const questionMaxTimeSeconds = currentQuestionData.timeLimitSeconds; // Use question's specific time limit
 
-  // Audios
-  const punchAudio = new Audio(punchSound);
-  const hurtAudio1 = new Audio(hurtSound1);
-  const hurtAudio2 = new Audio(hurtSound2);
-  punchAudio.volume = 0.2;
-  hurtAudio1.volume = 0.2;
-  hurtAudio2.volume = 0.2;
+  // Audio refs to persist across renders
+  const punchAudioRef = useRef(null);
+  const hurtAudio1Ref = useRef(null);
+  const hurtAudio2Ref = useRef(null);
+  const heartbeatsAudioRef = useRef(null);
+
+  // Initialize audio objects once
+  useEffect(() => {
+    punchAudioRef.current = new Audio(punchSound);
+    hurtAudio1Ref.current = new Audio(hurtSound1);
+    hurtAudio2Ref.current = new Audio(hurtSound2);
+    heartbeatsAudioRef.current = new Audio(heartbeatsSound);
+    
+    punchAudioRef.current.volume = 0.2;
+    hurtAudio1Ref.current.volume = 0.1;
+    hurtAudio2Ref.current.volume = 0.1;
+    heartbeatsAudioRef.current.volume = 0.4;
+
+    // Cleanup function to stop all audio when component unmounts
+    return () => {
+      try {
+        if (punchAudioRef.current) {
+          punchAudioRef.current.pause();
+          punchAudioRef.current = null;
+        }
+        if (hurtAudio1Ref.current) {
+          hurtAudio1Ref.current.pause();
+          hurtAudio1Ref.current = null;
+        }
+        if (hurtAudio2Ref.current) {
+          hurtAudio2Ref.current.pause();
+          hurtAudio2Ref.current = null;
+        }
+        if (heartbeatsAudioRef.current) {
+          heartbeatsAudioRef.current.pause();
+          heartbeatsAudioRef.current.currentTime = 0;
+          heartbeatsAudioRef.current.loop = false;
+          heartbeatsAudioRef.current = null;
+        }
+        console.log("All audio cleaned up on component unmount");
+      } catch (error) {
+        console.log("Error during audio cleanup:", error);
+      }
+    };
+  }, []);
 
   // Function to play random hurt sound
   const playHurtSound = () => {
-    const hurtSounds = [hurtAudio1, hurtAudio2];
+    const hurtSounds = [hurtAudio1Ref.current, hurtAudio2Ref.current];
     const randomHurtSound = hurtSounds[Math.floor(Math.random() * hurtSounds.length)];
-    randomHurtSound.currentTime = 0; // Reset audio to start
-    randomHurtSound.play().catch(error => {
-      console.log("Hurt audio play failed:", error);
-    });
+    if (randomHurtSound) {
+      randomHurtSound.currentTime = 0; // Reset audio to start
+      randomHurtSound.play().catch(error => {
+        console.log("Hurt audio play failed:", error);
+      });
+    }
   };
 
   const goBack = () => {
@@ -186,10 +227,12 @@ const BossBattle = () => {
       }, 2000);
 
       // Play punch sound effect
-      punchAudio.currentTime = 0; // Reset audio to start
-      punchAudio.play().catch(error => {
-        console.log("Audio play failed:", error);
-      });
+      if (punchAudioRef.current) {
+        punchAudioRef.current.currentTime = 0; // Reset audio to start
+        punchAudioRef.current.play().catch(error => {
+          console.log("Audio play failed:", error);
+        });
+      }
 
       console.log(`Correct! Boss takes ${damageAmount} damage.`);
 
@@ -253,6 +296,16 @@ const BossBattle = () => {
       setIsCurrentPlayerKnockedOut(true);
       setCurrentPlayerRevivalCode(generatedCode);
       setCurrentPlayerRevivalTimeLeft(60);
+      
+      // Play heartbeats sound when knocked out
+      if (heartbeatsAudioRef.current) {
+        heartbeatsAudioRef.current.currentTime = 0; // Reset audio to start
+        heartbeatsAudioRef.current.loop = true; // Loop the heartbeats sound
+        heartbeatsAudioRef.current.play().catch(error => {
+          console.log("Heartbeats audio play failed:", error);
+        });
+      }
+      
       console.log(`Player knocked out! Revival code: ${generatedCode}`);
     }
   };
@@ -281,6 +334,14 @@ const BossBattle = () => {
         setPlayerLivesRemaining(3); // Restore full lives
         setCurrentPlayerRevivalCode("");
         setCurrentPlayerRevivalTimeLeft(60);
+        
+        // Stop heartbeats sound when revived
+        if (heartbeatsAudioRef.current) {
+          heartbeatsAudioRef.current.pause();
+          heartbeatsAudioRef.current.currentTime = 0;
+          heartbeatsAudioRef.current.loop = false;
+        }
+        
         console.log("Player revived!");
       }
     }
@@ -369,6 +430,18 @@ const BossBattle = () => {
       setIsCurrentPlayerDead(true);
       setCurrentPlayerRevivalTimeLeft(60);
       
+      // Stop heartbeats sound when countdown reaches 0 (player dies)
+      try {
+        if (heartbeatsAudioRef.current) {
+          heartbeatsAudioRef.current.pause();
+          heartbeatsAudioRef.current.currentTime = 0;
+          heartbeatsAudioRef.current.loop = false;
+          console.log("Heartbeats stopped - player died (revival timer expired)");
+        }
+      } catch (error) {
+        console.log("Error stopping heartbeats audio:", error);
+      }
+      
       // Trigger hurt animation and sound when player dies
       setIsPlayerHurt(true);
       playHurtSound();
@@ -378,7 +451,7 @@ const BossBattle = () => {
         setIsPlayerHurt(false);
       }, 500);
       
-      console.log("Revival time expired - player is dead!");
+      console.log("Revival time expired - player is dead! Heartbeats stopped.");
     }
 
     return () => clearTimeout(timer);
@@ -441,6 +514,40 @@ const BossBattle = () => {
       return "text-red-500"; // Slow zone (red)
     }
   };
+
+  // Cleanup effect to stop heartbeats sound when component unmounts or player becomes dead
+  useEffect(() => {
+    return () => {
+      // Stop heartbeats sound when component unmounts (e.g., navigating away)
+      try {
+        if (heartbeatsAudioRef.current) {
+          heartbeatsAudioRef.current.pause();
+          heartbeatsAudioRef.current.currentTime = 0;
+          heartbeatsAudioRef.current.loop = false;
+          console.log("Heartbeats stopped - component cleanup");
+        }
+      } catch (error) {
+        console.log("Error stopping heartbeats audio during cleanup:", error);
+      }
+    };
+  }, []);
+
+  // Effect to stop heartbeats sound when player becomes dead
+  useEffect(() => {
+    if (isCurrentPlayerDead) {
+      // Force stop heartbeats sound with error handling
+      try {
+        if (heartbeatsAudioRef.current) {
+          heartbeatsAudioRef.current.pause();
+          heartbeatsAudioRef.current.currentTime = 0;
+          heartbeatsAudioRef.current.loop = false;
+          console.log("Heartbeats stopped - player is dead");
+        }
+      } catch (error) {
+        console.log("Error stopping heartbeats audio when player died:", error);
+      }
+    }
+  }, [isCurrentPlayerDead]);
 
   // ===== ===== ===== RENDER ===== ===== ===== //
   return (
@@ -698,6 +805,21 @@ const BossBattle = () => {
             {isCurrentPlayerDead ? (
               // Dead state - show death message
               <div className="text-center space-y-4">
+                {/* Force stop heartbeats when dead dialog is shown */}
+                {(() => {
+                  try {
+                    if (heartbeatsAudioRef.current) {
+                      heartbeatsAudioRef.current.pause();
+                      heartbeatsAudioRef.current.currentTime = 0;
+                      heartbeatsAudioRef.current.loop = false;
+                      console.log("Heartbeats stopped - dead dialog shown");
+                    }
+                  } catch (error) {
+                    console.log("Error stopping heartbeats in dead dialog:", error);
+                  }
+                  return null;
+                })()}
+                
                 <div className="flex items-center justify-center gap-2">
                   <Skull className="w-8 h-8 text-foreground" />
                   <AlertDialogTitle className="text-center text-foreground text-xl font-bold">
@@ -725,6 +847,9 @@ const BossBattle = () => {
               <div className="text-center space-y-4">
                 {/* Timer at the top */}
                 <div className="text-4xl font-bold text-foreground">
+                  <Heart 
+                    className="w-8 h-8 text-red-500 fill-red-500 mb-4 mx-auto heartbeat"
+                  />
                   {currentPlayerRevivalTimeLeft}s
                 </div>
                 
