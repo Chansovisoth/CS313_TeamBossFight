@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { apiClient, setupInterceptors } from "../api";
+import { apiClient } from "../api";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
-    delete apiClient.defaults.headers.common["Authorization"];
-  };
-
-  // Setup API interceptors (will be called from components that have access to navigate)
-  const setupAuth = (navigate) => {
-    setupInterceptors({ logout }, navigate);
+  const logout = async () => {
+    try {
+      // Call logout endpoint to clear refresh token cookie
+      await apiClient.post("/auth/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Continue with client-side logout even if server call fails
+    } finally {
+      // Clear client-side data
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("accessToken");
+      delete apiClient.defaults.headers.common["Authorization"];
+    }
   };
 
   useEffect(() => {
@@ -66,7 +70,6 @@ export const AuthProvider = ({ children }) => {
       login, 
       logout, 
       isLoading, 
-      setupAuth,
       isAuthenticated: !!user
     }}>
       {children}

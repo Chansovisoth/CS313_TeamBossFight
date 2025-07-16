@@ -189,7 +189,7 @@ export function NavSidebar({ ...props }) {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user?.avatar || "/placeholder.svg"} alt={user?.name || "User"} />
+                    <AvatarImage src={user?.avatar || "/placeholder.svg"} alt={user?.username || "User"} />
                     <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-white">
                       BF
                     </AvatarFallback>

@@ -12,17 +12,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { MessageDisplay } from "./components/MessageDisplay";
 import PageTitle from "@/layouts/PageTitle";
 import { Toaster } from "@/components/ui/sonner";
-// import { useAuth } from "./context/useAuth";
-// import { setupInterceptors } from "./api";
 
 export default function App() {
   const navigate = useNavigate();
-  
-  // ===== AUTHENTICATION INTERCEPTORS ===== //
-  // const auth = useAuth();
-  // useEffect(() => {
-  //   setupInterceptors(auth, navigate);
-  // }, [auth, navigate]);
 
   return (
     <SidebarProvider>

@@ -398,9 +398,9 @@ const EditQuestion = () => {
               <AlertDialogDescription className="text-gray-600">
                 Are you sure you want to delete this question?
                 <br /><br />
-                <span className="font-semibold text-gray-900">"{questionText}"</span>
+                <span className="font-semibold text-gray-200">"{questionText}"</span>
                 <br /><br />
-                <span className="text-red-600 font-medium">
+                <span className="text-red-00 font-medium">
                   This action cannot be undone.
                 </span>
               </AlertDialogDescription>
