@@ -69,7 +69,7 @@ import HostProfile from "./pages/Host/Profile/Profile";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
-      <AuthProvider>
+      <AuthProvider> 
         <BrowserRouter>
           <MessageProvider>
             <Routes>
@@ -116,7 +116,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </Route>
 
               {/* ===== HOST ROUTES (Protected for host and admin roles) ===== */}
-              <Route path="/host" element={<ProtectedRoute allowedRoles={['host', 'admin']} />}>
+              {/* <Route path="/host" element={<ProtectedRoute allowedRoles={['host', 'admin']} />}> */}
+              <Route path="/host">
                 {/* Host Bosses Routes */}
                 <Route path="bosses/create" element={<AppOP />}>
                   <Route index element={<HostBossesCreate />} />
@@ -225,7 +226,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 }>
                   <Route index element={<HostUsersEdit />} />
                 </Route>
-              </Route>
+               </Route>
 
               {/* 404 Error Route */}
               <Route path="/error" element={<Error />} />
@@ -235,7 +236,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </Routes>
           </MessageProvider>
         </BrowserRouter>
-      </AuthProvider>
+       </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

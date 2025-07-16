@@ -252,7 +252,6 @@ const Leaderboard = () => {
                   <TableHead>Player</TableHead>
                   <TableHead className="text-right">DMG</TableHead>
                   <TableHead className="text-right">Correct</TableHead>
-                  <TableHead className="text-right">Last Played</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -276,7 +275,6 @@ const Leaderboard = () => {
                     </TableCell>
                     <TableCell className="text-right">{player.dmg}</TableCell>
                     <TableCell className="text-right">{player.correct}</TableCell>
-                    <TableCell className="text-right text-gray-600 dark:text-gray-400">{player.lastPlayed}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
