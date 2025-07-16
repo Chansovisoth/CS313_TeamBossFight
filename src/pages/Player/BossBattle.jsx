@@ -416,8 +416,9 @@ const BossBattle = () => {
             clearInterval(countdownInterval);
             setIsBossDefeatCountdownVisible(false);
             setIsBossDefeatMessageVisible(false);
-            // Here you could navigate to podium or end screen
+            // Navigate to the victory podium page
             console.log("Boss defeated! Going to podium...");
+            navigate("/boss-podium");
           }
         }, 1000); // 1 second intervals for countdown
       }, BOSS_DEFEAT_COUNTDOWN_DELAY_MS); // Easy to modify: currently 1 second total
@@ -532,7 +533,7 @@ const BossBattle = () => {
               {/* Boss Defeat Message */}
               {isBossDefeatMessageVisible && (
                 <div className="absolute inset-0 items-center justify-center z-30 animate-fade-in">
-                  <div className="mt-40 text-center bg-black/80 p-4 rounded-lg">
+                  <div className="mt-30 sm:mt-40 text-center bg-black/80 p-4">
                     <h2 className="text-2xl font-bold text-white drop-shadow-lg mb-2 flex items-center justify-center gap-2">
                       <Skull className="w-6 h-6" />
                       {BOSS_NAME} has been defeated!

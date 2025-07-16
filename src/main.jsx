@@ -34,6 +34,7 @@ import PlayerProfile from "./pages/Player/Profile";
 import PlayerQR from "./pages/Player/QR";
 import PlayerBossPreview from "./pages/Player/BossPreview";
 import PlayerBossBattle from "./pages/Player/BossBattle";
+import PlayerBossPodium from "./pages/Player/BossPodium";
 
 // ===== HOST PAGES ===== //
 // Bosses
@@ -113,6 +114,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
               <Route path="/boss-battle" element={<AppBattle />}>
                 <Route index element={<PlayerBossBattle />} />
+              </Route>
+
+              <Route path="/boss-podium" element={<AppBattle />}>
+                <Route index element={<PlayerBossPodium />} />
               </Route>
 
               {/* ===== HOST ROUTES (Protected for host and admin roles) ===== */}
