@@ -53,12 +53,12 @@ const QuestionBankView = () => {
 
   // Static data
   const categories = [
-    { id: 1, name: 'ARC', fullName: 'Architecture', author: 'Chanreach [Admin]', questionCount: 15 },
-    { id: 2, name: 'ART', fullName: 'Art History', author: 'Sovitep [Admin]', questionCount: 12 },
-    { id: 3, name: 'BUS', fullName: 'Business', author: 'Chanreach [Admin]', questionCount: 20 },
-    { id: 4, name: 'CS', fullName: 'Computer Science', author: 'Sovitep [Admin]', questionCount: 25 },
-    { id: 5, name: 'MIS', fullName: 'Management Information Systems', author: 'Sovitep [Admin]', questionCount: 18 },
-    { id: 6, name: 'ABA Bank', fullName: 'ABA Banking', author: 'Chomroeun [Host]', questionCount: 8 }
+    { id: 1, name: 'ARC', author: 'Chanreach [Admin]', questionCount: 15 },
+    { id: 2, name: 'ART', author: 'Sovitep [Admin]', questionCount: 12 },
+    { id: 3, name: 'BUS', author: 'Chanreach [Admin]', questionCount: 20 },
+    { id: 4, name: 'CS', author: 'Sovitep [Admin]', questionCount: 25 },
+    { id: 5, name: 'MIS', author: 'Sovitep [Admin]', questionCount: 18 },
+    { id: 6, name: 'ABA Bank', author: 'Chomroeun [Host]', questionCount: 8 }
   ];
 
   const questions = [
@@ -112,8 +112,7 @@ const QuestionBankView = () => {
 
   // Filter categories based on search query
   const filteredCategories = categories.filter(category => 
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    category.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+    category.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Filter questions based on search query AND category filter
@@ -264,7 +263,6 @@ const QuestionBankView = () => {
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <div className="min-w-0 flex-1">
                         <h3 className="font-semibold text-sm text-gray-900 dark:text-white truncate">{category.name}</h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{category.fullName}</p>
                       </div>
                     </div>
                     <Button 

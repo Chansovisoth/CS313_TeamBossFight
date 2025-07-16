@@ -11,7 +11,6 @@ const CreateCategory = () => {
   const navigate = useNavigate();
   
   const [categoryName, setCategoryName] = useState('');
-  const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -22,12 +21,6 @@ const CreateCategory = () => {
       newErrors.categoryName = 'Category name is required';
     } else if (categoryName.length > 10) {
       newErrors.categoryName = 'Category name must be 10 characters or less';
-    }
-
-    if (!fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    } else if (fullName.length > 50) {
-      newErrors.fullName = 'Full name must be 50 characters or less';
     }
     
     setErrors(newErrors);
@@ -42,8 +35,7 @@ const CreateCategory = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Creating category:', {
-        name: categoryName,
-        fullName: fullName
+        name: categoryName
       });
       navigate('/host/questionbank/categories/view');
     } catch (error) {
@@ -92,10 +84,10 @@ const CreateCategory = () => {
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             
-            {/* Category Name (Short Code) */}
+            {/* Category Name */}
             <div className="space-y-2">
               <Label htmlFor="categoryName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Category Name (Short Code) <span className="text-red-500">*</span>
+                Category Name <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="categoryName"
@@ -113,30 +105,6 @@ const CreateCategory = () => {
               )}
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {categoryName.length}/10 characters
-              </p>
-            </div>
-
-            {/* Full Name */}
-            <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Full Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="fullName"
-                value={fullName}
-                onChange={(e) => {
-                  setFullName(e.target.value);
-                  clearErrors('fullName');
-                }}
-                placeholder="e.g., Computer Science, Art History, Business"
-                maxLength={50}
-                className={`${errors.fullName ? 'border-red-500 focus:border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
-              />
-              {errors.fullName && (
-                <p className="text-red-500 text-xs">{errors.fullName}</p>
-              )}
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {fullName.length}/50 characters
               </p>
             </div>
 
