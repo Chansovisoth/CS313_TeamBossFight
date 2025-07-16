@@ -1,6 +1,6 @@
 // ===== LIBRARIES ===== //
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { toast } from "sonner";
 
@@ -11,15 +11,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 // ===== CONTEXTS ===== //
-// import { useAuth } from "@/context/useAuth";  // Commented out for static version
-// import { apiClient } from "../api";           // Commented out for static version
-
+import { useAuth } from "@/context/useAuth";
+import { apiClient } from "@/api";
 
 
 const Authentication = () => {
-  // const { login } = useAuth();  // Commented out for static version
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [isSignIn, setIsSignIn] = useState(false); // State to toggle between forms
+  // Determine initial form state from URL
+  const params = new URLSearchParams(location.search);
+  const initialIsSignIn = params.get("mode") !== "register"; // true for login, false for register
+  const [isSignIn, setIsSignIn] = useState(initialIsSignIn);
   const [isClosing, setIsClosing] = useState(false); // State to track when form is closing
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Add this state
@@ -35,14 +39,24 @@ const Authentication = () => {
     password: "",
   });
 
-  const navigate = useNavigate();
+  // Sync form state with URL changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setIsSignIn(params.get("mode") !== "register");
+  }, [location.search]);
 
-  // Function to handle form transitions with animation
+  // Function to handle form transitions with animation and update URL
   const handleFormTransition = (newSignInState) => {
     setIsClosing(true);
     setTimeout(() => {
       setIsSignIn(newSignInState);
       setIsClosing(false);
+      // Update URL
+      if (newSignInState) {
+        navigate("/auth", { replace: true });
+      } else {
+        navigate("/auth?mode=register", { replace: true });
+      }
     }, 180); // Match this with your CSS animation duration
   };
 
@@ -91,25 +105,24 @@ const Authentication = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: loginData.emailOrUsername,
-          password: loginData.password,
-        }),
+      const response = await apiClient.post("/auth/login", {
+        email: loginData.emailOrUsername,
+        password: loginData.password,
       });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+      const data = response.data;
+      if (!data.token || !data.user) {
+        throw new Error("Invalid login response from server");
       }
-      toast.success("Login successful!");
-      // Optionally store token: localStorage.setItem('token', data.token);
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
+      login({ accessToken: data.token, user: data.user });
+      navigate("/");
     } catch (err) {
-      toast.error(err.message);
+      let message = "Login failed";
+      if (err.response && err.response.data && err.response.data.message) {
+        message = err.response.data.message;
+      } else if (err.message) {
+        message = err.message;
+      }
+      toast.error(message);
     }
   };
 

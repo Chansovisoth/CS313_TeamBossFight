@@ -1,26 +1,26 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/useAuth.jsx";
 import PropTypes from "prop-types";
 
-export const ProtectedRoute = ({ children, allowedRoles = [] }) => {
+export const ProtectedRoute = ({ allowedRoles = [] }) => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return <div className="text-center">Loading...</div>;
   }
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/error" replace />;
   }
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user.user.user.role)) {
-    return (
-      <div className="text-center text-red-500 font-bold">403 - Forbidden</div>
-    );
+  if (
+    allowedRoles.length > 0 &&
+    (!user.role || !allowedRoles.includes(user.role))
+  ) {
+    return <Navigate to="/error" replace />;
   }
 
-  return children;
+  return <Outlet />;
 };
 
 ProtectedRoute.propTypes = {
-  children: PropTypes.node.isRequired,
   allowedRoles: PropTypes.arrayOf(PropTypes.string),
 };

@@ -3,8 +3,58 @@ import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useNavigate, useParams } from 'react-router-dom';
+import { apiClient } from '@/api';
+import { useEffect, useState } from 'react';
 
 const Edit = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ username: '', email: '', role: 'user' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const res = await apiClient.get(`/users/${id}`);
+        setForm({
+          username: res.data.username || '',
+          email: res.data.email || '',
+          role: res.data.role || 'user',
+        });
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, [id]);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.id]: e.target.value });
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      await apiClient.put(`/users/${id}`, form);
+      navigate('/host/users/view');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading user...</div>;
+  if (error) return <div className="text-center py-8 text-red-500 dark:text-red-400">{error}</div>;
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-md mx-auto">
@@ -25,7 +75,8 @@ const Edit = () => {
               <Input
                 id="username"
                 type="text"
-                defaultValue="Chansovisoth"
+                value={form.username}
+                onChange={handleChange}
                 className="w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>
@@ -38,7 +89,8 @@ const Edit = () => {
               <Input
                 id="email"
                 type="email"
-                defaultValue="chansovisoth@gmail.com"
+                value={form.email}
+                onChange={handleChange}
                 className="w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>
@@ -50,12 +102,12 @@ const Edit = () => {
               </Label>
               <select
                 id="role"
-                defaultValue="user"
+                value={form.role}
+                onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
               >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-                <option value="moderator">Moderator</option>
+                <option value="player">Player</option>
+                <option value="host">Host</option>
               </select>
             </div>
           </div>
@@ -65,13 +117,16 @@ const Edit = () => {
             <Button 
               variant="outline" 
               className="flex-1 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => navigate('/host/users/view')}
             >
               Cancel
             </Button>
             <Button 
               className="flex-1 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+              onClick={handleSave}
+              disabled={saving}
             >
-              Save
+              {saving ? 'Saving...' : 'Save'}
             </Button>
           </div>
         </div>

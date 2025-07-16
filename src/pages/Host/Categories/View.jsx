@@ -3,8 +3,10 @@ import { Menu, Plus, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useNavigate } from 'react-router-dom';
 
 const QuestionBankView = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('category');
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -74,6 +76,7 @@ const QuestionBankView = () => {
               variant="outline" 
               size="sm"
               className="w-8 h-8 p-0 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => navigate('/host/categories/create')}
             >
               <Plus className="w-4 h-4" />
             </Button>
