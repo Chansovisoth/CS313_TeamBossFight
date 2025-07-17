@@ -5,10 +5,61 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext } from '@/components/ui/pagination';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 
 const Leaderboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [eventFilter, setEventFilter] = useState("all");
   const PAGE_SIZE = 5;
+
+  // Event-specific leaderboard data
+  const leaderboardData = {
+    all: [
+      { rank: 1, player: 'Python', dmg: 12000, correct: 95, avatar: '/src/assets/Placeholder/Profile1.jpg', event: 'Open House 2025' },
+      { rank: 2, player: 'Sovitep', dmg: 11000, correct: 90, avatar: '/src/assets/Placeholder/Profile2.jpg', event: 'Tech Conference 2025' },
+      { rank: 3, player: 'Visoth', dmg: 9500, correct: 88, avatar: '/src/assets/Placeholder/Profile3.jpg', event: 'Open House 2025' },
+      { rank: 4, player: 'Alice', dmg: 9000, correct: 85, avatar: '/src/assets/Placeholder/Profile4.jpg', event: 'Science Fair 2025' },
+      { rank: 5, player: 'Bob', dmg: 8500, correct: 80, avatar: '/src/assets/Placeholder/Profile5.jpg', event: 'Open House 2025' },
+      { rank: 6, player: 'TechMaster', dmg: 8200, correct: 92, avatar: '/src/assets/Placeholder/Profile1.jpg', event: 'Tech Conference 2025' },
+      { rank: 7, player: 'ScienceWiz', dmg: 7800, correct: 87, avatar: '/src/assets/Placeholder/Profile2.jpg', event: 'Science Fair 2025' },
+      { rank: 8, player: 'CodeNinja', dmg: 7500, correct: 83, avatar: '/src/assets/Placeholder/Profile3.jpg', event: 'Tech Conference 2025' },
+      { rank: 9, player: 'KnowledgeSeeker', dmg: 7200, correct: 89, avatar: '/src/assets/Placeholder/Profile4.jpg', event: 'Open House 2025' },
+      { rank: 10, player: 'AlgoHero', dmg: 6900, correct: 86, avatar: '/src/assets/Placeholder/Profile5.jpg', event: 'Tech Conference 2025' }
+    ],
+    "Open House 2025": [
+      { rank: 1, player: 'Python', dmg: 12000, correct: 95, avatar: '/src/assets/Placeholder/Profile1.jpg', event: 'Open House 2025' },
+      { rank: 2, player: 'Visoth', dmg: 9500, correct: 88, avatar: '/src/assets/Placeholder/Profile3.jpg', event: 'Open House 2025' },
+      { rank: 3, player: 'Bob', dmg: 8500, correct: 80, avatar: '/src/assets/Placeholder/Profile5.jpg', event: 'Open House 2025' },
+      { rank: 4, player: 'KnowledgeSeeker', dmg: 7200, correct: 89, avatar: '/src/assets/Placeholder/Profile4.jpg', event: 'Open House 2025' },
+      { rank: 5, player: 'WisdomWarrior', dmg: 5800, correct: 78, avatar: '/src/assets/Placeholder/Profile1.jpg', event: 'Open House 2025' },
+      { rank: 6, player: 'BrainBuster', dmg: 5400, correct: 75, avatar: '/src/assets/Placeholder/Profile3.jpg', event: 'Open House 2025' }
+    ],
+    "Tech Conference 2025": [
+      { rank: 1, player: 'Sovitep', dmg: 11000, correct: 90, avatar: '/src/assets/Placeholder/Profile2.jpg', event: 'Tech Conference 2025' },
+      { rank: 2, player: 'TechMaster', dmg: 8200, correct: 92, avatar: '/src/assets/Placeholder/Profile1.jpg', event: 'Tech Conference 2025' },
+      { rank: 3, player: 'CodeNinja', dmg: 7500, correct: 83, avatar: '/src/assets/Placeholder/Profile3.jpg', event: 'Tech Conference 2025' },
+      { rank: 4, player: 'AlgoHero', dmg: 6900, correct: 86, avatar: '/src/assets/Placeholder/Profile5.jpg', event: 'Tech Conference 2025' },
+      { rank: 5, player: 'ByteBeast', dmg: 6100, correct: 82, avatar: '/src/assets/Placeholder/Profile4.jpg', event: 'Tech Conference 2025' },
+      { rank: 6, player: 'DevDestroyer', dmg: 5700, correct: 79, avatar: '/src/assets/Placeholder/Profile2.jpg', event: 'Tech Conference 2025' }
+    ],
+    "Science Fair 2025": [
+      { rank: 1, player: 'Alice', dmg: 9000, correct: 85, avatar: '/src/assets/Placeholder/Profile4.jpg', event: 'Science Fair 2025' },
+      { rank: 2, player: 'ScienceWiz', dmg: 7800, correct: 87, avatar: '/src/assets/Placeholder/Profile2.jpg', event: 'Science Fair 2025' },
+      { rank: 3, player: 'DataMaster', dmg: 6500, correct: 84, avatar: '/src/assets/Placeholder/Profile1.jpg', event: 'Science Fair 2025' },
+      { rank: 4, player: 'LabLegend', dmg: 5900, correct: 81, avatar: '/src/assets/Placeholder/Profile5.jpg', event: 'Science Fair 2025' },
+      { rank: 5, player: 'FormulaFighter', dmg: 5300, correct: 77, avatar: '/src/assets/Placeholder/Profile3.jpg', event: 'Science Fair 2025' }
+    ]
+  };
+
+  // Get data based on selected event filter
+  const currentData = leaderboardData[eventFilter] || leaderboardData.all;
+  
+  // Reset page when event filter changes
+  const handleEventFilterChange = (value) => {
+    setEventFilter(value);
+    setCurrentPage(1);
+  };
 
   // Enhanced leaderboard data with avatars
   const teamLeaderboard = [
@@ -66,8 +117,8 @@ const Leaderboard = () => {
   const totalPages = Math.ceil(individualLeaderboard.length / PAGE_SIZE);
   const paginatedIndividual = individualLeaderboard.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  // Top 3 for podium
-  const podiumPlayers = individualLeaderboard.slice(0, 3);
+  // Top 3 for podium from current event data
+  const podiumPlayers = currentData.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background py-8 px-4">
@@ -122,12 +173,46 @@ const Leaderboard = () => {
         {/* REMOVED: Live Individual Leaderboard */}
 
         {/* All Time Leaderboard */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">All Time Leaderboard</CardTitle>
-            <p className="text-gray-600 dark:text-gray-400">Overall player statistics across all events</p>
+        <Card className="relative">
+          <CardHeader className="pb-3 sm:pb-6">
+            <CardTitle className="text-2xl sm:text-3xl font-bold">All-time Leaderboard</CardTitle>
+            <p className="text-muted-foreground mt-2 -mb-7 text-sm sm:text-base">
+              See the top players by overall damage and answer accuracy
+            </p>
           </CardHeader>
           <CardContent>
+            {/* Event Filter Tabs */}
+            <div className="mb-4">
+              <Tabs value={eventFilter} onValueChange={handleEventFilterChange}>
+                <TabsList className="grid w-full grid-cols-4 h-10 gap-1 p-1">
+                  <TabsTrigger
+                    value="all"
+                    className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight flex items-center justify-center"
+                  >
+                    All Events
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Open House 2025"
+                    className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight flex items-center justify-center"
+                  >
+                    <span className="break-words">Open House 2025</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Tech Conference 2025"
+                    className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight flex items-center justify-center"
+                  >
+                    <span className="break-words">Tech Conference 2025</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Science Fair 2025"
+                    className="text-xs sm:text-sm h-full py-2 px-2 whitespace-normal text-center leading-tight flex items-center justify-center"
+                  >
+                    <span className="break-words">Science Fair 2025</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -138,15 +223,17 @@ const Leaderboard = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {allTimeLeaderboard.map((player) => (
+                {currentData.map((player) => (
                   <TableRow key={player.rank} className="hover:bg-accent/50 transition-colors">
                     <TableCell className="text-center font-bold">
-                      {player.rank <= 3 ? (
-                        <div className={`inline-flex items-center justify-center w-8 h-6 rounded-full text-white text-sm font-bold ${getPodiumColor(player.rank)}`}>
-                          {player.rank}
-                        </div>
+                      {player.rank === 1 ? (
+                        <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white">1st</Badge>
+                      ) : player.rank === 2 ? (
+                        <Badge className="bg-gray-400 hover:bg-gray-500 text-white">2nd</Badge>
+                      ) : player.rank === 3 ? (
+                        <Badge className="bg-amber-600 hover:bg-amber-700 text-white">3rd</Badge>
                       ) : (
-                        <span className="text-gray-900 dark:text-white">{player.rank}</span>
+                        <span className="text-gray-900 dark:text-white">#{player.rank}</span>
                       )}
                     </TableCell>
                     <TableCell className="font-medium flex items-center gap-2">
@@ -156,8 +243,8 @@ const Leaderboard = () => {
                       </Avatar>
                       {player.player}
                     </TableCell>
-                    <TableCell className="text-right">{player.dmg}</TableCell>
-                    <TableCell className="text-right">{player.correct}</TableCell>
+                    <TableCell className="text-right">{player.dmg.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{player.correct}%</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
