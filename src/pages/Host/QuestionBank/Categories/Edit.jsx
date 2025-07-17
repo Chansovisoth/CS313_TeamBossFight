@@ -66,8 +66,8 @@ const EditCategory = () => {
     
     if (!categoryName.trim()) {
       newErrors.categoryName = 'Category name is required';
-    } else if (categoryName.trim().length < 3) {
-      newErrors.categoryName = 'Category name must be at least 3 characters';
+    } else if (categoryName.trim().length < 2) {
+      newErrors.categoryName = 'Category name must be at least 2 characters';
     } else if (categoryName.trim().length > 50) {
       newErrors.categoryName = 'Category name must be 50 characters or less';
     }
@@ -77,7 +77,7 @@ const EditCategory = () => {
   };
 
   // Check if form is valid for button styling (same as Create)
-  const isFormValid = categoryName.trim().length >= 3;
+  const isFormValid = categoryName.trim().length >= 2;
 
   const handleSave = async () => {
     if (!validateForm() || !canEdit()) return;
