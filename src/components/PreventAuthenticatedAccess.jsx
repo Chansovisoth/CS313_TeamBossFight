@@ -23,7 +23,7 @@ const PreventAuthenticatedAccess = ({ children }) => {
 
   // Check if user is authenticated as a regular user
   if (isAuthenticated && user) {
-    const redirectPath = user.role === 'admin' ? '/host/events/view' : '/host/events/view';
+    const redirectPath = user.role === 'admin' ? '/host/events/view' : '/';
     return <Navigate to={redirectPath} replace />;
   }
 
