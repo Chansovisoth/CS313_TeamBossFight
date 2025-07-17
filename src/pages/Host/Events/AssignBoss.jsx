@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, X, QrCode, SkipForward, Trophy, Clock, Zap, AlertTriangle, Badge as BadgeIcon, Download, Copy, Check } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, Plus, X, QrCode, SkipForward, Trophy, Clock, Zap, AlertTriangle, Badge as BadgeIcon, Download, Copy, Check, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,46 +25,61 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { getBossImageUrl } from '@/utils/imageUtils';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 
 const AssignBoss = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const eventId = searchParams.get('eventId');
+  
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, bossId: null, bossName: '' });
   const [qrDialog, setQrDialog] = useState({ isOpen: false, bossName: '', qrUrl: '' });
   const [copied, setCopied] = useState(false);
-  
-  const [assignedBosses, setAssignedBosses] = useState([
-    {
-      id: 1,
-      name: 'Falcon',
-      status: 'Active',
-      image: '/src/assets/Placeholder/Falcon.png',
-      categories: ['CS', 'MIS'],
-      teamsEngaged: 3,
-      totalTeams: 8
-    },
-    {
-      id: 2,
-      name: 'The Predator',
-      status: 'On Cooldown',
-      cooldownTime: '5:32',
-      image: '/src/assets/Placeholder/ThePredator.png',
-      categories: ['BUS', 'ARC'],
-      teamsEngaged: 0,
-      totalTeams: 5
-    },
-    {
-      id: 3,
-      name: 'Tricera',
-      status: 'Active',
-      image: '/src/assets/Placeholder/Tricera.png',
-      categories: ['CE'],
-      teamsEngaged: 2,
-      totalTeams: 4
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [assignedBosses, setAssignedBosses] = useState([]);
+
+  useEffect(() => {
+    if (eventId) {
+      fetchEventDetails();
     }
-  ]);
+  }, [eventId]);
+
+  const fetchEventDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get(`/events/${eventId}`);
+      setEvent(response.data);
+      
+      // Extract assigned bosses from event data
+      const bosses = response.data.eventBosses?.map(eventBoss => ({
+        id: eventBoss.boss.id,
+        eventBossId: eventBoss.id,
+        name: eventBoss.boss.name,
+        image: eventBoss.boss.image,
+        description: eventBoss.boss.description,
+        cooldownDuration: eventBoss.cooldownDuration,
+        numberOfTeams: eventBoss.numberOfTeams,
+        status: eventBoss.status,
+        joinCode: eventBoss.joinCode,
+        creatorId: eventBoss.boss.creatorId,
+        creator: eventBoss.boss.creator
+      })) || [];
+      
+      setAssignedBosses(bosses);
+    } catch (error) {
+      console.error('Error fetching event details:', error);
+      toast.error('Failed to fetch event details');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleShowQR = (boss) => {
-    const qrUrl = `${window.location.origin}/host/bosses/view`;
+    const qrUrl = `${window.location.origin}/player/join?code=${boss.joinCode}`;
     setQrDialog({
       isOpen: true,
       bossName: boss.name,
@@ -90,38 +105,51 @@ const AssignBoss = () => {
     }
   };
 
-  const handleRemoveBoss = (bossId) => {
-    const boss = assignedBosses.find(b => b.id === bossId);
-    const bossName = boss ? boss.name : 'this boss';
+  const handleRemoveBoss = (boss) => {
+    // Check if user can unassign this boss (hosts can only unassign their own bosses)
+    if (user.role === 'host' && boss.creatorId !== user.id) {
+      toast.error('You can only unassign bosses you created');
+      return;
+    }
     
     setConfirmDialog({
       isOpen: true,
-      bossId: bossId,
-      bossName: bossName
+      bossId: boss.id,
+      eventBossId: boss.eventBossId,
+      bossName: boss.name
     });
   };
 
-  const confirmRemoveBoss = () => {
-    if (confirmDialog.bossId) {
-      setAssignedBosses(assignedBosses.filter(boss => boss.id !== confirmDialog.bossId));
+  const confirmRemoveBoss = async () => {
+    if (confirmDialog.eventBossId) {
+      try {
+        await apiClient.delete(`/events/${eventId}/bosses/${confirmDialog.bossId}`);
+        setAssignedBosses(assignedBosses.filter(boss => boss.id !== confirmDialog.bossId));
+        toast.success('Boss unassigned successfully');
+      } catch (error) {
+        console.error('Error unassigning boss:', error);
+        toast.error('Failed to unassign boss');
+      }
     }
-    setConfirmDialog({ isOpen: false, bossId: null, bossName: '' });
+    setConfirmDialog({ isOpen: false, bossId: null, eventBossId: null, bossName: '' });
   };
 
   const cancelRemoveBoss = () => {
-    setConfirmDialog({ isOpen: false, bossId: null, bossName: '' });
+    setConfirmDialog({ isOpen: false, bossId: null, eventBossId: null, bossName: '' });
   };
 
-  const handleSkipCooldown = (bossId) => {
-    setAssignedBosses(assignedBosses.map(boss => 
-      boss.id === bossId 
-        ? { ...boss, status: 'Active', cooldownTime: undefined }
-        : boss
-    ));
+  const handleSkipCooldown = async (boss) => {
+    try {
+      // This would need to be implemented in the backend
+      toast.info('Skip cooldown feature coming soon');
+    } catch (error) {
+      console.error('Error skipping cooldown:', error);
+      toast.error('Failed to skip cooldown');
+    }
   };
 
   const handleAssignBoss = () => {
-    navigate('/host/events/boss_template');
+    navigate(`/host/events/boss_template?eventId=${eventId}`);
   };
 
   const handleBack = () => {
@@ -135,6 +163,26 @@ const AssignBoss = () => {
   const handlePlayerBadges = () => {
     navigate('/host/events/player_badges');
   };
+
+  const handleEditEvent = () => {
+    navigate(`/host/events/edit?eventId=${eventId}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 py-6 max-w-4xl">
+        <div className="text-center py-8">Loading event details...</div>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 py-6 max-w-4xl">
+        <div className="text-center py-8">Event not found</div>
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
@@ -182,13 +230,39 @@ const AssignBoss = () => {
           <Card className="mb-6">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold">Event: Adventure Quest 2024</h2>
-                  <p className="text-sm text-muted-foreground">Active Event • {assignedBosses.length} Bosses Assigned</p>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold">{event.name}</h2>
+                    {user?.role === 'admin' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleEditEvent}
+                        className="flex items-center gap-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit Event
+                      </Button>
+                    )}
+                  </div>
+                  {event.description && (
+                    <p className="text-sm text-muted-foreground mt-1 mb-2">{event.description}</p>
+                  )}
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span>
+                      <strong>Start:</strong> {event.startTimeFormatted?.formatted || 'N/A'}
+                    </span>
+                    <span>
+                      <strong>End:</strong> {event.endTimeFormatted?.formatted || 'N/A'}
+                    </span>
+                    <span>
+                      <strong>Bosses:</strong> {assignedBosses.length} assigned
+                    </span>
+                  </div>
                 </div>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 ml-4">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  Live
+                  {event.status || 'Active'}
                 </Badge>
               </div>
             </CardHeader>
@@ -222,7 +296,7 @@ const AssignBoss = () => {
               <div className="flex items-center justify-between">
                 <Label className="text-lg font-semibold">Assigned Bosses</Label>
                 <div className="text-sm text-muted-foreground">
-                  {assignedBosses.filter(boss => boss.status === 'Active').length} Active • {assignedBosses.filter(boss => boss.status === 'On Cooldown').length} On Cooldown
+                  {assignedBosses.filter(boss => boss.status === 'active').length} Active • {assignedBosses.filter(boss => boss.status === 'cooldown').length} On Cooldown
                 </div>
               </div>
               
@@ -238,7 +312,7 @@ const AssignBoss = () => {
                           className="w-full h-[270px] object-cover"
                         />
                         <div className="absolute top-2 left-2">
-                          {boss.status === 'Active' ? (
+                          {boss.status === 'active' ? (
                             <Badge className="bg-green-500 hover:bg-green-600">
                               <Zap className="w-3 h-3 mr-1" />
                               Active
@@ -251,22 +325,25 @@ const AssignBoss = () => {
                           )}
                         </div>
                         <div className="absolute top-2 right-2">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="w-8 h-8 p-0 bg-background/80 hover:bg-background"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleRemoveBoss(boss.id);
-                                }}
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Unassign Boss</TooltipContent>
-                          </Tooltip>
+                          {/* Only show remove button if user can unassign this boss */}
+                          {(user?.role === 'admin' || boss.creatorId === user?.id) && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-8 h-8 p-0 bg-background/80 hover:bg-background"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveBoss(boss);
+                                  }}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Unassign Boss</TooltipContent>
+                            </Tooltip>
+                          )}
                         </div>
                       </div>
 
@@ -274,41 +351,45 @@ const AssignBoss = () => {
                       <div className="p-4 space-y-3">
                         <div>
                           <h3 className="font-semibold text-base mb-1">{boss.name}</h3>
-                          <div className="flex flex-wrap gap-1">
-                            {boss.categories.map((category) => (
-                              <Badge key={category} variant="outline" className="text-xs">
-                                {category}
-                              </Badge>
-                            ))}
+                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                            <span>By: {boss.creator?.username || 'Unknown'}</span>
+                            <span>{boss.cooldownDuration || 60}s cooldown</span>
                           </div>
+                          {boss.description && (
+                            <p className="text-xs text-muted-foreground mb-2">{boss.description}</p>
+                          )}
                         </div>
 
                         {/* Status Info */}
                         <div className="space-y-2">
-                          {boss.status === 'On Cooldown' ? (
+                          {boss.status === 'cooldown' ? (
                             <div className="flex items-center justify-between">
-                              <span className="text-sm text-muted-foreground">Cooldown:</span>
-                              <span className="text-sm font-mono">{boss.cooldownTime}</span>
+                              <span className="text-sm text-muted-foreground">Status:</span>
+                              <span className="text-sm font-mono">On Cooldown</span>
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <span className="text-sm text-muted-foreground">Teams Engaged:</span>
-                              <span className="text-sm font-semibold">{boss.teamsEngaged}/{boss.totalTeams}</span>
+                              <span className="text-sm text-muted-foreground">Teams Allowed:</span>
+                              <span className="text-sm font-semibold">{boss.numberOfTeams || 2}</span>
                             </div>
                           )}
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Join Code:</span>
+                            <span className="text-sm font-mono bg-muted px-2 py-1 rounded">{boss.joinCode}</span>
+                          </div>
                         </div>
 
                         {/* Action Buttons */}
                         <div className="flex items-center justify-between pt-2 border-t">
                           <div className="flex items-center gap-1">
-                            {boss.status === 'On Cooldown' && (
+                            {boss.status === 'cooldown' && (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="ghost"
                                     size="sm"
                                     className="w-8 h-8 p-0"
-                                    onClick={() => handleSkipCooldown(boss.id)}
+                                    onClick={() => handleSkipCooldown(boss)}
                                   >
                                     <SkipForward className="w-4 h-4" />
                                   </Button>

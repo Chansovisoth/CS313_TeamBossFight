@@ -1,43 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, ChevronRight, Plus } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 
 const ViewEvents = () => {
   const navigate = useNavigate();
-  
-  // Static hardcoded events data
-  const events = [
-    {
-      id: 1,
-      title: 'Event1',
-      startDate: '01/01/2025',
-      startTime: '08:00AM',
-      endDate: '01/01/2025',
-      endTime: '05:00PM'
-    },
-    {
-      id: 2,
-      title: 'Event2',
-      startDate: '02/01/2025',
-      startTime: '06:00AM',
-      endDate: '02/02/2025',
-      endTime: '05:00PM'
-    },
-    {
-      id: 3,
-      title: 'Event3',
-      startDate: '02/01/2025',
-      startTime: '06:00AM',
-      endDate: '02/02/2025',
-      endTime: '05:00PM'
+  const { user } = useAuth();
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/events');
+      setEvents(response.data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      toast.error('Failed to fetch events');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Format the API data to match the UI expectations
+  const formatEventsForUI = (apiEvents) => {
+    return apiEvents.map(event => ({
+      id: event.id,
+      title: event.name,
+      startDate: event.startTimeFormatted?.formatted?.split(' ')[0] || 'N/A',
+      startTime: event.startTimeFormatted?.formatted?.split(' ')[1] || 'N/A',
+      endDate: event.endTimeFormatted?.formatted?.split(' ')[0] || 'N/A',
+      endTime: event.endTimeFormatted?.formatted?.split(' ')[1] || 'N/A'
+    }));
+  };
+
+  const formattedEvents = formatEventsForUI(events);
 
   const handleEventClick = (eventId) => {
     navigate(`/host/events/assign_boss?eventId=${eventId}`);
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 py-6 max-w-4xl">
+        <div className="text-center py-8">Loading events...</div>
+      </div>
+    );
+  }
 
   return (
       <div className="container mx-auto px-4 sm:px-6 py-6 max-w-4xl">
@@ -50,6 +67,7 @@ const ViewEvents = () => {
           <Button 
             onClick={() => navigate('/host/events/create')}
             className="flex items-center gap-2"
+            style={{ display: user?.role === 'admin' ? 'flex' : 'none' }}
           >
             <Plus className="h-4 w-4" />
             Create Event
@@ -58,7 +76,7 @@ const ViewEvents = () => {
 
         {/* Events List - Vertical Stack */}
         <div className="space-y-4">
-          {events.length === 0 ? (
+          {formattedEvents.length === 0 ? (
             // No Events Found State
             <div className="flex flex-col items-center justify-center py-12">
               <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
@@ -69,7 +87,7 @@ const ViewEvents = () => {
             </div>
           ) : (
             // Events List - Each event as a full-width card
-            events.map((event) => (
+            formattedEvents.map((event) => (
               <Card 
                 key={event.id} 
                 className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/30 border border-border/50 w-full"

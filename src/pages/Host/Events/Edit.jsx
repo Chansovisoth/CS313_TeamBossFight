@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, FileText, Type, Save, Trash2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -17,24 +18,65 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 
 const EditEvent = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const eventId = searchParams.get('eventId');
   
-  // Mock existing event data
   const [eventData, setEventData] = useState({
-    id: 1,
-    name: 'Team Building Workshop',
-    description: 'An interactive workshop focused on team collaboration and communication skills.',
-    startDate: '2024-02-15T09:00',
-    endDate: '2024-02-15T17:00',
-    status: 'Active'
+    name: '',
+    description: '',
+    startTime: '',
+    endTime: '',
+    status: ''
   });
   
+  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    if (eventId) {
+      fetchEventData();
+    }
+  }, [eventId]);
+
+  const fetchEventData = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get(`/events/${eventId}`);
+      const event = response.data;
+      
+      // Format datetime for input fields (convert from API format to datetime-local format)
+      const formatForInput = (dateTime) => {
+        if (!dateTime) return '';
+        const date = new Date(dateTime);
+        // Add 7 hours for GMT+7 timezone display
+        const gmt7Date = new Date(date.getTime() + (7 * 60 * 60 * 1000));
+        return gmt7Date.toISOString().slice(0, 16);
+      };
+
+      setEventData({
+        name: event.name || '',
+        description: event.description || '',
+        startTime: formatForInput(event.startTime),
+        endTime: formatForInput(event.endTime),
+        status: event.status || 'upcoming'
+      });
+    } catch (error) {
+      console.error('Error fetching event:', error);
+      toast.error('Failed to fetch event details');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setEventData(prev => ({
@@ -44,14 +86,57 @@ const EditEvent = () => {
     setHasChanges(true);
   };
 
+  // Format datetime for backend (convert from GMT+7 to UTC)
+  const formatDateTimeForBackend = (dateTime) => {
+    if (!dateTime) return null;
+    const date = new Date(dateTime);
+    // Subtract 7 hours for UTC storage
+    const utcDate = new Date(date.getTime() - (7 * 60 * 60 * 1000));
+    return utcDate.toISOString();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Updating event:', eventData);
-    setIsSubmitting(false);
-    setHasChanges(false);
+    if (!eventData.name || !eventData.startTime || !eventData.endTime) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      
+      const updateData = {
+        name: eventData.name,
+        description: eventData.description,
+        startTime: formatDateTimeForBackend(eventData.startTime),
+        endTime: formatDateTimeForBackend(eventData.endTime)
+      };
+
+      await apiClient.put(`/events/${eventId}`, updateData);
+      toast.success('Event updated successfully');
+      setHasChanges(false);
+      navigate(`/host/events/assign_boss?eventId=${eventId}`);
+    } catch (error) {
+      console.error('Error updating event:', error);
+      toast.error(error.response?.data?.message || 'Failed to update event');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await apiClient.delete(`/events/${eventId}`);
+      toast.success('Event deleted successfully');
+      navigate('/host/events/view');
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      toast.error(error.response?.data?.message || 'Failed to delete event');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+    }
   };
 
   const handleCancel = () => {
@@ -60,17 +145,16 @@ const EditEvent = () => {
       const confirmed = window.confirm('You have unsaved changes. Are you sure you want to leave?');
       if (!confirmed) return;
     }
-    navigate('/host/events/view');
+    navigate(`/host/events/assign_boss?eventId=${eventId}`);
   };
 
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Event deleted');
-    setIsDeleting(false);
-    setShowDeleteDialog(false);
-  };
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="text-center py-8">Loading event details...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
@@ -138,13 +222,13 @@ const EditEvent = () => {
                   <Label htmlFor="description" className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     Description
                   </Label>
-                  <textarea
+                  <Textarea
                     id="description"
                     value={eventData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     placeholder="Describe your event..."
                     rows={4}
-                    className="w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 resize-none transition-colors"
+                    className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                   />
                 </div>
 
@@ -156,8 +240,8 @@ const EditEvent = () => {
                     <Input
                       id="start-datetime"
                       type="datetime-local"
-                      value={eventData.startDate}
-                      onChange={(e) => handleInputChange('startDate', e.target.value)}
+                      value={eventData.startTime}
+                      onChange={(e) => handleInputChange('startTime', e.target.value)}
                       className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                       required
                     />
@@ -170,8 +254,8 @@ const EditEvent = () => {
                     <Input
                       id="end-datetime"
                       type="datetime-local"
-                      value={eventData.endDate}
-                      onChange={(e) => handleInputChange('endDate', e.target.value)}
+                      value={eventData.endTime}
+                      onChange={(e) => handleInputChange('endTime', e.target.value)}
                       className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                       required
                     />
@@ -196,7 +280,7 @@ const EditEvent = () => {
                   <Button 
                     type="submit"
                     className="flex-1 h-11 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 shadow-lg"
-                    disabled={isSubmitting || !eventData.name.trim() || !eventData.startDate || !eventData.endDate || !hasChanges}
+                    disabled={isSubmitting || !eventData.name.trim() || !eventData.startTime || !eventData.endTime || !hasChanges}
                   >
                     {isSubmitting ? (
                       <>

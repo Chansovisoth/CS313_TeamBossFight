@@ -388,7 +388,7 @@ const HostProfile = () => {
 
                 {/* Password Requirements (only when editing) */}
                 {isEditing && (
-                  <div className="bg-blue-50 p-3 rounded-md">
+                  <div className="bg-background p-3 rounded-md">
                     <p className="text-sm font-medium mb-2">Password Requirements:</p>
                     <ul className="text-xs space-y-1">
                       <li className={`flex items-center gap-2 ${isPasswordValid ? 'text-green-600' : 'text-muted-foreground'}`}>

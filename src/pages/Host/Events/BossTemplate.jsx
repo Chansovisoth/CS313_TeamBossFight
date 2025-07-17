@@ -1,82 +1,53 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Sword, Plus, Check, Zap, Clock, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { getBossImageUrl } from '@/utils/imageUtils';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
 
 const BossTemplate = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const eventId = searchParams.get('eventId');
+  
   const [selectedBosses, setSelectedBosses] = useState([]);
+  const [availableBosses, setAvailableBosses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [assigning, setAssigning] = useState(false);
 
-  // Enhanced boss templates data
-  const bossTemplates = [
-    { 
-      id: 1, 
-      name: 'Dragon Lord', 
-      image: 'https://via.placeholder.com/150x100',
-      categories: ['CS', 'MIS'],
-      cooldown: '30 min',
-      teamsRequired: 4,
-      status: 'Available'
-    },
-    { 
-      id: 2, 
-      name: 'Shadow Beast', 
-      image: 'https://via.placeholder.com/150x100',
-      categories: ['BUS', 'ARC'],
-      cooldown: '15 min',
-      teamsRequired: 3,
-      status: 'Available'
-    },
-    { 
-      id: 3, 
-      name: 'Fire Elemental', 
-      image: 'https://via.placeholder.com/150x100',
-      categories: ['CE'],
-      cooldown: '20 min',
-      teamsRequired: 2,
-      status: 'Available'
-    },
-    { 
-      id: 4, 
-      name: 'Ice Wizard', 
-      image: 'https://via.placeholder.com/150x100',
-      categories: ['CS', 'CE'],
-      cooldown: '25 min',
-      teamsRequired: 3,
-      status: 'Assigned'
-    },
-    { 
-      id: 5, 
-      name: 'Thunder King', 
-      image: 'https://via.placeholder.com/150x100',
-      categories: ['MIS', 'BUS'],
-      cooldown: '40 min',
-      teamsRequired: 5,
-      status: 'Available'
-    },
-    { 
-      id: 6, 
-      name: 'Stone Golem', 
-      image: 'https://via.placeholder.com/150x100',
-      categories: ['ARC'],
-      cooldown: '10 min',
-      teamsRequired: 2,
-      status: 'Available'
+  useEffect(() => {
+    fetchAvailableBosses();
+  }, []);
+
+  const fetchAvailableBosses = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/bosses');
+      // Filter to show only user's own bosses for hosts, all bosses for admins
+      const bosses = user.role === 'admin' 
+        ? response.data 
+        : response.data.filter(boss => boss.creatorId === user.id);
+      
+      setAvailableBosses(bosses);
+    } catch (error) {
+      console.error('Error fetching bosses:', error);
+      toast.error('Failed to fetch available bosses');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const handleBack = () => {
-    navigate('/host/events/assign_boss');
+    navigate(`/host/events/assign_boss?eventId=${eventId}`);
   };
 
   const handleBossSelect = (bossId) => {
-    const boss = bossTemplates.find(b => b.id === bossId);
-    if (boss.status === 'Assigned') return; // Can't select already assigned bosses
-
     if (selectedBosses.includes(bossId)) {
       setSelectedBosses(selectedBosses.filter(id => id !== bossId));
     } else {
@@ -84,14 +55,34 @@ const BossTemplate = () => {
     }
   };
 
-  const handleAssignSelected = () => {
-    console.log('Assigning bosses:', selectedBosses);
-    // Here you would typically make an API call to assign the selected bosses
-    navigate('/host/events/assign_boss');
+  const handleAssignSelected = async () => {
+    if (selectedBosses.length === 0) {
+      toast.error('Please select at least one boss to assign');
+      return;
+    }
+
+    try {
+      setAssigning(true);
+      await apiClient.post(`/events/${eventId}/bosses`, {
+        bossIds: selectedBosses
+      });
+      toast.success(`Successfully assigned ${selectedBosses.length} boss(es) to the event`);
+      navigate(`/host/events/assign_boss?eventId=${eventId}`);
+    } catch (error) {
+      console.error('Error assigning bosses:', error);
+      toast.error(error.response?.data?.message || 'Failed to assign bosses');
+    } finally {
+      setAssigning(false);
+    }
   };
 
-  const availableBosses = bossTemplates.filter(boss => boss.status === 'Available');
-  const assignedBosses = bossTemplates.filter(boss => boss.status === 'Assigned');
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 py-6 max-w-6xl">
+        <div className="text-center py-8">Loading available bosses...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -114,9 +105,13 @@ const BossTemplate = () => {
             </div>
           </div>
           {selectedBosses.length > 0 && (
-            <Button onClick={handleAssignSelected} className="flex items-center gap-2">
+            <Button 
+              onClick={handleAssignSelected} 
+              disabled={assigning}
+              className="flex items-center gap-2"
+            >
               <Plus className="w-4 h-4" />
-              Assign Selected ({selectedBosses.length})
+              {assigning ? 'Assigning...' : `Assign Selected (${selectedBosses.length})`}
             </Button>
           )}
         </div>
@@ -149,7 +144,7 @@ const BossTemplate = () => {
               </p>
             </div>
             <div className="text-sm text-muted-foreground">
-              {availableBosses.length} Available • {assignedBosses.length} Already Assigned
+              {availableBosses.length} Available {user?.role === 'host' ? '(Your Bosses Only)' : ''}
             </div>
           </div>
 
@@ -190,13 +185,12 @@ const BossTemplate = () => {
                   <div className="p-4 space-y-3">
                     <div>
                       <h3 className="font-semibold text-base mb-1">{boss.name}</h3>
-                      <div className="flex flex-wrap gap-1">
-                        {boss.categories.map((category) => (
-                          <Badge key={category} variant="outline" className="text-xs">
-                            {category}
-                          </Badge>
-                        ))}
+                      <div className="text-xs text-muted-foreground mb-2">
+                        By: {boss.creator?.username || 'Unknown'}
                       </div>
+                      {boss.description && (
+                        <p className="text-xs text-muted-foreground">{boss.description}</p>
+                      )}
                     </div>
 
                     {/* Boss Stats */}
@@ -204,16 +198,16 @@ const BossTemplate = () => {
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          Cooldown:
+                          Cooldown
                         </span>
-                        <span className="font-medium">{boss.cooldown}</span>
+                        <span className="font-medium">{boss.cooldownDuration || 60}s</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground flex items-center gap-1">
                           <Users className="w-3 h-3" />
-                          Teams:
+                          Teams
                         </span>
-                        <span className="font-medium">{boss.teamsRequired}</span>
+                        <span className="font-medium">{boss.numberOfTeams || 2}</span>
                       </div>
                     </div>
                   </div>
@@ -222,54 +216,26 @@ const BossTemplate = () => {
             ))}
           </div>
 
-          {/* Already Assigned Bosses */}
-          {assignedBosses.length > 0 && (
-            <div className="space-y-4">
-              <div className="border-t pt-6">
-                <Label className="text-lg font-semibold text-muted-foreground">Already Assigned to Event</Label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  These bosses are currently assigned to this event
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {assignedBosses.map((boss) => (
-                  <Card 
-                    key={boss.id}
-                    className="overflow-hidden opacity-60 border-dashed"
-                  >
-                    <CardContent className="p-0">
-                      <div className="relative h-32 bg-gradient-to-br from-muted/20 to-muted/5">
-                        <img
-                          src={boss.image ? getBossImageUrl(boss.image) : '/src/assets/Placeholder/Falcon.png'}
-                          alt={boss.name}
-                          className="w-full h-full object-cover grayscale"
-                        />
-                        <div className="absolute top-2 left-2">
-                          <Badge variant="secondary">
-                            <Check className="w-3 h-3 mr-1" />
-                            Assigned
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="p-4 space-y-3">
-                        <div>
-                          <h3 className="font-semibold text-base mb-1">{boss.name}</h3>
-                          <div className="flex flex-wrap gap-1">
-                            {boss.categories.map((category) => (
-                              <Badge key={category} variant="outline" className="text-xs">
-                                {category}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
+          {/* Empty State */}
+          {availableBosses.length === 0 && (
+            <Card className="border-dashed">
+              <CardContent className="py-12">
+                <div className="flex flex-col items-center justify-center text-center space-y-4">
+                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                    <Sword className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold">No Bosses Available</h3>
+                    <p className="text-sm text-muted-foreground max-w-sm">
+                      {user?.role === 'host' 
+                        ? "You haven't created any bosses yet. Create bosses first to assign them to events."
+                        : "No bosses are available for assignment."
+                      }
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
 
@@ -281,9 +247,9 @@ const BossTemplate = () => {
                 <span className="text-sm font-medium">
                   {selectedBosses.length} boss{selectedBosses.length !== 1 ? 'es' : ''} selected
                 </span>
-                <Button onClick={handleAssignSelected} size="sm">
+                <Button onClick={handleAssignSelected} size="sm" disabled={assigning}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Assign to Event
+                  {assigning ? 'Assigning...' : 'Assign to Event'}
                 </Button>
               </div>
             </Card>

@@ -7,6 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { apiClient } from '@/api';
+import { toast } from 'sonner';
 
 const CreateEvent = () => {
   const navigate = useNavigate();
@@ -14,10 +17,20 @@ const CreateEvent = () => {
   const [eventData, setEventData] = useState({
     name: '',
     description: '',
-    startDate: '',
-    endDate: ''
+    startDate: '', // This will hold the datetime-local value
+    endDate: ''    // This will hold the datetime-local value  
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Helper function to format datetime for backend (GMT+7 to UTC)
+  const formatDateTimeForBackend = (datetimeLocal) => {
+    if (!datetimeLocal) return null;
+    
+    // datetime-local gives us YYYY-MM-DDTHH:MM format in local time
+    const localDateTime = new Date(datetimeLocal);
+    
+    return localDateTime.toISOString();
+  };
 
   const handleInputChange = (field, value) => {
     setEventData(prev => ({
@@ -28,11 +41,46 @@ const CreateEvent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validation
+    if (!eventData.name || !eventData.startDate || !eventData.endDate) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Format datetime for backend
+    const startTime = formatDateTimeForBackend(eventData.startDate);
+    const endTime = formatDateTimeForBackend(eventData.endDate);
+
+    if (!startTime || !endTime) {
+      toast.error('Invalid date/time format');
+      return;
+    }
+
+    // Validate that start time is before end time
+    if (new Date(startTime) >= new Date(endTime)) {
+      toast.error('Start time must be before end time');
+      return;
+    }
+
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Creating event:', eventData);
-    setIsSubmitting(false);
+    
+    try {
+      const response = await apiClient.post('/events', {
+        name: eventData.name,
+        description: eventData.description,
+        startTime,
+        endTime
+      });
+
+      toast.success('Event created successfully!');
+      navigate('/host/events/view');
+    } catch (error) {
+      console.error('Error creating event:', error);
+      toast.error(error.response?.data?.message || 'Failed to create event');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
