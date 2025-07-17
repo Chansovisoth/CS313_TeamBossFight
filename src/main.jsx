@@ -147,25 +147,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <Route index element={<PlayerBossPreview />} />
               </Route>
 
-              <Route
-                path="/boss-battle"
-                element={
-                  <AuthenticationCheck>
-                    <AppBattle />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/boss-battle" element={<AppBattle />}>
                 <Route index element={<PlayerBossBattle />} />
               </Route>
 
-              <Route
-                path="/boss-podium"
-                element={
-                  <AuthenticationCheck>
-                    <AppBattle />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/boss-podium" element={<AppBattle />}>
                 <Route index element={<PlayerBossPodium />} />
               </Route>
 
