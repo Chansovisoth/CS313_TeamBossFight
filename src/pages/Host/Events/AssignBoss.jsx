@@ -250,21 +250,10 @@ const AssignBoss = () => {
           {/* Event Info Card */}
           <Card className="mb-6">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-2">
                     <h2 className="text-lg font-semibold">{event.name}</h2>
-                    {user?.role === 'admin' && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleEditEvent}
-                        className="flex items-center gap-2"
-                      >
-                        <Edit className="h-4 w-4" />
-                        Edit Event
-                      </Button>
-                    )}
                   </div>
                   {event.description && (
                     <p className="text-sm text-muted-foreground mt-1 mb-2">{event.description}</p>
@@ -281,10 +270,23 @@ const AssignBoss = () => {
                     </span>
                   </div>
                 </div>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 ml-4">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  {event.status || 'Active'}
-                </Badge>
+                <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                  {user?.role === 'admin' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleEditEvent}
+                      className="flex items-center gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit Event
+                    </Button>
+                  )}
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    {event.status || 'Active'}
+                  </Badge>
+                </div>
               </div>
             </CardHeader>
           </Card>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, ChevronRight, Plus } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { apiClient } from '@/api';
 import { useAuth } from '@/context/useAuth';
 import { toast } from 'sonner';
@@ -38,11 +39,28 @@ const ViewEvents = () => {
       startDate: event.startTimeFormatted?.formatted?.split(' ')[0] || 'N/A',
       startTime: event.startTimeFormatted?.formatted?.split(' ')[1] || 'N/A',
       endDate: event.endTimeFormatted?.formatted?.split(' ')[0] || 'N/A',
-      endTime: event.endTimeFormatted?.formatted?.split(' ')[1] || 'N/A'
+      endTime: event.endTimeFormatted?.formatted?.split(' ')[1] || 'N/A',
+      status: event.status || 'active'
     }));
   };
 
   const formattedEvents = formatEventsForUI(events);
+
+  // Get status badge style
+  const getStatusBadgeStyle = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'active':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'upcoming':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'completed':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-green-100 text-green-800 border-green-200';
+    }
+  };
 
   const handleEventClick = (eventId) => {
     navigate(`/host/events/assign_boss?eventId=${eventId}`);
@@ -95,10 +113,19 @@ const ViewEvents = () => {
               >
                 <CardContent className="p-4 sm:p-6">
                   <div className="space-y-3 sm:space-y-4">
-                    {/* Event Title */}
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {event.title}
-                    </h3>
+                    {/* Event Title and Status */}
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="text-lg font-semibold text-foreground flex-1">
+                        {event.title}
+                      </h3>
+                      <Badge 
+                        variant="outline" 
+                        className={`${getStatusBadgeStyle(event.status)} flex-shrink-0`}
+                      >
+                        <div className="w-2 h-2 bg-current rounded-full mr-2"></div>
+                        {event.status || 'Active'}
+                      </Badge>
+                    </div>
 
                     <div className="flex flex-col sm:flex-row sm:gap-8 gap-2">
                       {/* Start Date/Time */}
