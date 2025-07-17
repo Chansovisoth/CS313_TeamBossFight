@@ -173,19 +173,20 @@ const NavOP = (props) => {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage 
-                      src={user.profileImage 
-                        ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${user.profileImage}`
-                        : user.avatar || "/placeholder.svg"
-                      } 
-                      alt={user.username || user.name} 
+                      src={user?.profileImage || user?.avatar || "/placeholder.svg"} 
+                      alt={user?.username || user?.name || "User"}
+                      onError={(e) => {
+                        console.log("NavOP avatar image failed to load:", e.target.src);
+                        e.target.style.display = 'none';
+                      }}
                     />
-                    <AvatarFallback className="rounded-lg bg-orange-500 text-white">
-                      {(user.username || user.name || 'H').charAt(0).toUpperCase()}
+                    <AvatarFallback className="rounded-lg bg-gradient-to-br from-orange-600 to-red-600 text-white">
+                      {(user?.username || user?.name || 'H').charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user.username || user.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">{user.email}</span>
+                    <span className="truncate font-semibold">{user?.username || user?.name || "User"}</span>
+                    <span className="truncate text-xs text-muted-foreground">{user?.email || ""}</span>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -199,19 +200,20 @@ const NavOP = (props) => {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage 
-                        src={user.profileImage 
-                          ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${user.profileImage}`
-                          : user.avatar || "/placeholder.svg"
-                        } 
-                        alt={user.username || user.name} 
+                        src={user?.profileImage || user?.avatar || "/placeholder.svg"} 
+                        alt={user?.username || user?.name || "User"}
+                        onError={(e) => {
+                          console.log("NavOP dropdown avatar image failed to load:", e.target.src);
+                          e.target.style.display = 'none';
+                        }}
                       />
-                      <AvatarFallback className="rounded-lg bg-orange-500 text-white">
-                        {(user.username || user.name || 'H').charAt(0).toUpperCase()}
+                      <AvatarFallback className="rounded-lg bg-gradient-to-br from-orange-600 to-red-600 text-white">
+                        {(user?.username || user?.name || 'H').charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{user.username || user.name}</span>
-                      <span className="truncate text-xs text-muted-foreground">{user.email}</span>
+                      <span className="truncate font-semibold">{user?.username || user?.name || "User"}</span>
+                      <span className="truncate text-xs text-muted-foreground">{user?.email || ""}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>

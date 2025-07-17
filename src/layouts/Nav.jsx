@@ -190,11 +190,12 @@ export function NavSidebar({ ...props }) {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage 
-                      src={user?.profileImage 
-                        ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${user.profileImage}`
-                        : user?.avatar || "/placeholder.svg"
-                      } 
-                      alt={user?.username || user?.name || "User"} 
+                      src={user?.profileImage || user?.avatar || "/placeholder.svg"} 
+                      alt={user?.username || user?.name || "User"}
+                      onError={(e) => {
+                        console.log("Avatar image failed to load:", e.target.src);
+                        e.target.style.display = 'none';
+                      }}
                     />
                     <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-white">
                       {(user?.username || user?.name || 'BF').charAt(0).toUpperCase()}
@@ -216,11 +217,12 @@ export function NavSidebar({ ...props }) {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage 
-                        src={user?.profileImage 
-                          ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${user.profileImage}`
-                          : user?.avatar || "/placeholder.svg"
-                        } 
-                        alt={user?.username || user?.name || "User"} 
+                        src={user?.profileImage || user?.avatar || "/placeholder.svg"} 
+                        alt={user?.username || user?.name || "User"}
+                        onError={(e) => {
+                          console.log("Dropdown avatar image failed to load:", e.target.src);
+                          e.target.style.display = 'none';
+                        }}
                       />
                       <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-white">
                         {(user?.username || user?.name || 'BF').charAt(0).toUpperCase()}
