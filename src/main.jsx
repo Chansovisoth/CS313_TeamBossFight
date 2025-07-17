@@ -86,77 +86,38 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </Route>
 
               <Route path="/auth" element={<AppLanding />}>
-                <Route index element={
-                  <PreventAuthenticatedAccess>
-                    <Authentication />
-                  </PreventAuthenticatedAccess>
-                } />
+                <Route
+                  index
+                  element={
+                    <PreventAuthenticatedAccess>
+                      <Authentication />
+                    </PreventAuthenticatedAccess>
+                  }
+                />
               </Route>
 
               {/* ===== PLAYER ROUTES ===== */}
-              <Route
-                path="/"
-                element={
-                  <AuthenticationCheck>
-                    <App />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/" element={<App />}>
                 <Route index element={<PlayerHome />} />
               </Route>
 
-              <Route
-                path="/event-bosses"
-                element={
-                  <AuthenticationCheck>
-                    <App />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/event-bosses" element={<App />}>
                 <Route index element={<PlayerEventBosses />} />
               </Route>
 
-              <Route
-                path="/qr"
-                element={
-                  <AuthenticationCheck>
-                    <App />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/qr" element={<App />}>
                 <Route index element={<PlayerQR />} />
               </Route>
 
-              <Route
-                path="/badges"
-                element={
-                  <AuthenticationCheck>
-                    <App />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/badges" element={<App />}>
                 <Route index element={<PlayerBadges />} />
               </Route>
 
-              <Route
-                path="/leaderboard"
-                element={
-                  <AuthenticationCheck>
-                    <App />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/leaderboard" element={<App />}>
                 <Route index element={<PlayerLeaderboard />} />
               </Route>
 
-              <Route
-                path="/profile"
-                element={
-                  <AuthenticationCheck>
-                    <App />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/profile" element={<App />}>
                 <Route index element={<PlayerProfile />} />
               </Route>
 
