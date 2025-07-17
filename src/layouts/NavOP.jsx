@@ -31,6 +31,7 @@ import { Separator } from "@/components/ui/separator";
 // ===== CONTEXTS ===== //
 import { useThemeColor } from "@/theme/theme-provider";
 import { useAuth } from "@/context/useAuth";
+import { getProfileImageUrl } from "@/utils/imageUtils";
 
 // ===== NAVIGATION DATA ===== //
 const mainNavItems = [
@@ -173,7 +174,7 @@ const NavOP = (props) => {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage 
-                      src={user?.profileImage || user?.avatar || "/placeholder.svg"} 
+                      src={getProfileImageUrl(user?.profileImage)} 
                       alt={user?.username || user?.name || "User"}
                       onError={(e) => {
                         console.log("NavOP avatar image failed to load:", e.target.src);
@@ -200,7 +201,7 @@ const NavOP = (props) => {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage 
-                        src={user?.profileImage || user?.avatar || "/placeholder.svg"} 
+                        src={getProfileImageUrl(user?.profileImage)} 
                         alt={user?.username || user?.name || "User"}
                         onError={(e) => {
                           console.log("NavOP dropdown avatar image failed to load:", e.target.src);

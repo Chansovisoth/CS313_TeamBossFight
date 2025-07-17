@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Upload, X, ChevronDown, ArrowLeft, Sword, ImageIcon, Trash2, AlertTriangle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,31 +15,81 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { apiClient } from '@/api';
+import { toast } from 'sonner';
+import { getBossImageUrl } from '@/utils/imageUtils';
 
 const EditBoss = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState(['CS', 'MIS']);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [availableCategories, setAvailableCategories] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState('/src/assets/Placeholder/Falcon.png'); // Pre-existing image
-  const [hasOriginalImage, setHasOriginalImage] = useState(true); // Track if boss has original image
+  const [imagePreview, setImagePreview] = useState(null);
+  const [hasOriginalImage, setHasOriginalImage] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false });
+  const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [formData, setFormData] = useState({
-    name: 'Boss1',
-    cooldown: '30',
-    teamsCount: '4',
-    description: 'Cool boss 😎'
+    name: '',
+    cooldownDuration: '',
+    numberOfTeams: '',
+    description: ''
   });
   const fileInputRef = useRef(null);
 
-  const availableCategories = [
-    'ARC',
-    'BUS', 
-    'CE',
-    'CS',
-    'MIS',
-    'Life is good'
-  ];
+  // Fetch categories from API
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get('/categories');
+      // API returns { categories: [], totalCount: ... } - we need the categories array
+      const categoriesData = response.data.categories || response.data;
+      setAvailableCategories(Array.isArray(categoriesData) ? categoriesData : []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  // Fetch boss data from API
+  const fetchBossData = async () => {
+    try {
+      setPageLoading(true);
+      const response = await apiClient.get(`/bosses/${id}`);
+      const boss = response.data;
+      
+      // Update form data
+      setFormData({
+        name: boss.name || '',
+        cooldownDuration: boss.cooldownDuration || '',
+        numberOfTeams: boss.numberOfTeams || '',
+        description: boss.description || ''
+      });
+      
+      // Set selected categories (convert from boss.Categories to the expected format)
+      if (boss.Categories && boss.Categories.length > 0) {
+        setSelectedCategories(boss.Categories);
+      }
+      
+      // Set image preview if boss has an image
+      if (boss.image) {
+        setImagePreview(getBossImageUrl(boss.image));
+        setHasOriginalImage(true);
+      }
+      
+    } catch (error) {
+      console.error('Error fetching boss data:', error);
+      navigate('/host/bosses'); // Redirect if boss not found
+    } finally {
+      setPageLoading(false);
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    fetchCategories();
+    fetchBossData();
+  }, [id]);
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -71,14 +121,14 @@ const EditBoss = () => {
   };
 
   const handleCategorySelect = (category) => {
-    if (!selectedCategories.includes(category)) {
+    if (!selectedCategories.find(cat => cat.id === category.id)) {
       setSelectedCategories([...selectedCategories, category]);
     }
     setIsDropdownOpen(false);
   };
 
   const handleCategoryRemove = (categoryToRemove) => {
-    setSelectedCategories(selectedCategories.filter(cat => cat !== categoryToRemove));
+    setSelectedCategories(selectedCategories.filter(cat => cat.id !== categoryToRemove.id));
   };
 
   const handleInputChange = (field, value) => {
@@ -88,20 +138,47 @@ const EditBoss = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Prepare form data for submission
-    const submissionData = {
-      ...formData,
-      categories: selectedCategories,
-      imageAction: hasOriginalImage ? 'keep' : 'remove', // Track image action
-      newImage: selectedImage, // New image file if uploaded
-      removeImage: !hasOriginalImage && !selectedImage // Flag to remove image
-    };
-    
-    console.log('Updated form data:', submissionData);
-    navigate('/host/bosses/view');
+    if (!formData.name.trim()) {
+      toast.error('Boss name is required');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('description', formData.description);
+      submitData.append('cooldownDuration', formData.cooldownDuration || 60);
+      submitData.append('numberOfTeams', formData.numberOfTeams || 2);
+      
+      // Add category IDs
+      if (selectedCategories.length > 0) {
+        submitData.append('categoryIds', JSON.stringify(selectedCategories.map(cat => cat.id)));
+      }
+      
+      // Add image if selected
+      if (selectedImage) {
+        submitData.append('image', selectedImage);
+      }
+      
+      await apiClient.put(`/bosses/${id}`, submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      toast.success('Boss updated successfully!');
+      navigate('/host/bosses/view');
+    } catch (error) {
+      console.error('Error updating boss:', error);
+      toast.error(error.response?.data?.message || 'Failed to update boss');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -113,22 +190,40 @@ const EditBoss = () => {
     setDeleteDialog({ isOpen: true });
   };
 
-  const confirmDeleteBoss = () => {
-    console.log('Boss deleted:', formData.name);
-    setDeleteDialog({ isOpen: false });
-    navigate('/host/bosses/view');
+  const confirmDeleteBoss = async () => {
+    try {
+      setLoading(true);
+      await apiClient.delete(`/bosses/${id}`);
+      toast.success('Boss deleted successfully!');
+      setDeleteDialog({ isOpen: false });
+      navigate('/host/bosses/view');
+    } catch (error) {
+      console.error('Error deleting boss:', error);
+      toast.error(error.response?.data?.message || 'Failed to delete boss');
+      setDeleteDialog({ isOpen: false });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const cancelDeleteBoss = () => {
     setDeleteDialog({ isOpen: false });
   };
 
-  const unselectedCategories = availableCategories.filter(
-    cat => !selectedCategories.includes(cat)
+  const unselectedCategories = (availableCategories || []).filter(
+    cat => !(selectedCategories || []).find(selected => selected.id === cat.id)
   );
 
   return (
     <div className="min-h-screen bg-background">
+      {pageLoading ? (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="text-muted-foreground">Loading boss data...</p>
+          </div>
+        </div>
+      ) : (
       <div className="container mx-auto px-4 sm:px-6 py-6 max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -272,8 +367,8 @@ const EditBoss = () => {
                     type="number"
                     placeholder="e.g., 30"
                     min="1"
-                    value={formData.cooldown}
-                    onChange={(e) => handleInputChange('cooldown', e.target.value)}
+                    value={formData.cooldownDuration}
+                    onChange={(e) => handleInputChange('cooldownDuration', e.target.value)}
                     className="w-full"
                   />
                 </div>
@@ -294,10 +389,10 @@ const EditBoss = () => {
                     {/* Selected Category Tags */}
                     {selectedCategories.map((category) => (
                       <span 
-                        key={category}
+                        key={category.id}
                         className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 text-sm rounded-md"
                       >
-                        {category}
+                        {category.name}
                         <X 
                           className="w-3 h-3 cursor-pointer hover:text-red-600 dark:hover:text-red-400" 
                           onClick={(e) => {
@@ -322,11 +417,11 @@ const EditBoss = () => {
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-10">
                       {unselectedCategories.map((category) => (
                         <div
-                          key={category}
+                          key={category.id}
                           className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm border-b border-gray-100 dark:border-gray-600 last:border-b-0 text-gray-900 dark:text-white"
                           onClick={() => handleCategorySelect(category)}
                         >
-                          {category}
+                          {category.name}
                         </div>
                       ))}
                     </div>
@@ -342,8 +437,8 @@ const EditBoss = () => {
                   type="number"
                   placeholder="Enter number"
                   min="1"
-                  value={formData.teamsCount}
-                  onChange={(e) => handleInputChange('teamsCount', e.target.value)}
+                  value={formData.numberOfTeams}
+                  onChange={(e) => handleInputChange('numberOfTeams', e.target.value)}
                   className="w-full"
                 />
               </div>
@@ -382,6 +477,7 @@ const EditBoss = () => {
           </div>
         </form>
       </div>
+      )}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialog.isOpen} onOpenChange={cancelDeleteBoss}>

@@ -24,6 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { getBossImageUrl } from '@/utils/imageUtils';
 
 const AssignBoss = () => {
   const navigate = useNavigate();
@@ -232,7 +233,7 @@ const AssignBoss = () => {
                       {/* Boss Image */}
                       <div className="relative bg-gradient-to-br from-primary/20 to-primary/5">
                         <img
-                          src={boss.image}
+                          src={boss.image ? getBossImageUrl(boss.image) : '/src/assets/Placeholder/Falcon.png'}
                           alt={boss.name}
                           className="w-full h-[270px] object-cover"
                         />

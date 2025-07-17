@@ -1,42 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sword, Plus } from 'lucide-react';
+import { Sword, Plus, User } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { apiClient } from '@/api';
+import { useAuth } from '@/context/useAuth';
+import { toast } from 'sonner';
+import { getBossImageUrl } from '@/utils/imageUtils';
 
 const ViewBosses = () => {
   const navigate = useNavigate();
-  
-  // For demo purposes - toggle this to see different states
-  const [bosses, setBosses] = useState([
-    {
-      id: 1,
-      name: 'Falcon',
-      image: '/src/assets/Placeholder/Falcon.png',
-      description: 'A fearsome boss with incredible strength'
-    },
-    {
-      id: 2,
-      name: 'The Predator', 
-      image: '/src/assets/Placeholder/ThePredator.png',
-      description: 'Master of dark magic and ancient spells'
-    },
-    {
-      id: 3,
-      name: 'Tricera',
-      image: '/src/assets/Placeholder/Tricera.png',
-      description: 'Lightning-fast warrior with deadly precision'
+  const { user } = useAuth();
+  const [bosses, setBosses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchBosses();
+  }, []);
+
+  const fetchBosses = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/bosses');
+      setBosses(response.data);
+    } catch (error) {
+      console.error('Error fetching bosses:', error);
+      toast.error('Failed to fetch bosses');
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
   const handleBossClick = (bossId) => {
     // Navigate to boss edit page
-    navigate('/host/bosses/edit');
+    navigate(`/host/bosses/edit/${bossId}`);
   };
 
   const handleCreateBoss = () => {
     navigate('/host/bosses/create');
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto max-w-6xl">
+        <div className="flex items-center justify-center py-16">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading bosses...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-6xl">
@@ -89,7 +105,7 @@ const ViewBosses = () => {
                 <div className="relative overflow-hidden aspect-square">
                   {boss.image ? (
                     <img 
-                      src={boss.image} 
+                      src={getBossImageUrl(boss.image)} 
                       alt={boss.name}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     />
@@ -114,13 +130,30 @@ const ViewBosses = () => {
 
                 {/* Boss Info */}
                 <div className="p-4">
-                  <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                    {boss.name}
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                      {boss.name}
+                    </h3>
+                    {user?.role === 'admin' && boss.creator && (
+                      <Badge variant="outline" className="text-xs">
+                        <User className="h-3 w-3 mr-1" />
+                        {boss.creator.username}
+                      </Badge>
+                    )}
+                  </div>
                   {boss.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
                       {boss.description}
                     </p>
+                  )}
+                  {boss.categories && boss.categories.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {boss.categories.map((category) => (
+                        <Badge key={category.id} variant="secondary" className="text-xs">
+                          {category.name}
+                        </Badge>
+                      ))}
+                    </div>
                   )}
                 </div>
               </CardContent>

@@ -1,32 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, X, ChevronDown, ArrowLeft, Sword, ImageIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { apiClient } from '@/api';
+import { toast } from 'sonner';
 
 const CreateBoss = () => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState(['CS', 'MIS']);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [availableCategories, setAvailableCategories] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    cooldown: '',
-    teamsCount: '',
+    cooldownDuration: '',
+    numberOfTeams: '',
     description: ''
   });
 
-  const availableCategories = [
-    'ARC',
-    'BUS', 
-    'CE',
-    'CS',
-    'MIS',
-    'Life is good'
-  ];
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get('/categories');
+      // API returns { categories: [], totalCount: ... } - we need the categories array
+      const categoriesData = response.data.categories || response.data;
+      setAvailableCategories(Array.isArray(categoriesData) ? categoriesData : []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      toast.error('Failed to fetch categories');
+      // Fallback to empty array if API fails
+      setAvailableCategories([]);
+    }
+  };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -41,14 +54,14 @@ const CreateBoss = () => {
   };
 
   const handleCategorySelect = (category) => {
-    if (!selectedCategories.includes(category)) {
+    if (!selectedCategories.find(cat => cat.id === category.id)) {
       setSelectedCategories([...selectedCategories, category]);
     }
     setIsDropdownOpen(false);
   };
 
   const handleCategoryRemove = (categoryToRemove) => {
-    setSelectedCategories(selectedCategories.filter(cat => cat !== categoryToRemove));
+    setSelectedCategories(selectedCategories.filter(cat => cat.id !== categoryToRemove.id));
   };
 
   const handleInputChange = (field, value) => {
@@ -58,18 +71,55 @@ const CreateBoss = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form data:', formData, selectedCategories, selectedImage);
-    navigate('/host/bosses/view');
+    
+    if (!formData.name.trim()) {
+      toast.error('Boss name is required');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('description', formData.description);
+      submitData.append('cooldownDuration', formData.cooldownDuration || 60);
+      submitData.append('numberOfTeams', formData.numberOfTeams || 2);
+      
+      // Add category IDs
+      if (selectedCategories.length > 0) {
+        submitData.append('categoryIds', JSON.stringify(selectedCategories.map(cat => cat.id)));
+      }
+      
+      // Add image if selected
+      if (selectedImage) {
+        submitData.append('image', selectedImage);
+      }
+      
+      await apiClient.post('/bosses', submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      toast.success('Boss created successfully!');
+      navigate('/host/bosses/view');
+    } catch (error) {
+      console.error('Error creating boss:', error);
+      toast.error(error.response?.data?.message || 'Failed to create boss');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
     navigate('/host/bosses/view');
   };
 
-  const unselectedCategories = availableCategories.filter(
-    cat => !selectedCategories.includes(cat)
+  const unselectedCategories = (availableCategories || []).filter(
+    cat => !(selectedCategories || []).find(selected => selected.id === cat.id)
   );
 
   return (
@@ -179,8 +229,8 @@ const CreateBoss = () => {
                     type="number"
                     placeholder="e.g., 30"
                     min="1"
-                    value={formData.cooldown}
-                    onChange={(e) => handleInputChange('cooldown', e.target.value)}
+                    value={formData.cooldownDuration}
+                    onChange={(e) => handleInputChange('cooldownDuration', e.target.value)}
                     className="w-full"
                   />
                 </div>
@@ -201,10 +251,10 @@ const CreateBoss = () => {
                     {/* Selected Category Tags */}
                     {selectedCategories.map((category) => (
                       <span 
-                        key={category}
+                        key={category.id}
                         className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 text-sm rounded-md"
                       >
-                        {category}
+                        {category.name}
                         <X 
                           className="w-3 h-3 cursor-pointer hover:text-red-600 dark:hover:text-red-400" 
                           onClick={(e) => {
@@ -229,11 +279,11 @@ const CreateBoss = () => {
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-10">
                       {unselectedCategories.map((category) => (
                         <div
-                          key={category}
+                          key={category.id}
                           className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm border-b border-gray-100 dark:border-gray-600 last:border-b-0 text-gray-900 dark:text-white"
                           onClick={() => handleCategorySelect(category)}
                         >
-                          {category}
+                          {category.name}
                         </div>
                       ))}
                     </div>
@@ -249,8 +299,8 @@ const CreateBoss = () => {
                   type="number"
                   placeholder="Enter number"
                   min="1"
-                  value={formData.teamsCount}
-                  onChange={(e) => handleInputChange('teamsCount', e.target.value)}
+                  value={formData.numberOfTeams}
+                  onChange={(e) => handleInputChange('numberOfTeams', e.target.value)}
                   className="w-full"
                 />
               </div>
@@ -282,9 +332,10 @@ const CreateBoss = () => {
             </Button>
             <Button
               type="submit"
+              disabled={loading}
               className="w-full sm:w-auto sm:min-w-[120px]"
             >
-              Create Boss
+              {loading ? 'Creating...' : 'Create Boss'}
             </Button>
           </div>
         </form>

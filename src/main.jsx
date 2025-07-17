@@ -128,7 +128,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                   <Route index element={<HostBossesCreate />} />
                 </Route>
                 
-                <Route path="bosses/edit" element={<AppOP />}>
+                <Route path="bosses/edit/:id" element={<AppOP />}>
                   <Route index element={<HostBossesEdit />} />
                 </Route>
                 

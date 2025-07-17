@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { getBossImageUrl } from '@/utils/imageUtils';
 
 const BossTemplate = () => {
   const navigate = useNavigate();
@@ -168,7 +169,7 @@ const BossTemplate = () => {
                   {/* Boss Image */}
                   <div className="relative h-32 bg-gradient-to-br from-primary/20 to-primary/5">
                     <img
-                      src={boss.image}
+                      src={boss.image ? getBossImageUrl(boss.image) : '/src/assets/Placeholder/Falcon.png'}
                       alt={boss.name}
                       className="w-full h-full object-cover"
                     />
@@ -240,7 +241,7 @@ const BossTemplate = () => {
                     <CardContent className="p-0">
                       <div className="relative h-32 bg-gradient-to-br from-muted/20 to-muted/5">
                         <img
-                          src={boss.image}
+                          src={boss.image ? getBossImageUrl(boss.image) : '/src/assets/Placeholder/Falcon.png'}
                           alt={boss.name}
                           className="w-full h-full object-cover grayscale"
                         />
