@@ -1,9 +1,11 @@
 // ===== LIBRARIES ===== //
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Calendar, Clock } from "lucide-react";
 import { apiClient } from '@/api';
 
 const EventCarousel = () => {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,6 +88,16 @@ const EventCarousel = () => {
 
   const goToNext = () => {
     setCurrentIndex(currentIndex === displayEvents.length - 1 ? 0 : currentIndex + 1);
+  };
+
+  const handleCardClick = (event) => {
+    // Don't navigate if it's a placeholder event
+    if (event.isPlaceholder) {
+      return;
+    }
+    
+    // Navigate to event-bosses page with the event ID
+    navigate(`/event-bosses?eventId=${event.id}`);
   };
 
   const getCardPosition = (index) => {
@@ -189,8 +201,22 @@ const EventCarousel = () => {
           {displayEvents.map((event, index) => (
             <li
               key={event.id}
-              className={`absolute top-[50%] left-[50%] w-[350px] h-[350px] sm:w-[600px] sm:h-[338px] duration-400 cursor-pointer ${getCardPosition(index)}`}
-              onClick={() => displayEvents.length > 1 && goToSlide(index)}
+              className={`absolute top-[50%] left-[50%] w-[350px] h-[350px] sm:w-[600px] sm:h-[338px] duration-400 ${
+                index === currentIndex && !event.isPlaceholder 
+                  ? 'cursor-pointer hover:scale-105' 
+                  : displayEvents.length > 1 
+                    ? 'cursor-pointer' 
+                    : 'cursor-default'
+              } ${getCardPosition(index)}`}
+              onClick={() => {
+                // If it's the center card, navigate to the event
+                if (index === currentIndex) {
+                  handleCardClick(event);
+                } else if (displayEvents.length > 1) {
+                  // Otherwise, just navigate to that slide
+                  goToSlide(index);
+                }
+              }}
             >
               {/* Card with gradient border */}
               <div className={`relative w-full h-full rounded-xl overflow-hidden ${
