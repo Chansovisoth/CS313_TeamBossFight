@@ -160,36 +160,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <Route index element={<PlayerProfile />} />
               </Route>
 
-              <Route
-                path="/boss-preview"
-                element={
-                  <AuthenticationCheck>
-                    <App />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/boss-preview" element={<App />}>
                 <Route index element={<PlayerBossPreview />} />
               </Route>
 
-              <Route
-                path="/boss-battle"
-                element={
-                  <AuthenticationCheck>
-                    <AppBattle />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/boss-battle" element={<AppBattle />}>
                 <Route index element={<PlayerBossBattle />} />
               </Route>
 
-              <Route
-                path="/boss-podium"
-                element={
-                  <AuthenticationCheck>
-                    <AppBattle />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/boss-podium" element={<AppBattle />}>
                 <Route index element={<PlayerBossPodium />} />
               </Route>
 
@@ -274,8 +253,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 >
                   <Route index element={<HostCategoriesCreate />} />
                 </Route>
-                
-                <Route path="questionbank/categories/edit/:id" element={<AppOP />}>
+
+                <Route
+                  path="questionbank/categories/edit/:id"
+                  element={<AppOP />}
+                >
                   <Route index element={<HostCategoriesEdit />} />
                 </Route>
 
