@@ -1,5 +1,5 @@
 // ===== LIBRARIES ===== //
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Mail, Lock, Camera, Edit, Save, X, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
@@ -12,70 +12,188 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
+// ===== CONTEXTS ===== //
+import { useAuth } from "@/context/useAuth";
+import { apiClient } from "@/api";
+import { toast } from "sonner";
+
 const HostProfile = () => {
   const navigate = useNavigate();
+  const { user, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [profileData, setProfileData] = useState({
-    profilePic: "/src/assets/Placeholder/host-profile.jpg",
-    username: "HostOne",
-    email: "host.one@example.com",
-    password: "••••••••",
-    uuid: "fcae3bf-2870-4848-8e78-2205a41a"
-  });
+  const [profileData, setProfileData] = useState(null);
   
   const [editData, setEditData] = useState({
-    profilePic: profileData.profilePic,
-    username: profileData.username,
-    email: profileData.email,
+    username: "",
+    email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    profileImage: null
   });
+
+  // Fetch profile data on component mount
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/users/profile');
+      setProfileData(response.data);
+      setEditData({
+        username: response.data.username,
+        email: response.data.email,
+        password: "",
+        confirmPassword: "",
+        profileImage: null
+      });
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast.error('Failed to load profile data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEdit = () => {
     setIsEditing(true);
     setEditData({
-      profilePic: profileData.profilePic,
       username: profileData.username,
       email: profileData.email,
-      password: '',
-      confirmPassword: ''
+      password: "",
+      confirmPassword: "",
+      profileImage: null
     });
   };
 
-  const handleSave = () => {
-    // Validation
-    if (editData.password && editData.password !== editData.confirmPassword) {
-      alert('Passwords do not match');
-      return;
+  const handleSave = async () => {
+    try {
+      // Validation
+      if (editData.password && editData.password !== editData.confirmPassword) {
+        toast.error("Passwords do not match!");
+        return;
+      }
+      
+      if (editData.password && editData.password.length > 0 && editData.password.length < 8) {
+        toast.error("Password must be at least 8 characters long!");
+        return;
+      }
+
+      setSaving(true);
+
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('username', editData.username);
+      formData.append('email', editData.email);
+      if (editData.password) {
+        formData.append('password', editData.password);
+      }
+      if (editData.profileImage) {
+        formData.append('profileImage', editData.profileImage);
+      }
+
+      const response = await apiClient.put('/users/profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Update local state and auth context
+      setProfileData(response.data.user);
+      setUser({ ...user, ...response.data.user });
+      
+      setIsEditing(false);
+      setShowPassword(false);
+      setShowConfirmPassword(false);
+      toast.success('Profile updated successfully');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to update profile';
+      toast.error(errorMessage);
+    } finally {
+      setSaving(false);
     }
-    
-    // Update data
-    setProfileData(prev => ({
-      ...prev,
-      username: editData.username,
-      email: editData.email,
-      ...(editData.password && { password: '••••••••' })
-    }));
-    setIsEditing(false);
-    alert('Profile updated successfully!');
   };
 
   const handleCancel = () => {
+    setIsEditing(false);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     setEditData({
-      profilePic: profileData.profilePic,
       username: profileData.username,
       email: profileData.email,
-      password: '',
-      confirmPassword: ''
+      password: "",
+      confirmPassword: "",
+      profileImage: null
     });
-    setIsEditing(false);
   };
 
   const handleBack = () => {
     navigate('/host/events/view');
   };
+
+  const handleInputChange = (field, value) => {
+    setEditData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleProfilePicChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Only image files (JPEG, PNG, GIF, WebP) are allowed');
+        return;
+      }
+      
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File size must be less than 5MB');
+        return;
+      }
+      
+      setEditData(prev => ({
+        ...prev,
+        profileImage: file
+      }));
+    }
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4 max-w-4xl">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">Loading profile...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if no profile data
+  if (!profileData) {
+    return (
+      <div className="container mx-auto p-4 max-w-4xl">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <p className="text-red-500 mb-4">Failed to load profile data</p>
+            <Button onClick={fetchProfile} variant="outline">Try Again</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const isPasswordValid = editData.password.length >= 8;
   const doPasswordsMatch = editData.password === editData.confirmPassword;
@@ -114,28 +232,39 @@ const HostProfile = () => {
               <CardContent className="flex flex-col items-center space-y-4">
                 <div className="relative">
                   <Avatar className="w-24 h-24">
-                    <AvatarImage src={profileData.profilePic} alt={profileData.username} />
+                    <AvatarImage 
+                      src={editData.profileImage 
+                        ? URL.createObjectURL(editData.profileImage)
+                        : profileData.profileImage 
+                          ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${profileData.profileImage}`
+                          : "/src/assets/Placeholder/host-profile.jpg"
+                      } 
+                      alt={profileData.username} 
+                    />
                     <AvatarFallback className="text-lg font-bold bg-gradient-to-br from-blue-600 to-purple-600 text-white">
-                      {profileData.username.charAt(0)}
+                      {profileData.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   {isEditing && (
-                    <Button 
-                      size="sm" 
-                      className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
-                    >
+                    <label className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/90 transition-colors">
                       <Camera className="h-4 w-4" />
-                    </Button>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProfilePicChange}
+                        className="hidden"
+                      />
+                    </label>
                   )}
                 </div>
                 
                 <div className="text-center space-y-1">
                   <h3 className="font-semibold text-lg">{profileData.username}</h3>
                   <p className="text-sm text-muted-foreground">
-                    UUID: {profileData.uuid}
+                    UUID: {profileData.id}
                   </p>
                   <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                    Host
+                    {profileData.role.charAt(0).toUpperCase() + profileData.role.slice(1)}
                   </Badge>
                 </div>
               </CardContent>
@@ -218,8 +347,8 @@ const HostProfile = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="p-2 bg-muted rounded-md">
-                      {profileData.password}
+                    <div className="p-2 bg-muted rounded-md font-mono tracking-wider">
+                      ••••••••
                     </div>
                   )}
                 </div>
@@ -283,14 +412,27 @@ const HostProfile = () => {
                         variant="outline" 
                         onClick={handleCancel}
                         className="flex-1"
+                        disabled={saving}
                       >
+                        <X className="h-4 w-4 mr-2" />
                         Cancel
                       </Button>
                       <Button 
                         onClick={handleSave}
-                        className="flex-1"
+                        className="flex-1 flex items-center gap-2"
+                        disabled={saving}
                       >
-                        Save
+                        {saving ? (
+                          <>
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-4 w-4" />
+                            Save
+                          </>
+                        )}
                       </Button>
                     </>
                   ) : (

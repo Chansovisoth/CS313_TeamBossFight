@@ -172,7 +172,13 @@ const NavOP = (props) => {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.username || user.name} />
+                    <AvatarImage 
+                      src={user.profileImage 
+                        ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${user.profileImage}`
+                        : user.avatar || "/placeholder.svg"
+                      } 
+                      alt={user.username || user.name} 
+                    />
                     <AvatarFallback className="rounded-lg bg-orange-500 text-white">
                       {(user.username || user.name || 'H').charAt(0).toUpperCase()}
                     </AvatarFallback>
@@ -192,7 +198,13 @@ const NavOP = (props) => {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.username || user.name} />
+                      <AvatarImage 
+                        src={user.profileImage 
+                          ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${user.profileImage}`
+                          : user.avatar || "/placeholder.svg"
+                        } 
+                        alt={user.username || user.name} 
+                      />
                       <AvatarFallback className="rounded-lg bg-orange-500 text-white">
                         {(user.username || user.name || 'H').charAt(0).toUpperCase()}
                       </AvatarFallback>

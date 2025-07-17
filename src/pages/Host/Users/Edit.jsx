@@ -18,40 +18,27 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useNavigate, useParams } from 'react-router-dom';
-// import { apiClient } from '@/api';
+import { apiClient } from '../../../api';
 import { useEffect, useState } from 'react';
-// import { toast } from 'sonner';
+import { toast } from 'sonner';
 
 const Edit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // Static data for testing
-  const staticUsers = [
-    { id: 1, username: 'admin_user', email: 'admin@example.com', role: 'admin' },
-    { id: 2, username: 'host_user', email: 'host@example.com', role: 'host' },
-    { id: 3, username: 'player1', email: 'player1@example.com', role: 'player' },
-    { id: 4, username: 'player2', email: 'player2@example.com', role: 'player' },
-    { id: 5, username: 'test_host', email: 'testhost@example.com', role: 'host' }
-  ];
-
-  // Find user by ID from static data
-  const currentUser = staticUsers.find(user => user.id === parseInt(id)) || staticUsers[0];
-
   const [form, setForm] = useState({ 
-    username: currentUser.username, 
-    email: currentUser.email, 
-    role: currentUser.role 
+    username: '', 
+    email: '', 
+    role: 'player' 
   });
-  const [loading, setLoading] = useState(false); // Set to false for static data
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Commented out API fetch
-  /*
+  // Fetch user data from API
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -77,7 +64,6 @@ const Edit = () => {
       fetchUser();
     }
   }, [id]);
-  */
 
   const validateForm = () => {
     const errors = {};
@@ -138,21 +124,6 @@ const Edit = () => {
     setDeleteDialog(false);
     setDeleting(true);
     
-    // Static delete - simulate success and navigate back
-    try {
-      setTimeout(() => {
-        setDeleting(false);
-        // toast.success('User deleted successfully'); // Commented out toast
-        console.log('User deleted successfully'); // Console log instead
-        navigate('/host/users/view');
-      }, 1000);
-    } catch (err) {
-      console.error('Error deleting user:', err);
-      setDeleting(false);
-    }
-
-    // Commented out API delete
-    /*
     try {
       await apiClient.delete(`/users/${id}`);
       toast.success('User deleted successfully');
@@ -165,38 +136,19 @@ const Edit = () => {
     } finally {
       setDeleting(false);
     }
-    */
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) {
-      // toast.error('Please fix the validation errors'); // Commented out toast
-      console.log('Please fix the validation errors'); // Console log instead
+      toast.error('Please fix the validation errors');
       return;
     }
 
     setSaving(true);
     setError(null);
     
-    // Static save - just simulate success
-    try {
-      // Simulate async operation
-      setTimeout(() => {
-        setSaving(false);
-        // toast.success('User updated successfully'); // Commented out toast
-        console.log('User updated successfully'); // Console log instead
-        navigate('/host/users/view');
-      }, 1000);
-    } catch (err) {
-      console.error('Error updating user:', err);
-      setError('Failed to update user');
-      setSaving(false);
-    }
-
-    // Commented out API save
-    /*
     try {
       await apiClient.put(`/users/${id}`, {
         username: form.username.trim(),
@@ -214,7 +166,6 @@ const Edit = () => {
     } finally {
       setSaving(false);
     }
-    */
   };
 
   if (loading) {

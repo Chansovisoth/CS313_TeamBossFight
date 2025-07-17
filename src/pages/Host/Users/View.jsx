@@ -1,90 +1,133 @@
 import React from 'react';
-import { Search, Edit, Users, ArrowLeft } from 'lucide-react';
+import { Search, Edit, Users, ArrowLeft, Loader2, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-// import { apiClient } from '@/api';
+import { apiClient } from '../../../api';
 import { useEffect, useState } from 'react';
-// import { toast } from 'sonner';
+import { toast } from 'sonner';
 
 const View = () => {
-  // Static data for testing
-  const staticUsers = [
-    { id: 1, username: 'admin_user', email: 'admin@example.com', role: 'admin' },
-    { id: 2, username: 'host_user', email: 'host@example.com', role: 'host' },
-    { id: 3, username: 'player1', email: 'player1@example.com', role: 'player' },
-    { id: 4, username: 'player2', email: 'player2@example.com', role: 'player' },
-    { id: 5, username: 'test_host', email: 'testhost@example.com', role: 'host' }
-  ];
-
-  const [users, setUsers] = useState(staticUsers);
-  const [loading, setLoading] = useState(false); // Set to false for static data
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const navigate = useNavigate();
 
-  // Commented out API fetch function
-  /*
-  const fetchUsers = async (search = '') => {
+  // Fetch users from API
+  const fetchUsers = async (search = '', page = 1, role = 'all', isSearching = false) => {
     try {
-      setLoading(true);
-      const params = search ? { search } : {};
+      if (isSearching) {
+        setSearching(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+      const params = { 
+        page, 
+        limit: 10,
+        ...(search && { search }),
+        ...(role !== 'all' && { role })
+      };
+      
       const res = await apiClient.get('/users', { params });
       
-      // Handle both old format (array) and new format (object with users array)
-      const userData = res.data.users || res.data;
-      setUsers(Array.isArray(userData) ? userData : []);
+      // Handle the response format from your user controller
+      const { users: userData, totalCount, currentPage, totalPages } = res.data;
+      
+      // Filter out admin users and apply role filter
+      let filteredUsers = Array.isArray(userData) ? userData.filter(user => user.role !== 'admin') : [];
+      
+      // Apply role filter if not 'all'
+      if (role !== 'all') {
+        filteredUsers = filteredUsers.filter(user => user.role === role);
+      }
+      
+      setUsers(filteredUsers);
+      setTotalCount(filteredUsers.length);
+      setCurrentPage(currentPage || 1);
+      setTotalPages(Math.ceil(filteredUsers.length / 10) || 1);
     } catch (err) {
       console.error('Error fetching users:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to fetch users');
-      toast.error('Failed to fetch users');
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch users';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setUsers([]);
     } finally {
       setLoading(false);
+      setSearching(false);
     }
   };
-  */
 
-  // Static filter function for search
-  const filterUsers = (search = '') => {
-    if (!search) {
-      setUsers(staticUsers);
-      return;
-    }
-    
-    const filtered = staticUsers.filter(user => 
-      user.username.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
-    );
-    setUsers(filtered);
-  };
-
-  // Commented out useEffect for API calls
-  /*
+  // Load users on component mount
   useEffect(() => {
-    fetchUsers();
+    fetchUsers(searchTerm, currentPage, roleFilter);
+  }, [currentPage]);
+
+  // Load users when role filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchUsers(searchTerm, 1, roleFilter, true);
+  }, [roleFilter]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (window.searchTimeout) {
+        clearTimeout(window.searchTimeout);
+      }
+    };
   }, []);
-  */
 
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page on search
     
-    // Use static filter instead of API call
-    filterUsers(value);
+    // Clear previous timeout
+    if (window.searchTimeout) {
+      clearTimeout(window.searchTimeout);
+    }
     
-    // Commented out debounced API search
-    /*
-    // Debounce search
-    const timeoutId = setTimeout(() => {
-      fetchUsers(value);
-    }, 500);
+    // Debounce search to avoid too many API calls
+    window.searchTimeout = setTimeout(() => {
+      fetchUsers(value, 1, roleFilter, true); // Pass true for isSearching
+    }, 300); // Reduced from 500ms to 300ms for more responsive feel
+  };
 
-    return () => clearTimeout(timeoutId);
-    */
+  // Function to highlight search terms with stable layout
+  const highlightText = (text, highlight) => {
+    if (!highlight || !text) return text;
+    
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    const parts = text.split(regex);
+    
+    return (
+      <span className="inline-block w-full">
+        {parts.map((part, index) => 
+          regex.test(part) ? (
+            <span 
+              key={index} 
+              className="bg-yellow-200 dark:bg-yellow-800/60 text-yellow-900 dark:text-yellow-100 px-0.5 py-0.5 rounded-sm font-medium transition-colors duration-200"
+            >
+              {part}
+            </span>
+          ) : (
+            <span key={index}>{part}</span>
+          )
+        )}
+      </span>
+    );
   };
 
   const getRoleBadgeVariant = (role) => {
@@ -142,15 +185,55 @@ const View = () => {
         {/* Search Card */}
         <Card>
           <CardContent className="p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Search users by username or email..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="pl-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-              />
+            <div className="flex gap-4">
+              {/* Search Input */}
+              <div className="relative flex-1">
+                {searching ? (
+                  <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 animate-spin" />
+                ) : (
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                )}
+                <Input
+                  type="text"
+                  placeholder="Search users by username or email..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="pl-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                />
+                {searchTerm && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSearchTerm('');
+                        setCurrentPage(1);
+                        fetchUsers('', 1, roleFilter);
+                      }}
+                      className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      ×
+                    </Button>
+                  </div>
+                )}
+              </div>
+              
+              {/* Role Filter */}
+              <div className="w-48">
+                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Filter className="h-4 w-4 text-gray-400" />
+                      <SelectValue placeholder="Filter by role" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="host">Host Only</SelectItem>
+                    <SelectItem value="player">Player Only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -160,49 +243,52 @@ const View = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
-              Users ({users.length})
+              Users ({totalCount})
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            {loading && users.length > 0 && (
-              <div className="text-center py-4 text-gray-500 dark:text-gray-400 text-sm border-b">
-                Searching...
+            {(loading || searching) && users.length > 0 && (
+              <div className="text-center py-4 text-gray-500 dark:text-gray-400 text-sm border-b bg-gray-50/50 dark:bg-gray-800/50">
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {searching ? 'Searching...' : 'Loading...'}
+                </div>
               </div>
             )}
 
             {users.length > 0 ? (
               <div className="divide-y divide-gray-200 dark:divide-gray-700">
                 {users.map((user) => (
-                  <div key={user.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                  <div key={user.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200 ease-in-out">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <Avatar className="h-10 w-10">
+                        <Avatar className="h-10 w-10 flex-shrink-0">
                           <AvatarFallback className="bg-primary/10 text-primary font-medium">
                             {user.username.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 overflow-hidden">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-medium text-gray-900 dark:text-white truncate">
+                            <div className="font-medium text-gray-900 dark:text-white truncate min-w-0">
                               {user.username}
-                            </h3>
-                            <Badge variant={getRoleBadgeVariant(user.role)} className="text-xs">
+                            </div>
+                            <Badge variant={getRoleBadgeVariant(user.role)} className="text-xs flex-shrink-0">
                               {user.role}
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                          <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
                             {user.email}
-                          </p>
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         <Button 
                           variant="outline" 
                           size="sm"
                           onClick={() => navigate(`/host/users/edit/${user.id}`)}
-                          className="h-8 px-3"
+                          className="h-8 px-3 transition-all duration-200 hover:scale-105"
                         >
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
@@ -219,23 +305,61 @@ const View = () => {
                   No Users Found
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-4">
-                  {searchTerm ? 'No users found matching your search criteria.' : 'No users have been created yet.'}
+                  {searchTerm || roleFilter !== 'all' 
+                    ? 'No users found matching your search criteria.' 
+                    : 'No users have been created yet.'}
                 </p>
-                {searchTerm && (
+                {(searchTerm || roleFilter !== 'all') && (
                   <Button 
                     variant="outline" 
                     onClick={() => {
                       setSearchTerm('');
-                      filterUsers('');
+                      setRoleFilter('all');
+                      setCurrentPage(1);
+                      fetchUsers('', 1, 'all');
                     }}
                   >
-                    Clear Search
+                    Clear Filters
                   </Button>
                 )}
               </div>
             )}
           </CardContent>
         </Card>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, totalCount)} of {totalCount} users
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1 || loading}
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-sm font-medium px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded">
+                    {currentPage} of {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages || loading}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
