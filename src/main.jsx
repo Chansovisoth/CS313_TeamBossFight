@@ -257,8 +257,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 >
                   <Route index element={<HostCategoriesCreate />} />
                 </Route>
-
-                <Route path="questionbank/categories/edit" element={<AppOP />}>
+                
+                <Route path="questionbank/categories/edit/:id" element={<AppOP />}>
                   <Route index element={<HostCategoriesEdit />} />
                 </Route>
 

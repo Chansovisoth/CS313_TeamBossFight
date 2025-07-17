@@ -283,8 +283,8 @@ const QuestionsIndex = () => {
             {/* Desktop Table */}
             <div className="hidden md:block">
               <Card className="border-0 shadow-sm">
-                <CardHeader className="border-b bg-muted/50 py-2 px-4">
-                  <div className="grid grid-cols-12 gap-3 text-xs font-medium text-gray-700 dark:text-gray-300">
+                <CardHeader className="border-b bg-muted/50 py-1.5 px-4">
+                  <div className="grid grid-cols-12 gap-3 text-sm font-semibold text-gray-800 dark:text-gray-200">
                     <div className="col-span-7">Question</div>
                     <div className="col-span-2 text-center">Category</div>
                     <div className="col-span-2 text-center">Author</div>

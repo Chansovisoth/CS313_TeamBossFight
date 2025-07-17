@@ -299,9 +299,9 @@ const AssignBoss = () => {
           {/* Event Info Card */}
           <Card className="mb-6">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-2">
                     <h2 className="text-lg font-semibold">{event.name}</h2>
                     {user?.role === "admin" && (
                       <Button

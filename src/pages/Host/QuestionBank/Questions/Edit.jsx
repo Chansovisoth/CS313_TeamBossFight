@@ -228,7 +228,7 @@ const EditQuestion = () => {
               variant="ghost" 
               size="sm" 
               onClick={handleCancel}
-              className="p-2 hover:bg-white/50 dark:hover:bg-gray-800/50"
+              className="p-2 hover:bg-white/50 dark:hover:bg-background/50"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -250,7 +250,7 @@ const EditQuestion = () => {
         </div>
 
         {/* Main Form Card */}
-        <Card className="shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+        <Card className="shadow-lg border-0 bg-card backdrop-blur-sm">
           <div className="p-6 space-y-6">
             {/* Category and Time Limit Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -287,7 +287,7 @@ const EditQuestion = () => {
                   value={timeLimit}
                   onChange={(e) => setTimeLimit(e.target.value)}
                   placeholder="30"
-                  className={`${errors.timeLimit ? 'border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+                  className={`${errors.timeLimit ? 'border-red-500' : ''} dark:bg-background dark:border-gray-600 dark:text-white`}
                 />
                 {errors.timeLimit && (
                   <p className="text-red-500 dark:text-red-400 text-xs">{errors.timeLimit}</p>
@@ -318,7 +318,7 @@ const EditQuestion = () => {
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
                 placeholder="Enter your question here"
-                className={`${errors.question ? 'border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+                className={`${errors.question ? 'border-red-500' : ''} dark:bg-background dark:border-gray-600 dark:text-white`}
               />
               {errors.question && (
                 <p className="text-red-500 dark:text-red-400 text-xs">{errors.question}</p>
@@ -342,7 +342,7 @@ const EditQuestion = () => {
                         value={answer.text}
                         onChange={(e) => handleAnswerChange(answer.id, e.target.value)}
                         placeholder={`A${index + 1}: Enter answer option`}
-                        className="text-sm bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                        className="text-sm bg-white dark:bg-background dark:border-gray-500 dark:text-white"
                       />
                     </div>
                     <input
@@ -351,7 +351,7 @@ const EditQuestion = () => {
                       value={answer.id}
                       checked={correctAnswerId === answer.id}
                       onChange={(e) => handleCorrectAnswerChange(e.target.value)}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                      className="w-4 h-4 text-blue-600 bg-background border-gray-300 focus:ring-blue-500"
                     />
                   </div>
                 ))}
