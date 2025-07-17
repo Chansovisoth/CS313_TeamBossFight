@@ -871,36 +871,7 @@ button {
 
 
 /* ===== ===== ===== ===== ===== MOBILE PORTRAIT MODE ENFORCEMENT ===== ===== ===== ===== ===== */
-@media screen and (max-width: 1024px) and (max-height: 932px) {
-  /* Hide landscape warning by default */
-  .landscape-warning {
-    display: none;
-  }
-  
-  /* Show warning in landscape mode - multiple conditions for better detection */
-  @media (orientation: landscape), (max-height: 500px) {
-    .portrait-only {
-      overflow: hidden;
-    }
-    
-    .landscape-warning {
-      display: flex !important;
-    }
-    
-    /* Hide main game content when in landscape */
-    .portrait-only > *:not(.landscape-warning) {
-      display: none;
-    }
-  }
-  
-  /* Ensure content fits properly in portrait */
-  @media (orientation: portrait) {
-    .portrait-only {
-      height: 100vh;
-      height: 100dvh; /* Dynamic viewport height for better mobile support */
-    }
-  }
-}
+
 
 /* Additional check for devices that might not report orientation correctly */
 @media screen and (max-width: 1024px) and (max-height: 500px) {

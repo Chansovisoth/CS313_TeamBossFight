@@ -36,7 +36,7 @@ import PlayerLeaderboard from "./pages/Player/Leaderboard";
 import PlayerProfile from "./pages/Player/Profile";
 import PlayerQR from "./pages/Player/QR";
 import PlayerBossPreview from "./pages/Player/BossPreview";
-import PlayerBossBattle from "./pages/Player/BossBattle";
+import PlayerBossBattle from "./pages/Player/BossBattle/BossBattleWrapper";
 import PlayerBossPodium from "./pages/Player/BossPodium";
 
 // ===== HOST PAGES ===== //

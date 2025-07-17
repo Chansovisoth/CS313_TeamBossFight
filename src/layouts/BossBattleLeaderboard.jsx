@@ -10,98 +10,44 @@ import { Badge } from "@/components/ui/badge";
 // ===== STYLES ===== //
 import "@/index.css";
 
-const BattleLeaderboard = ({ isOpen, onClose }) => {
+const BattleLeaderboard = ({ isOpen, onClose, leaderboard = [], teams = [] }) => {
   const [expandedTeams, setExpandedTeams] = useState(new Set());
 
-  // Sample leaderboard data with players
-  const leaderboardData = [
-    { 
-      rank: 1, 
-      team: 'Kangaroo', 
-      dmg: 450, 
-      players: [
-        { name: 'Player_Alpha', username: '@alpha123', dmg: 200 },
-        { name: 'Player_Beta', username: '@beta456', dmg: 150 },
-        { name: 'Player_Gamma', username: '@gamma789', dmg: 100 }
-      ]
-    },
-    { 
-      rank: 2, 
-      team: 'Koala', 
-      dmg: 380, 
-      players: [
-        { name: 'PlayerOne', username: '@player1', dmg: 180 },
-        { name: 'PlayerTwo', username: '@player2', dmg: 120 },
-        { name: 'PlayerThree', username: '@player3', dmg: 80 }
-      ]
-    },
-    { 
-      rank: 3, 
-      team: 'Shellfish', 
-      dmg: 320, 
-      players: [
-        { name: 'User123', username: '@user123', dmg: 170 },
-        { name: 'User456', username: '@user456', dmg: 90 },
-        { name: 'User789', username: '@user789', dmg: 60 }
-      ]
-    },
-    { 
-      rank: 4, 
-      team: 'Dolphins', 
-      dmg: 280, 
-      players: [
-        { name: 'Dolphin_A', username: '@dolphin_a', dmg: 160 },
-        { name: 'Dolphin_B', username: '@dolphin_b', dmg: 70 },
-        { name: 'Dolphin_C', username: '@dolphin_c', dmg: 50 }
-      ]
-    },
-    { 
-      rank: 5, 
-      team: 'Eagles', 
-      dmg: 250, 
-      players: [
-        { name: 'Eagle_One', username: '@eagle1', dmg: 140 },
-        { name: 'Eagle_Two', username: '@eagle2', dmg: 65 },
-        { name: 'Eagle_Three', username: '@eagle3', dmg: 45 }
-      ]
-    },
-    { 
-      rank: 6, 
-      team: 'Lions', 
-      dmg: 220, 
-      players: [
-        { name: 'Lion_King', username: '@lionking', dmg: 130 },
-        { name: 'Lion_Queen', username: '@lionqueen', dmg: 55 },
-        { name: 'Lion_Cub', username: '@lioncub', dmg: 35 }
-      ]
-    },
-    { 
-      rank: 7, 
-      team: 'Tigers', 
-      dmg: 190, 
-      players: [
-        { name: 'Tiger_Roar', username: '@tigerroar', dmg: 110 },
-        { name: 'Tiger_Claw', username: '@tigerclaw', dmg: 50 },
-        { name: 'Tiger_Stripe', username: '@tigerstripe', dmg: 30 }
-      ]
-    },
-    { 
-      rank: 8, 
-      team: 'Bears', 
-      dmg: 160, 
-      players: [
-        { name: 'Bear_Paw', username: '@bearpaw', dmg: 90 },
-        { name: 'Bear_Cub', username: '@bearcub', dmg: 40 },
-        { name: 'Bear_Den', username: '@bearден', dmg: 30 }
-      ]
-    },
-  ];
+  // Convert leaderboard data to team-based format
+  const teamData = new Map();
+  
+  // Group players by team
+  leaderboard.forEach(player => {
+    const teamId = player.teamId || 'no-team';
+    const teamName = teams.find(t => t.id === teamId)?.name || `Team ${teamId}`;
+    
+    if (!teamData.has(teamId)) {
+      teamData.set(teamId, {
+        id: teamId,
+        name: teamName,
+        totalDamage: 0,
+        totalScore: 0,
+        players: []
+      });
+    }
+    
+    const team = teamData.get(teamId);
+    team.totalDamage += player.totalDamage || 0;
+    team.totalScore += player.score || 0;
+    team.players.push(player);
+  });
+
+  // Convert to array and sort by total damage
+  const leaderboardData = Array.from(teamData.values())
+    .sort((a, b) => b.totalDamage - a.totalDamage)
+    .map((team, index) => ({
+      ...team,
+      rank: index + 1,
+      players: team.players.sort((a, b) => (b.totalDamage || 0) - (a.totalDamage || 0))
+    }));
 
   // Sort players within each team by damage (descending)
-  const sortedLeaderboardData = leaderboardData.map(team => ({
-    ...team,
-    players: [...team.players].sort((a, b) => b.dmg - a.dmg)
-  }));
+  const sortedLeaderboardData = leaderboardData;
 
   const toggleTeamExpansion = (teamName) => {
     setExpandedTeams(prev => {
@@ -120,7 +66,7 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
   };
 
   const expandAll = () => {
-    const allTeamNames = new Set(sortedLeaderboardData.map(team => team.team));
+    const allTeamNames = new Set(sortedLeaderboardData.map(team => team.name));
     setExpandedTeams(allTeamNames);
   };
 
@@ -198,7 +144,7 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
 
             <div className="space-y-1">
               {sortedLeaderboardData.map((team) => {
-                const isExpanded = expandedTeams.has(team.team);
+                const isExpanded = expandedTeams.has(team.name);
                 return (
                   <div key={team.rank}>
                     {/* Team Row */}
@@ -210,7 +156,7 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
                           : 'bg-muted/20 hover:bg-muted/40 border-border'
                         }
                       `}
-                      onClick={() => toggleTeamExpansion(team.team)}
+                      onClick={() => toggleTeamExpansion(team.name)}
                     >
                       {/* Rank */}
                       <div className="col-span-2 flex justify-center">
@@ -224,13 +170,13 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
                         ) : (
                           <ChevronRight className="w-3 h-3 text-muted-foreground" />
                         )}
-                        <p className="font-medium text-sm truncate">{team.team}</p>
+                        <p className="font-medium text-sm truncate">{team.name}</p>
                         <span className="text-xs text-muted-foreground">({team.players.length})</span>
                       </div>
 
                       {/* Total Team Damage */}
                       <div className="col-span-3 text-right">
-                        <div className="font-bold text-sm">{team.dmg}</div>
+                        <div className="font-bold text-sm">{team.totalDamage.toFixed(1)}</div>
                       </div>
                     </div>
 
@@ -245,14 +191,14 @@ const BattleLeaderboard = ({ isOpen, onClose }) => {
                             {/* Player Name */}
                             <div className="col-span-7 pl-4">
                               <div className="flex flex-col">
-                                <p className="text-xs font-medium truncate text-muted-foreground">{player.name}</p>
-                                <p className="text-xs truncate text-muted-foreground/70">{player.username}</p>
+                                <p className="text-xs font-medium truncate text-muted-foreground">{player.username || player.playerId}</p>
+                                <p className="text-xs truncate text-muted-foreground/70">Score: {player.score || 0}</p>
                               </div>
                             </div>
 
                             {/* Player Damage */}
                             <div className="col-span-3 text-right">
-                              <div className="text-xs font-medium">{player.dmg}</div>
+                              <div className="text-xs font-medium">{(player.totalDamage || 0).toFixed(1)}</div>
                             </div>
                           </div>
                         ))}
