@@ -572,36 +572,38 @@ const Badges = () => {
 
             {/* ===== DISPLAY ALL BADGES ===== */}
             <CardContent className="space-y-6 sm:space-y-8">
-              {selectedEvent.bosses.map((boss, bossIndex) => {
-                const filteredBadges = getFilteredBadges(boss.badges);
+              {selectedEvent.bosses
+                .filter(boss => selectedBoss === null || boss.id === selectedBoss)
+                .map((boss, bossIndex) => {
+                  const filteredBadges = getFilteredBadges(boss.badges);
 
-                if (filteredBadges.length === 0) return null;
+                  if (filteredBadges.length === 0) return null;
 
-                return (
-                  <div key={boss.id}>
-                    {bossIndex > 0 && <Separator className="my-4 sm:my-6" />}
+                  return (
+                    <div key={boss.id}>
+                      {bossIndex > 0 && <Separator className="my-4 sm:my-6" />}
 
-                    {/* Boss Header */}
-                    <div className="mb-4 sm:mb-6">
-                      <h3 className="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
-                        <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
-                        {boss.name}
-                      </h3>
-                      <p className="text-muted-foreground text-sm sm:text-base">{boss.description}</p>
+                      {/* Boss Header */}
+                      <div className="mb-4 sm:mb-6">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+                          <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
+                          {boss.name}
+                        </h3>
+                        <p className="text-muted-foreground text-sm sm:text-base">{boss.description}</p>
+                      </div>
+
+                      {/* Boss Badges */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                        {filteredBadges.map((badge) => (
+                          <BadgeCard key={badge.id} badge={badge} />
+                        ))}
+                      </div>
                     </div>
-
-                    {/* Boss Badges */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                      {filteredBadges.map((badge) => (
-                        <BadgeCard key={badge.id} badge={badge} />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
 
               {/* ===== Event Milestone Badges ===== */}
-              {(() => {
+              {selectedBoss === null && (() => {
                 const filteredMilestones = getFilteredBadges(selectedEvent.milestones);
                 if (filteredMilestones.length === 0) return null;
 
@@ -631,8 +633,10 @@ const Badges = () => {
               })()}
 
               {/* ===== Empty State ===== */}
-              {selectedEvent.bosses.every(boss => getFilteredBadges(boss.badges).length === 0) &&
-                getFilteredBadges(selectedEvent.milestones).length === 0 && (
+              {selectedEvent.bosses
+                .filter(boss => selectedBoss === null || boss.id === selectedBoss)
+                .every(boss => getFilteredBadges(boss.badges).length === 0) &&
+                (selectedBoss !== null || getFilteredBadges(selectedEvent.milestones).length === 0) && (
                   <div className="text-center py-8 sm:py-12">
                     <Trophy className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 dark:text-gray-600 mx-auto mb-3 sm:mb-4" />
                     <h3 className="text-base sm:text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
