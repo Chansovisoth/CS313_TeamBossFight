@@ -189,16 +189,16 @@ const View = () => {
               {/* Search Input */}
               <div className="relative flex-1">
                 {searching ? (
-                  <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 animate-spin" />
+                  <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
                 ) : (
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 )}
                 <Input
                   type="text"
                   placeholder="Search users by username or email..."
                   value={searchTerm}
                   onChange={handleSearch}
-                  className="pl-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                  className="pl-10 bg-white dark:bg-black border-gray-200 dark:border-gray-700 dark:text-white transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                 />
                 {searchTerm && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -221,9 +221,9 @@ const View = () => {
               {/* Role Filter */}
               <div className="w-48">
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <SelectTrigger className="bg-white dark:bg-black border-gray-200 dark:border-gray-700 dark:text-white">
                     <div className="flex items-center gap-2">
-                      <Filter className="h-4 w-4 text-gray-400" />
+                      <Filter className="h-4 w-4 text-muted-foreground" />
                       <SelectValue placeholder="Filter by role" />
                     </div>
                   </SelectTrigger>

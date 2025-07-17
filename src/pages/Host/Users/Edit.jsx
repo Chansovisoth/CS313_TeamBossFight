@@ -281,7 +281,7 @@ const Edit = () => {
                   type="text"
                   value={form.username}
                   onChange={handleChange}
-                  className={`bg-white dark:bg-gray-800 ${
+                  className={`bg-white dark:bg-black dark:text-white ${
                     validationErrors.username ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'
                   }`}
                   placeholder="Enter username"
@@ -301,7 +301,7 @@ const Edit = () => {
                   type="email"
                   value={form.email}
                   onChange={handleChange}
-                  className={`bg-white dark:bg-gray-800 ${
+                  className={`bg-white dark:bg-black dark:text-white ${
                     validationErrors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'
                   }`}
                   placeholder="Enter email address"
@@ -317,7 +317,7 @@ const Edit = () => {
                   Role <span className="text-red-500 dark:text-red-400">*</span>
                 </Label>
                 <Select value={form.role} onValueChange={handleRoleChange}>
-                  <SelectTrigger className={`bg-white dark:bg-gray-800 ${
+                  <SelectTrigger className={`bg-white dark:bg-black dark:text-white ${
                     validationErrors.role ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'
                   }`}>
                     <SelectValue placeholder="Select a role" />
