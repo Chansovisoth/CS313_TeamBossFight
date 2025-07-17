@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/AuthProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import { AuthenticationCheck } from "./components/AuthenticationCheck";
+import PreventAuthenticatedAccess from "./components/PreventAuthenticatedAccess";
 import { MessageProvider } from "./context/MessageProvider";
 
 // ===== STYLES ===== //
@@ -84,7 +85,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </Route>
 
               <Route path="/auth" element={<AppLanding />}>
-                <Route index element={<Authentication />} />
+                <Route index element={
+                  <PreventAuthenticatedAccess>
+                    <Authentication />
+                  </PreventAuthenticatedAccess>
+                } />
               </Route>
 
               {/* ===== PLAYER ROUTES ===== */}
