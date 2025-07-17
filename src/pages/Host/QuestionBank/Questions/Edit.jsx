@@ -189,10 +189,10 @@ const EditQuestion = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
         <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4" />
-          <p className="text-gray-600">Loading question...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading question...</p>
         </div>
       </div>
     );
@@ -200,9 +200,9 @@ const EditQuestion = () => {
 
   if (!question) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Question not found</p>
+          <p className="text-muted-foreground">Question not found</p>
         </div>
       </div>
     );
@@ -210,16 +210,16 @@ const EditQuestion = () => {
 
   if (!canEdit()) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">You don't have permission to edit this question</p>
+          <p className="text-muted-foreground">You don't have permission to edit this question</p>
           <Button onClick={handleCancel} className="mt-4">Go Back</Button>
         </div>
       </div>
     );
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -232,7 +232,7 @@ const EditQuestion = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div>            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Question</h1>
+            <div>            <h1 className="text-2xl font-bold">Edit Question</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400">Update question details</p>
             </div>
           </div>
@@ -242,7 +242,7 @@ const EditQuestion = () => {
             variant="ghost"
             size="sm"
             onClick={() => setShowDeleteDialog(true)}
-            className="p-2 hover:bg-red-50 hover:text-red-600"
+            className="p-2 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
             disabled={isLoading}
           >
             <Trash2 className="h-5 w-5" />
@@ -271,7 +271,7 @@ const EditQuestion = () => {
                   </SelectContent>
                 </Select>
                 {errors.category && (
-                  <p className="text-red-500 text-xs">{errors.category}</p>
+                  <p className="text-red-500 dark:text-red-400 text-xs">{errors.category}</p>
                 )}
               </div>
               
@@ -290,7 +290,7 @@ const EditQuestion = () => {
                   className={`${errors.timeLimit ? 'border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
                 />
                 {errors.timeLimit && (
-                  <p className="text-red-500 text-xs">{errors.timeLimit}</p>
+                  <p className="text-red-500 dark:text-red-400 text-xs">{errors.timeLimit}</p>
                 )}
               </div>
             </div>
@@ -300,7 +300,7 @@ const EditQuestion = () => {
               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Question Author
               </Label>
-              <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
+              <div className="p-3 bg-muted rounded-md border">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {question?.creator?.username || 'Unknown'} [{question?.creator?.role || 'User'}]
                   {question?.authorId === user?.id ? ' (You)' : ''}
@@ -311,7 +311,7 @@ const EditQuestion = () => {
             {/* Question Input */}
             <div className="space-y-2">
               <Label htmlFor="question" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Question <span className="text-red-500">*</span>
+                Question <span className="text-red-500 dark:text-red-400">*</span>
               </Label>
               <Input
                 id="question"
@@ -321,20 +321,20 @@ const EditQuestion = () => {
                 className={`${errors.question ? 'border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
               />
               {errors.question && (
-                <p className="text-red-500 text-xs">{errors.question}</p>
+                <p className="text-red-500 dark:text-red-400 text-xs">{errors.question}</p>
               )}
             </div>
 
             {/* Answer Options */}
             <div className="space-y-3">
               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Answer Options <span className="text-red-500">*</span>
+                Answer Options <span className="text-red-500 dark:text-red-400">*</span>
               </Label>
               {errors.answers && (
-                <p className="text-red-500 text-xs">{errors.answers}</p>
+                <p className="text-red-500 dark:text-red-400 text-xs">{errors.answers}</p>
               )}
               
-              <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700 space-y-3">
+              <div className="border rounded-lg p-4 bg-muted space-y-3">
                 {answers.map((answer, index) => (
                   <div key={answer.id} className="flex items-center gap-3">
                     <div className="flex-1">
@@ -391,7 +391,7 @@ const EditQuestion = () => {
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <AlertDialogContent className="max-w-md">
             <AlertDialogHeader>
-              <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertDialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
                 <AlertTriangle className="h-5 w-5" />
                 Delete Question
               </AlertDialogTitle>

@@ -38,10 +38,10 @@ const Leaderboard = () => {
 
   // Podium helpers
   const getPodiumColor = (rank) => {
-    if (rank === 1) return "bg-yellow-500"; // Gold
-    if (rank === 2) return "bg-gray-400";   // Silver
-    if (rank === 3) return "bg-amber-600";  // Bronze
-    return "bg-gray-500";
+    if (rank === 1) return "bg-yellow-500 dark:bg-yellow-600"; // Gold
+    if (rank === 2) return "bg-gray-400 dark:bg-gray-500";   // Silver
+    if (rank === 3) return "bg-amber-600 dark:bg-amber-700";  // Bronze
+    return "bg-gray-500 dark:bg-gray-600";
   };
 
   const getPodiumIcon = (rank) => {
@@ -52,9 +52,9 @@ const Leaderboard = () => {
   };
 
   const getRowBackground = (rank) => {
-    if (rank === 1) return "bg-yellow-500 dark:bg-yellow-700 hover:bg-yellow-500";
-    if (rank === 2) return "bg-gray-400 dark:bg-gray-600 hover:bg-gray-400";
-    if (rank === 3) return "bg-amber-600 dark:bg-amber-800 hover:bg-amber-600";
+    if (rank === 1) return "bg-yellow-500 dark:bg-yellow-700 hover:bg-yellow-500 dark:hover:bg-yellow-600";
+    if (rank === 2) return "bg-gray-400 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500";
+    if (rank === 3) return "bg-amber-600 dark:bg-amber-800 hover:bg-amber-600 dark:hover:bg-amber-700";
     return "";
   };
 
@@ -70,7 +70,7 @@ const Leaderboard = () => {
   const podiumPlayers = individualLeaderboard.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+    <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
 
 
@@ -81,7 +81,7 @@ const Leaderboard = () => {
         <Card>
           <CardHeader className="pb-3 sm:pb-6 text-center">
             <CardTitle className="text-xl sm:text-2xl font-bold flex items-center justify-center gap-2">
-              <Trophy className="w-5 h-5 text-yellow-500" /> Top Players
+              <Trophy className="w-5 h-5 text-yellow-500 dark:text-yellow-400" /> Top Players
             </CardTitle>
             <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm sm:text-base">
               Top 3 players by damage and accuracy
@@ -116,127 +116,10 @@ const Leaderboard = () => {
         </Card>
 
         {/* Live Team Leaderboard */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Live Team Leaderboard</CardTitle>
-            <p className="text-gray-600 dark:text-gray-400">Team rankings by damage and accuracy</p>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-16 text-center">Rank</TableHead>
-                  <TableHead>Team</TableHead>
-                  <TableHead className="text-right">DMG</TableHead>
-                  <TableHead className="text-right">Correct</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {teamLeaderboard.map((team) => (
-                  <TableRow key={team.rank} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <TableCell className="text-center font-bold">
-                      {team.rank <= 3 ? (
-                        <div className={`inline-flex items-center justify-center w-8 h-6 rounded-full text-white text-sm font-bold ${getPodiumColor(team.rank)}`}>
-                          {team.rank}
-                        </div>
-                      ) : (
-                        <span className="text-gray-900 dark:text-white">{team.rank}</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="font-medium flex items-center gap-2">
-                      <Avatar className="w-7 h-7 border border-gray-200 dark:border-gray-700">
-                        <AvatarImage src={team.avatar} alt={team.team} />
-                        <AvatarFallback>{team.team[0]}</AvatarFallback>
-                      </Avatar>
-                      {team.team}
-                    </TableCell>
-                    <TableCell className="text-right">{team.dmg}</TableCell>
-                    <TableCell className="text-right">{team.correct}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        {/* REMOVED: Live Team Leaderboard */}
 
         {/* Live Individual Leaderboard with Pagination */}
-        <Card className="relative min-h-[400px]">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Live Individual Leaderboard</CardTitle>
-            <p className="text-gray-600 dark:text-gray-400">Individual player rankings</p>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-16 text-center">Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead className="text-right">DMG</TableHead>
-                  <TableHead className="text-right">Correct</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedIndividual.map((player) => (
-                  <TableRow key={player.rank} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <TableCell className="text-center font-bold">
-                      {player.rank <= 3 ? (
-                        <div className={`inline-flex items-center justify-center w-8 h-6 rounded-full text-white text-sm font-bold ${getPodiumColor(player.rank)}`}>
-                          {player.rank}
-                        </div>
-                      ) : (
-                        <span className="text-gray-900 dark:text-white">{player.rank}</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="font-medium flex items-center gap-2">
-                      <Avatar className="w-7 h-7 border border-gray-200 dark:border-gray-700">
-                        <AvatarImage src={player.avatar} alt={player.player} />
-                        <AvatarFallback>{player.player[0]}</AvatarFallback>
-                      </Avatar>
-                      {player.player}
-                    </TableCell>
-                    <TableCell className="text-right">{player.dmg}</TableCell>
-                    <TableCell className="text-right">{player.correct}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="absolute left-0 bottom-0 w-full flex justify-center pb-4">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
-                        onClick={(e) => { e.preventDefault(); setCurrentPage(currentPage > 1 ? currentPage - 1 : 1); }}
-                        disabled={currentPage === 1}
-                      />
-                    </PaginationItem>
-                    {[...Array(totalPages)].map((_, idx) => (
-                      <PaginationItem key={idx}>
-                        <PaginationLink
-                          href="#"
-                          isActive={currentPage === idx + 1}
-                          onClick={(e) => { e.preventDefault(); setCurrentPage(idx + 1); }}
-                        >
-                          {idx + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationItem>
-                      <PaginationNext
-                        href="#"
-                        onClick={(e) => { e.preventDefault(); setCurrentPage(currentPage < totalPages ? currentPage + 1 : totalPages); }}
-                        disabled={currentPage === totalPages}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* REMOVED: Live Individual Leaderboard */}
 
         {/* All Time Leaderboard */}
         <Card>
@@ -256,7 +139,7 @@ const Leaderboard = () => {
               </TableHeader>
               <TableBody>
                 {allTimeLeaderboard.map((player) => (
-                  <TableRow key={player.rank} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  <TableRow key={player.rank} className="hover:bg-accent/50 transition-colors">
                     <TableCell className="text-center font-bold">
                       {player.rank <= 3 ? (
                         <div className={`inline-flex items-center justify-center w-8 h-6 rounded-full text-white text-sm font-bold ${getPodiumColor(player.rank)}`}>

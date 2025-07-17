@@ -157,7 +157,7 @@ const QuestionsIndex = () => {
   const paginatedData = currentData.slice(startIndex, endIndex);
 
   const getAuthorBadgeColor = (author) => {
-    return 'bg-blue-100 text-blue-700 border-blue-200';
+    return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700';
   };
 
   return (
@@ -211,13 +211,13 @@ const QuestionsIndex = () => {
 
               {/* Search Input */}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Search questions..."
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="pl-10 h-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                  className="pl-10 h-9 bg-white dark:bg-black border-gray-200 dark:border-gray-700 dark:text-white"
                 />
               </div>
 
@@ -255,7 +255,7 @@ const QuestionsIndex = () => {
           // Error State
           <Card className="border-0 shadow-sm">
             <CardContent className="p-8 text-center">
-              <p className="text-red-500 mb-4">{error}</p>
+              <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
               <Button onClick={fetchQuestions} variant="outline">Try Again</Button>
             </CardContent>
           </Card>
@@ -263,7 +263,7 @@ const QuestionsIndex = () => {
           // Empty State
           <Card className="border-0 shadow-sm">
             <CardContent className="p-8 text-center">
-              <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto mb-3 bg-muted rounded-full flex items-center justify-center">
                 <List className="h-6 w-6 text-gray-400" />
               </div>
               <h3 className="text-base font-medium text-gray-900 dark:text-white mb-2">
@@ -283,7 +283,7 @@ const QuestionsIndex = () => {
             {/* Desktop Table */}
             <div className="hidden md:block">
               <Card className="border-0 shadow-sm">
-                <CardHeader className="border-b bg-gray-50 dark:bg-gray-800/50 py-2 px-4">
+                <CardHeader className="border-b bg-muted/50 py-2 px-4">
                   <div className="grid grid-cols-12 gap-3 text-xs font-medium text-gray-700 dark:text-gray-300">
                     <div className="col-span-7">Question</div>
                     <div className="col-span-2 text-center">Category</div>
@@ -320,7 +320,7 @@ const QuestionsIndex = () => {
                                 e.stopPropagation();
                                 handleEdit(question.id);
                               }}
-                              className="h-7 w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
+                              className="h-7 w-7 p-0 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                             >
                               <Edit3 className="h-3.5 w-3.5" />
                             </Button>
@@ -360,7 +360,7 @@ const QuestionsIndex = () => {
                             e.stopPropagation();
                             handleEdit(question.id);
                           }}
-                          className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
+                          className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                         >
                           <Edit3 className="h-3.5 w-3.5" />
                         </Button>

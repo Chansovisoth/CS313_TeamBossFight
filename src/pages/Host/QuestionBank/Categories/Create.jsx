@@ -70,7 +70,7 @@ const CreateCategory = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -78,20 +78,20 @@ const CreateCategory = () => {
             variant="ghost" 
             size="sm" 
             onClick={handleCancel}
-            className="p-2 hover:bg-white/50 dark:hover:bg-gray-800/50"
+            className="p-2 hover:bg-accent/50"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create Category</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Add a new category to organize questions</p>
+            <h1 className="text-2xl font-bold">Create Category</h1>
+            <p className="text-sm text-muted-foreground">Add a new category to organize questions</p>
           </div>
         </div>
 
         {/* Main Form Card */}
-        <Card className="shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-          <CardHeader className="border-b border-gray-200 dark:border-gray-600">
-            <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+        <Card className="shadow-lg border-0 bg-card backdrop-blur-sm">
+          <CardHeader className="border-b">
+            <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <Plus className="h-5 w-5" />
               Category Information
             </CardTitle>
@@ -100,8 +100,8 @@ const CreateCategory = () => {
             
             {/* Category Name */}
             <div className="space-y-2">
-              <Label htmlFor="categoryName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Category Name <span className="text-red-500">*</span>
+              <Label htmlFor="categoryName" className="text-sm font-medium">
+                Category Name <span className="text-red-500 dark:text-red-400">*</span>
               </Label>
               <Input
                 id="categoryName"
@@ -114,21 +114,20 @@ const CreateCategory = () => {
                 }}
                 placeholder="e.g., Computer Science, Art, Business"
                 maxLength={50}
-                className={`${errors.name ? 'border-red-500 focus:border-red-500' : isFormValid ? 'border-green-500 focus:border-green-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors`}
+                className={`${errors.name ? 'border-red-500 focus:border-red-500' : isFormValid ? 'border-green-500 focus:border-green-500' : ''} transition-colors`}
               />
               {errors.name && (
-                <p className="text-sm text-red-500">{errors.name}</p>
+                <p className="text-sm text-red-500 dark:text-red-400">{errors.name}</p>
               )}
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {name.length}/50 characters {isFormValid && !errors.name && <span className="text-green-600">✓ Valid</span>}
+              <p className="text-xs text-muted-foreground">
+                {name.length}/50 characters {isFormValid && !errors.name && <span className="text-green-600 dark:text-green-400">✓ Valid</span>}
               </p>
             </div>
 
 
 
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
+            <div className="flex gap-3 pt-4 border-t">
               <Button
                 variant="outline"
                 onClick={handleCancel}
@@ -141,12 +140,8 @@ const CreateCategory = () => {
                 onClick={handleCreate}
                 className={`flex items-center gap-2 flex-1 transition-all duration-300 ${
                   isFormValid && !isLoading
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/25 scale-105'
-                    : 'bg-gray-400 hover:bg-gray-500 cursor-not-allowed'
-                } dark:${
-                  isFormValid && !isLoading
-                    ? 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
-                    : 'bg-gray-600 hover:bg-gray-700'
+                    ? 'bg-black hover:bg-gray-800 shadow-lg shadow-black/25 scale-105 text-white'
+                    : 'bg-muted hover:bg-muted/90 cursor-not-allowed opacity-50'
                 }`}
                 disabled={!isFormValid || isLoading}
               >

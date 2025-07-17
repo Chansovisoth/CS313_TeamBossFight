@@ -86,8 +86,8 @@ const ViewQuestionDetail = () => {
     return (
       <div className="min-h-screen bg-background p-4 flex items-center justify-center">
         <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4" />
-          <p className="text-gray-600">Loading question...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading question...</p>
         </div>
       </div>
     );
@@ -112,7 +112,7 @@ const ViewQuestionDetail = () => {
               variant="ghost" 
               size="sm" 
               onClick={handleBackClick}
-              className="p-2 hover:bg-white/50 dark:hover:bg-gray-800/50"
+              className="p-2 hover:bg-accent/50"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -128,7 +128,7 @@ const ViewQuestionDetail = () => {
               variant="ghost"
               size="sm"
               onClick={() => setShowDeleteDialog(true)}
-              className="p-2 hover:bg-red-50 hover:text-red-600"
+              className="p-2 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               disabled={isLoading}
             >
               <Trash2 className="h-5 w-5" />
@@ -137,7 +137,7 @@ const ViewQuestionDetail = () => {
         </div>
 
         {/* Main Content Card */}
-        <Card className="shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+        <Card className="shadow-lg border-0 bg-card backdrop-blur-sm">
           <div className="p-6 space-y-6">
             {/* Category and Time Limit */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -176,7 +176,7 @@ const ViewQuestionDetail = () => {
               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Question
               </Label>
-              <div className="text-lg font-bold text-gray-900 dark:text-white mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+              <div className="text-lg font-bold mt-2 p-4 bg-muted rounded-lg border">
                 Q: {question.questionText}
               </div>
             </div>
@@ -193,7 +193,7 @@ const ViewQuestionDetail = () => {
                     className={`flex items-center gap-3 p-3 border rounded-lg transition-colors ${
                       answer.isCorrect 
                         ? 'border-green-200 bg-green-50 dark:border-green-700 dark:bg-green-900/20' 
-                        : 'border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700'
+                        : 'border bg-card'
                     }`}
                   >
                     {/* Correct Answer Indicator */}
@@ -259,7 +259,7 @@ const ViewQuestionDetail = () => {
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <AlertDialogContent className="max-w-md">
             <AlertDialogHeader>
-              <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertDialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
                 <AlertTriangle className="h-5 w-5" />
                 Delete Question
               </AlertDialogTitle>

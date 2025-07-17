@@ -141,11 +141,11 @@ const View = () => {
 
   if (loading && users.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="min-h-screen bg-background p-4">
         <div className="container mx-auto max-w-4xl">
           <Card>
             <CardContent className="p-8 text-center">
-              <div className="text-gray-500 dark:text-gray-400">Loading users...</div>
+              <div className="text-muted-foreground">Loading users...</div>
             </CardContent>
           </Card>
         </div>
@@ -155,7 +155,7 @@ const View = () => {
 
   if (error && users.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="min-h-screen bg-background p-4">
         <div className="container mx-auto max-w-4xl">
           <Card>
             <CardContent className="p-8 text-center">
@@ -171,7 +171,7 @@ const View = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="container mx-auto max-w-4xl space-y-6">
         
         {/* Header */}
@@ -248,7 +248,7 @@ const View = () => {
           </CardHeader>
           <CardContent className="p-0">
             {(loading || searching) && users.length > 0 && (
-              <div className="text-center py-4 text-gray-500 dark:text-gray-400 text-sm border-b bg-gray-50/50 dark:bg-gray-800/50">
+              <div className="text-center py-4 text-muted-foreground text-sm border-b bg-muted/50">
                 <div className="flex items-center justify-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   {searching ? 'Searching...' : 'Loading...'}
@@ -344,7 +344,7 @@ const View = () => {
                   >
                     Previous
                   </Button>
-                  <span className="text-sm font-medium px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded">
+                  <span className="text-sm font-medium px-3 py-1 bg-muted rounded">
                     {currentPage} of {totalPages}
                   </span>
                   <Button

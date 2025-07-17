@@ -170,11 +170,11 @@ const Edit = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="min-h-screen bg-background p-4">
         <div className="container mx-auto max-w-2xl">
           <Card>
             <CardContent className="p-8 text-center">
-              <div className="text-gray-500 dark:text-gray-400">Loading user...</div>
+              <div className="text-muted-foreground">Loading user...</div>
             </CardContent>
           </Card>
         </div>
@@ -184,7 +184,7 @@ const Edit = () => {
 
   if (error && !form.username) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="min-h-screen bg-background p-4">
         <div className="container mx-auto max-w-2xl">
           <Card>
             <CardContent className="p-8 text-center">
@@ -209,7 +209,7 @@ const Edit = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="container mx-auto max-w-2xl space-y-6">
         
         {/* Header */}
@@ -274,7 +274,7 @@ const Edit = () => {
               {/* Username Field */}
               <div className="space-y-2">
                 <Label htmlFor="username" className="text-sm font-medium text-gray-900 dark:text-white">
-                  Username <span className="text-red-500">*</span>
+                  Username <span className="text-red-500 dark:text-red-400">*</span>
                 </Label>
                 <Input
                   id="username"
@@ -294,7 +294,7 @@ const Edit = () => {
               {/* Email Field */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white">
-                  Email Address <span className="text-red-500">*</span>
+                  Email Address <span className="text-red-500 dark:text-red-400">*</span>
                 </Label>
                 <Input
                   id="email"
@@ -314,7 +314,7 @@ const Edit = () => {
               {/* Role Field */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  Role <span className="text-red-500">*</span>
+                  Role <span className="text-red-500 dark:text-red-400">*</span>
                 </Label>
                 <Select value={form.role} onValueChange={handleRoleChange}>
                   <SelectTrigger className={`bg-white dark:bg-gray-800 ${

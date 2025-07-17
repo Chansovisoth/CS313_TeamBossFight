@@ -141,7 +141,7 @@ const EditCategory = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center py-8">
-            <p className="text-red-500 mb-4">Category not found or access denied</p>
+            <p className="text-red-500 dark:text-red-400 mb-4">Category not found or access denied</p>
             <Button onClick={() => navigate('/host/questionbank/categories/view')} variant="outline">
               Back to Categories
             </Button>
@@ -176,7 +176,7 @@ const EditCategory = () => {
             variant="ghost"
             size="sm"
             onClick={() => setShowDeleteDialog(true)}
-            className="p-2 hover:bg-red-50 hover:text-red-600"
+            className="p-2 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
             disabled={isLoading}
           >
             <Trash2 className="h-5 w-5" />
@@ -196,7 +196,7 @@ const EditCategory = () => {
             {/* Category Name */}
             <div className="space-y-2">
               <Label htmlFor="categoryName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Category Name <span className="text-red-500">*</span>
+                Category Name <span className="text-red-500 dark:text-red-400">*</span>
               </Label>
               <Input
                 id="categoryName"
@@ -212,10 +212,10 @@ const EditCategory = () => {
                 className={`${errors.categoryName ? 'border-red-500 focus:border-red-500' : isFormValid ? 'border-green-500 focus:border-green-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors`}
               />
               {errors.categoryName && (
-                <p className="text-sm text-red-500">{errors.categoryName}</p>
+                <p className="text-sm text-red-500 dark:text-red-400">{errors.categoryName}</p>
               )}
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {categoryName.length}/50 characters {isFormValid && !errors.categoryName && <span className="text-green-600">✓ Valid</span>}
+                {categoryName.length}/50 characters {isFormValid && !errors.categoryName && <span className="text-green-600 dark:text-green-400">✓ Valid</span>}
               </p>
             </div>
 
@@ -224,7 +224,7 @@ const EditCategory = () => {
               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Created By
               </Label>
-              <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
+              <div className="p-3 bg-muted rounded-md border">
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   {category?.creator?.username || 'Unknown'}
                 </p>
@@ -269,15 +269,15 @@ const EditCategory = () => {
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <AlertDialogContent className="max-w-md">
             <AlertDialogHeader>
-              <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertDialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
                 <AlertTriangle className="h-5 w-5" />
                 Delete Category
               </AlertDialogTitle>
               <AlertDialogDescription className="text-gray-600">
                 Are you sure you want to delete the category{' '}
-                <span className="font-semibold text-gray-900">"{categoryName}"</span>?
+                <span className="font-semibold text-gray-900 dark:text-white">"{categoryName}"</span>?
                 <br /><br />
-                <span className="text-red-600 font-medium">
+                <span className="text-red-600 dark:text-red-400 font-medium">
                   This action cannot be undone and will permanently remove all associated questions.
                 </span>
               </AlertDialogDescription>

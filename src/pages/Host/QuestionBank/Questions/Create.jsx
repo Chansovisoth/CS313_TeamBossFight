@@ -143,7 +143,7 @@ const CreateQuestion = () => {
     navigate(returnUrl);
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -151,26 +151,26 @@ const CreateQuestion = () => {
             variant="ghost" 
             size="sm" 
             onClick={handleCancel}
-            className="p-2 hover:bg-white/50 dark:hover:bg-gray-800/50"
+            className="p-2 hover:bg-accent/50"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create Question</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Add a new question to the bank</p>
+            <h1 className="text-2xl font-bold">Create Question</h1>
+            <p className="text-sm text-muted-foreground">Add a new question to the bank</p>
           </div>
         </div>
 
         {/* Main Form Card */}
-        <Card className="shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+        <Card className="shadow-lg border-0 bg-card backdrop-blur-sm">
           <div className="p-6 space-y-6">
             {/* Category and Time Limit Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Category <span className="text-red-500">*</span>
+                  Category <span className="text-red-500 dark:text-red-400">*</span>
                   {isCategoryLocked && (
-                    <span className="ml-2 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                    <span className="ml-2 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded">
                       Auto-selected from {categoryFromUrl}
                     </span>
                   )}
@@ -180,7 +180,7 @@ const CreateQuestion = () => {
                   onValueChange={isCategoryLocked ? undefined : setSelectedCategory}
                   disabled={isCategoryLocked}
                 >
-                  <SelectTrigger className={`${errors.category ? 'border-red-500' : ''} ${isCategoryLocked ? 'bg-gray-50 cursor-not-allowed opacity-75' : ''}`}>
+                  <SelectTrigger className={`${errors.category ? 'border-red-500' : ''} ${isCategoryLocked ? 'bg-muted cursor-not-allowed opacity-75' : ''}`}>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -197,13 +197,13 @@ const CreateQuestion = () => {
                   </p>
                 )}
                 {errors.category && (
-                  <p className="text-red-500 text-xs">{errors.category}</p>
+                  <p className="text-red-500 dark:text-red-400 text-xs">{errors.category}</p>
                 )}
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="time-limit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Time Limit (seconds) <span className="text-red-500">*</span>
+                  Time Limit (seconds) <span className="text-red-500 dark:text-red-400">*</span>
                 </Label>
                 <Input
                   id="time-limit"
@@ -213,21 +213,21 @@ const CreateQuestion = () => {
                   value={timeLimit}
                   onChange={(e) => setTimeLimit(e.target.value)}
                   placeholder="30"
-                  className={`${errors.timeLimit ? 'border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+                  className={`${errors.timeLimit ? 'border-red-500' : ''}`}
                 />
                 {errors.timeLimit && (
-                  <p className="text-red-500 text-xs">{errors.timeLimit}</p>
+                  <p className="text-red-500 dark:text-red-400 text-xs">{errors.timeLimit}</p>
                 )}
               </div>
             </div>
 
             {/* Question Author (Read-only) */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label className="text-sm font-medium">
                 Question Author
               </Label>
-              <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="p-3 bg-muted rounded-md border">
+                <p className="text-sm text-muted-foreground">
                   {user?.username || 'Unknown'} [{user?.role || 'User'}] (You)
                 </p>
               </div>
@@ -243,7 +243,7 @@ const CreateQuestion = () => {
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
                 placeholder="Enter your question here"
-                className={`${errors.question ? 'border-red-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+                className={`${errors.question ? 'border-red-500' : ''}`}
               />
               {errors.question && (
                 <p className="text-red-500 text-xs">{errors.question}</p>
@@ -259,14 +259,14 @@ const CreateQuestion = () => {
                 <p className="text-red-500 text-xs">{errors.answers}</p>
               )}
               
-              <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700 space-y-3">
+              <div className="border rounded-lg p-4 bg-muted space-y-3">
                 {answers.map((answer, index) => (
                   <div key={answer.id} className="flex items-center gap-3">
                     <div className="flex-1">                        <Input
                           value={answer.text}
                           onChange={(e) => handleAnswerChange(answer.id, e.target.value)}
                           placeholder={`A${index + 1}: Enter answer option`}
-                          className="text-sm bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                          className="text-sm bg-card"
                         />
                     </div>
                     <input
@@ -275,7 +275,7 @@ const CreateQuestion = () => {
                       value={answer.id}
                       checked={correctAnswerId === answer.id}
                       onChange={(e) => handleCorrectAnswerChange(e.target.value)}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                      className="w-4 h-4 text-primary bg-background border focus:ring-primary"
                     />
                   </div>
                 ))}

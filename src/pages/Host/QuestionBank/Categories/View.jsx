@@ -231,9 +231,9 @@ const QuestionBankView = () => {
   const paginatedData = currentData.slice(startIndex, endIndex);
 
   const getAuthorBadgeColor = (author) => {
-    if (author.includes('[Admin]')) return 'bg-blue-100 text-blue-700 border-blue-200';
-    if (author.includes('[Host]')) return 'bg-purple-100 text-purple-700 border-purple-200';
-    return 'bg-gray-100 text-gray-700 border-gray-200';
+    if (author.includes('[Admin]')) return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700';
+    if (author.includes('[Host]')) return 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700';
+    return 'bg-muted text-muted-foreground border';
   };
 
   return (
@@ -289,13 +289,13 @@ const QuestionBankView = () => {
 
               {/* Search Input */}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder={viewMode === 'category' ? 'Search categories...' : 'Search questions...'}
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="pl-10 h-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                  className="pl-10 h-9 bg-white dark:bg-black border-gray-200 dark:border-gray-700 dark:text-white"
                 />
               </div>
 
@@ -335,7 +335,7 @@ const QuestionBankView = () => {
           // Error State
           <Card className="border-0 shadow-sm">
             <CardContent className="p-8 text-center">
-              <p className="text-red-500 mb-4">{error}</p>
+              <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
               <Button onClick={() => viewMode === 'category' ? fetchCategories() : fetchQuestions()} variant="outline">Try Again</Button>
             </CardContent>
           </Card>
@@ -343,7 +343,7 @@ const QuestionBankView = () => {
           // Empty State
           <Card className="border-0 shadow-sm">
             <CardContent className="p-8 text-center">
-              <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto mb-3 bg-muted rounded-full flex items-center justify-center">
                 {viewMode === 'category' ? (
                   <Grid3X3 className="h-6 w-6 text-gray-400" />
                 ) : (
@@ -382,7 +382,7 @@ const QuestionBankView = () => {
                         e.stopPropagation();
                         handleEdit(category.id);
                       }}
-                      className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
+                      className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                     >
                       <Edit3 className="h-3.5 w-3.5" />
                     </Button>
@@ -406,7 +406,7 @@ const QuestionBankView = () => {
             {/* Desktop Table */}
             <div className="hidden md:block">
               <Card className="border-0 shadow-sm">
-                <CardHeader className="border-b bg-gray-50 dark:bg-gray-800/50 py-2 px-4">
+                <CardHeader className="border-b bg-muted/50 py-2 px-4">
                   <div className="grid grid-cols-12 gap-3 text-xs font-medium text-gray-700 dark:text-gray-300">
                     <div className="col-span-5">Question</div>
                     <div className="col-span-2 text-center">Category</div>
@@ -433,7 +433,7 @@ const QuestionBankView = () => {
                           </Badge>
                         </div>
                         <div className="col-span-2 flex justify-center">
-                          <Badge variant="secondary" className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 border-blue-200">
+                          <Badge variant="secondary" className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700">
                             {question.timeLimit}s
                           </Badge>
                         </div>
@@ -447,7 +447,7 @@ const QuestionBankView = () => {
                             variant="ghost" 
                             size="sm" 
                             onClick={() => handleEdit(question.id)}
-                            className="h-7 w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
+                            className="h-7 w-7 p-0 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                           >
                             <Edit3 className="h-3.5 w-3.5" />
                           </Button>
@@ -473,7 +473,7 @@ const QuestionBankView = () => {
                           <Badge variant="outline" className="text-xs px-1.5 py-0.5">
                             {question.category?.name || 'No Category'}
                           </Badge>
-                          <Badge variant="secondary" className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 border-blue-200">
+                          <Badge variant="secondary" className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700">
                             {question.timeLimit}s
                           </Badge>
                           <Badge variant="outline" className={`text-xs px-1.5 py-0.5 ${getAuthorBadgeColor(getQuestionAuthor(question))}`}>
@@ -488,7 +488,7 @@ const QuestionBankView = () => {
                         variant="ghost" 
                         size="sm" 
                         onClick={() => handleEdit(question.id)}
-                        className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600"
+                        className="h-7 w-7 p-0 flex-shrink-0 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                       >
                         <Edit3 className="h-3.5 w-3.5" />
                       </Button>
