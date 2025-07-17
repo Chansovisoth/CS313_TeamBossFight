@@ -1,7 +1,19 @@
 // ===== LIBRARIES ===== //
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, Lock, Camera, Edit, Save, X, Eye, EyeOff, ArrowLeft, LogOut } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  Camera,
+  Edit,
+  Save,
+  X,
+  Eye,
+  EyeOff,
+  ArrowLeft,
+  LogOut,
+} from "lucide-react";
 
 // ===== COMPONENTS (Shadcn.ui) ===== //
 import { Button } from "@/components/ui/button";
@@ -17,6 +29,7 @@ import AlertLogout from "@/layouts/AlertLogout";
 import { useAuth } from "@/context/useAuth";
 import { apiClient } from "@/api";
 import { toast } from "sonner";
+import { isGuestUser } from "@/utils/guestUtils";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -28,13 +41,13 @@ const Profile = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [profileData, setProfileData] = useState(null);
-  
+
   const [editData, setEditData] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
-    profileImage: null
+    profileImage: null,
   });
 
   // Fetch profile data on component mount
@@ -42,21 +55,29 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
+  // Check if user is guest and redirect to error page
+  useEffect(() => {
+    if (isGuestUser()) {
+      toast.error("Guest users don't have access to profile settings");
+      navigate("/error", { replace: true });
+    }
+  }, [navigate]);
+
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/users/profile');
+      const response = await apiClient.get("/users/profile");
       setProfileData(response.data);
       setEditData({
         username: response.data.username,
         email: response.data.email,
         password: "",
         confirmPassword: "",
-        profileImage: null
+        profileImage: null,
       });
     } catch (error) {
-      console.error('Error fetching profile:', error);
-      toast.error('Failed to load profile data');
+      console.error("Error fetching profile:", error);
+      toast.error("Failed to load profile data");
     } finally {
       setLoading(false);
     }
@@ -69,7 +90,7 @@ const Profile = () => {
       email: profileData.email,
       password: "",
       confirmPassword: "",
-      profileImage: null
+      profileImage: null,
     });
   };
 
@@ -80,8 +101,12 @@ const Profile = () => {
         toast.error("Passwords do not match!");
         return;
       }
-      
-      if (editData.password && editData.password.length > 0 && editData.password.length < 8) {
+
+      if (
+        editData.password &&
+        editData.password.length > 0 &&
+        editData.password.length < 8
+      ) {
         toast.error("Password must be at least 8 characters long!");
         return;
       }
@@ -90,32 +115,33 @@ const Profile = () => {
 
       // Create FormData for file upload
       const formData = new FormData();
-      formData.append('username', editData.username);
-      formData.append('email', editData.email);
+      formData.append("username", editData.username);
+      formData.append("email", editData.email);
       if (editData.password) {
-        formData.append('password', editData.password);
+        formData.append("password", editData.password);
       }
       if (editData.profileImage) {
-        formData.append('profileImage', editData.profileImage);
+        formData.append("profileImage", editData.profileImage);
       }
 
-      const response = await apiClient.put('/users/profile', formData, {
+      const response = await apiClient.put("/users/profile", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
       // Update local state and auth context
       setProfileData(response.data.user);
       setUser({ ...user, ...response.data.user });
-      
+
       setIsEditing(false);
       setShowPassword(false);
       setShowConfirmPassword(false);
-      toast.success('Profile updated successfully');
+      toast.success("Profile updated successfully");
     } catch (error) {
-      console.error('Error updating profile:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to update profile';
+      console.error("Error updating profile:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to update profile";
       toast.error(errorMessage);
     } finally {
       setSaving(false);
@@ -144,14 +170,14 @@ const Profile = () => {
       email: profileData.email,
       password: "",
       confirmPassword: "",
-      profileImage: null
+      profileImage: null,
     });
   };
 
   const handleInputChange = (field, value) => {
-    setEditData(prev => ({
+    setEditData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -159,21 +185,27 @@ const Profile = () => {
     const file = event.target.files[0];
     if (file) {
       // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ];
       if (!allowedTypes.includes(file.type)) {
-        toast.error('Only image files (JPEG, PNG, GIF, WebP) are allowed');
+        toast.error("Only image files (JPEG, PNG, GIF, WebP) are allowed");
         return;
       }
-      
+
       // Validate file size (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('File size must be less than 5MB');
+        toast.error("File size must be less than 5MB");
         return;
       }
-      
-      setEditData(prev => ({
+
+      setEditData((prev) => ({
         ...prev,
-        profileImage: file
+        profileImage: file,
       }));
     }
   };
@@ -185,7 +217,9 @@ const Profile = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto mb-4" />
-            <p className="text-gray-600 dark:text-gray-400">Loading profile...</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading profile...
+            </p>
           </div>
         </div>
       </div>
@@ -199,7 +233,9 @@ const Profile = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <p className="text-red-500 mb-4">Failed to load profile data</p>
-            <Button onClick={fetchProfile} variant="outline">Try Again</Button>
+            <Button onClick={fetchProfile} variant="outline">
+              Try Again
+            </Button>
           </div>
         </div>
       </div>
@@ -214,20 +250,25 @@ const Profile = () => {
           <Button onClick={handleBack} variant="outline">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back
           </Button>
-          <Button onClick={() => setShowLogoutDialog(true)} variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+          <Button
+            onClick={() => setShowLogoutDialog(true)}
+            variant="outline"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
             <LogOut className="w-4 h-4 mr-2" /> Logout
           </Button>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">Profile Settings</h1>
-            <p className="text-muted-foreground">Manage your account information and preferences</p>
+            <p className="text-muted-foreground">
+              Manage your account information and preferences
+            </p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
         {/* ===== PROFILE PICTURE ===== */}
         <div className="lg:col-span-1">
           <Card className="h-full">
@@ -237,20 +278,26 @@ const Profile = () => {
             <CardContent className="flex flex-col items-center space-y-4">
               <div className="relative">
                 <Avatar className="w-32 h-32 sm:w-40 sm:h-40">
-                  <AvatarImage 
-                    src={editData.profileImage 
-                      ? URL.createObjectURL(editData.profileImage)
-                      : profileData.profileImage 
-                        ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${profileData.profileImage}`
+                  <AvatarImage
+                    src={
+                      editData.profileImage
+                        ? URL.createObjectURL(editData.profileImage)
+                        : profileData.profileImage
+                        ? `${
+                            import.meta.env.VITE_API_URL ||
+                            "http://localhost:3000"
+                          }${profileData.profileImage}`
                         : "/src/assets/Placeholder/Profile1.jpg"
-                    } 
-                    alt="Profile" 
+                    }
+                    alt="Profile"
                   />
                   <AvatarFallback className="text-2xl sm:text-3xl">
-                    {(isEditing ? editData.username : profileData.username).charAt(0).toUpperCase()}
+                    {(isEditing ? editData.username : profileData.username)
+                      .charAt(0)
+                      .toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 {isEditing && (
                   <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/90 transition-colors">
                     <Camera className="h-4 w-4" />
@@ -263,7 +310,7 @@ const Profile = () => {
                   </label>
                 )}
               </div>
-              
+
               <div className="text-center">
                 <h3 className="font-semibold text-lg">
                   {isEditing ? editData.username : profileData.username}
@@ -272,7 +319,8 @@ const Profile = () => {
                   UUID: {profileData.id}
                 </p>
                 <Badge variant="outline" className="mt-1">
-                  {profileData.role.charAt(0).toUpperCase() + profileData.role.slice(1)}
+                  {profileData.role.charAt(0).toUpperCase() +
+                    profileData.role.slice(1)}
                 </Badge>
               </div>
             </CardContent>
@@ -296,7 +344,9 @@ const Profile = () => {
                   <Input
                     id="username"
                     value={editData.username}
-                    onChange={(e) => handleInputChange('username', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("username", e.target.value)
+                    }
                     placeholder="Enter your username"
                   />
                 ) : (
@@ -309,7 +359,6 @@ const Profile = () => {
                 )}
               </div>
 
-
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-2">
@@ -321,7 +370,7 @@ const Profile = () => {
                     id="email"
                     type="email"
                     value={editData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     placeholder="Enter your email"
                   />
                 ) : (
@@ -349,7 +398,9 @@ const Profile = () => {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         value={editData.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("password", e.target.value)
+                        }
                         placeholder="Enter new password"
                       />
                       <Button
@@ -366,10 +417,13 @@ const Profile = () => {
                         )}
                       </Button>
                     </div>
-                    
+
                     {/* Confirm Password */}
                     <div className="space-y-2">
-                      <Label htmlFor="confirmPassword" className="flex items-center gap-2">
+                      <Label
+                        htmlFor="confirmPassword"
+                        className="flex items-center gap-2"
+                      >
                         <Lock className="h-4 w-4" />
                         Confirm Password
                       </Label>
@@ -378,7 +432,9 @@ const Profile = () => {
                           id="confirmPassword"
                           type={showConfirmPassword ? "text" : "password"}
                           value={editData.confirmPassword}
-                          onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("confirmPassword", e.target.value)
+                          }
                           placeholder="Confirm your new password"
                         />
                         <Button
@@ -386,7 +442,9 @@ const Profile = () => {
                           variant="ghost"
                           size="sm"
                           className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
                         >
                           {showConfirmPassword ? (
                             <EyeOff className="h-4 w-4" />
@@ -396,10 +454,14 @@ const Profile = () => {
                         </Button>
                       </div>
                     </div>
-                    
-                    {editData.password && editData.confirmPassword && editData.password !== editData.confirmPassword && (
-                      <p className="text-sm text-red-500">Passwords do not match</p>
-                    )}
+
+                    {editData.password &&
+                      editData.confirmPassword &&
+                      editData.password !== editData.confirmPassword && (
+                        <p className="text-sm text-red-500">
+                          Passwords do not match
+                        </p>
+                      )}
                   </div>
                 ) : (
                   <Input
@@ -416,7 +478,9 @@ const Profile = () => {
                 <>
                   {/* <Separator /> */}
                   <div className="bg-background p-4 rounded-lg">
-                    <h4 className="font-medium text-sm mb-2">Password Requirements:</h4>
+                    <h4 className="font-medium text-sm mb-2">
+                      Password Requirements:
+                    </h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• At least 8 characters long</li>
                       <li>• Leave blank to keep current password</li>
@@ -431,11 +495,19 @@ const Profile = () => {
               <div className="flex gap-2">
                 {isEditing ? (
                   <>
-                    <Button onClick={handleCancel} variant="outline" className="flex-1 flex items-center justify-center gap-2">
+                    <Button
+                      onClick={handleCancel}
+                      variant="outline"
+                      className="flex-1 flex items-center justify-center gap-2"
+                    >
                       <X className="h-4 w-4" />
                       Cancel
                     </Button>
-                    <Button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2" disabled={saving}>
+                    <Button
+                      onClick={handleSave}
+                      className="flex-1 flex items-center justify-center gap-2"
+                      disabled={saving}
+                    >
                       {saving ? (
                         <>
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -451,13 +523,20 @@ const Profile = () => {
                   </>
                 ) : (
                   <>
-                    <Button onClick={handleBack} variant="outline" className="flex-1 flex items-center justify-center gap-2">
+                    <Button
+                      onClick={handleBack}
+                      variant="outline"
+                      className="flex-1 flex items-center justify-center gap-2"
+                    >
                       <ArrowLeft className="h-4 w-4" />
                       Back
                     </Button>
-                    <Button onClick={handleEdit} className="flex-1 flex items-center justify-center gap-2">
-                        <Edit className="h-4 w-4" />
-                        Edit
+                    <Button
+                      onClick={handleEdit}
+                      className="flex-1 flex items-center justify-center gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit
                     </Button>
                   </>
                 )}
@@ -473,7 +552,6 @@ const Profile = () => {
         onOpenChange={setShowLogoutDialog}
         onConfirm={handleLogout}
       />
-
     </div>
   );
 };

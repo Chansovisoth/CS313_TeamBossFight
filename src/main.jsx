@@ -8,6 +8,7 @@ import { ThemeProvider } from "./theme/theme-provider";
 import { AuthProvider } from "./context/AuthProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import { AuthenticationCheck } from "./components/AuthenticationCheck";
 import { MessageProvider } from "./context/MessageProvider";
 
 // ===== STYLES ===== //
@@ -66,11 +67,10 @@ import HostCategoriesQuestionsEdit from "./pages/Host/QuestionBank/Questions/Edi
 // Profile
 import HostProfile from "./pages/Host/Profile/Profile";
 
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
-      <AuthProvider> 
+      <AuthProvider>
         <BrowserRouter>
           <MessageProvider>
             <Routes>
@@ -88,50 +88,109 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </Route>
 
               {/* ===== PLAYER ROUTES ===== */}
-              <Route path="/" element={<App />}>
+              <Route
+                path="/"
+                element={
+                  <AuthenticationCheck>
+                    <App />
+                  </AuthenticationCheck>
+                }
+              >
                 <Route index element={<PlayerHome />} />
               </Route>
 
-              <Route path="/qr" element={<App />}>
+              <Route
+                path="/qr"
+                element={
+                  <AuthenticationCheck>
+                    <App />
+                  </AuthenticationCheck>
+                }
+              >
                 <Route index element={<PlayerQR />} />
               </Route>
 
-              <Route path="/badges" element={<App />}>
+              <Route
+                path="/badges"
+                element={
+                  <AuthenticationCheck>
+                    <App />
+                  </AuthenticationCheck>
+                }
+              >
                 <Route index element={<PlayerBadges />} />
               </Route>
 
-              <Route path="/leaderboard" element={<App />}>
+              <Route
+                path="/leaderboard"
+                element={
+                  <AuthenticationCheck>
+                    <App />
+                  </AuthenticationCheck>
+                }
+              >
                 <Route index element={<PlayerLeaderboard />} />
               </Route>
 
-              <Route path="/profile" element={<App />}>
+              <Route
+                path="/profile"
+                element={
+                  <AuthenticationCheck>
+                    <App />
+                  </AuthenticationCheck>
+                }
+              >
                 <Route index element={<PlayerProfile />} />
               </Route>
 
-              <Route path="/boss-preview" element={<App />}>
+              <Route
+                path="/boss-preview"
+                element={
+                  <AuthenticationCheck>
+                    <App />
+                  </AuthenticationCheck>
+                }
+              >
                 <Route index element={<PlayerBossPreview />} />
               </Route>
 
-              <Route path="/boss-battle" element={<AppBattle />}>
+              <Route
+                path="/boss-battle"
+                element={
+                  <AuthenticationCheck>
+                    <AppBattle />
+                  </AuthenticationCheck>
+                }
+              >
                 <Route index element={<PlayerBossBattle />} />
               </Route>
 
-              <Route path="/boss-podium" element={<AppBattle />}>
+              <Route
+                path="/boss-podium"
+                element={
+                  <AuthenticationCheck>
+                    <AppBattle />
+                  </AuthenticationCheck>
+                }
+              >
                 <Route index element={<PlayerBossPodium />} />
               </Route>
 
               {/* ===== HOST ROUTES (Protected for host and admin roles) ===== */}
-              <Route path="/host" element={<ProtectedRoute allowedRoles={['host', 'admin']} />}>
-              {/* <Route path="/host"> */}
+              <Route
+                path="/host"
+                element={<ProtectedRoute allowedRoles={["host", "admin"]} />}
+              >
+                {/* <Route path="/host"> */}
                 {/* Host Bosses Routes */}
                 <Route path="bosses/create" element={<AppOP />}>
                   <Route index element={<HostBossesCreate />} />
                 </Route>
-                
+
                 <Route path="bosses/edit/:id" element={<AppOP />}>
                   <Route index element={<HostBossesEdit />} />
                 </Route>
-                
+
                 <Route path="bosses/view" element={<AppOP />}>
                   <Route index element={<HostBossesView />} />
                 </Route>
@@ -140,44 +199,50 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <Route path="events/view" element={<AppOP />}>
                   <Route index element={<HostEventsView />} />
                 </Route>
-                
+
                 <Route path="events/assign_boss" element={<AppOP />}>
                   <Route index element={<HostEventsAssignBoss />} />
                 </Route>
-                
+
                 <Route path="events/boss_template" element={<AppOP />}>
                   <Route index element={<HostEventsBossTemplate />} />
                 </Route>
-                
+
                 <Route path="events/player_badges" element={<AppOP />}>
                   <Route index element={<HostEventsPlayerbadges />} />
                 </Route>
-                
+
                 <Route path="events/player_badges_edit" element={<AppOP />}>
                   <Route index element={<HostEventsPlayerBadgesEdit />} />
                 </Route>
-                
+
                 <Route path="events/leaderboard" element={<AppOP />}>
                   <Route index element={<HostEventsLeaderboard />} />
                 </Route>
-                
+
                 <Route path="all_leaderboard" element={<AppOP />}>
                   <Route index element={<HostEventsAllLeaderboard />} />
                 </Route>
-                
-                <Route path="events/create" element={
-                  <AdminRoute>
-                    <AppOP />
-                  </AdminRoute>
-                }>
+
+                <Route
+                  path="events/create"
+                  element={
+                    <AdminRoute>
+                      <AppOP />
+                    </AdminRoute>
+                  }
+                >
                   <Route index element={<HostEventsCreate />} />
                 </Route>
-                
-                <Route path="events/edit" element={
-                  <AdminRoute>
-                    <AppOP />
-                  </AdminRoute>
-                }>
+
+                <Route
+                  path="events/edit"
+                  element={
+                    <AdminRoute>
+                      <AppOP />
+                    </AdminRoute>
+                  }
+                >
                   <Route index element={<HostEventsEdit />} />
                 </Route>
 
@@ -185,27 +250,30 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <Route path="questionbank/categories/view" element={<AppOP />}>
                   <Route index element={<HostCategoriesView />} />
                 </Route>
-                
-                <Route path="questionbank/categories/create" element={<AppOP />}>
+
+                <Route
+                  path="questionbank/categories/create"
+                  element={<AppOP />}
+                >
                   <Route index element={<HostCategoriesCreate />} />
                 </Route>
                 
                 <Route path="questionbank/categories/edit/:id" element={<AppOP />}>
                   <Route index element={<HostCategoriesEdit />} />
                 </Route>
-                
+
                 <Route path="questionbank/questions" element={<AppOP />}>
                   <Route index element={<HostQuestionsIndex />} />
                 </Route>
-                
+
                 <Route path="questionbank/questions/view" element={<AppOP />}>
                   <Route index element={<HostCategoriesQuesitonsView />} />
                 </Route>
-                
+
                 <Route path="questionbank/questions/create" element={<AppOP />}>
                   <Route index element={<HostCategoriesQuestionsCreate />} />
                 </Route>
-                
+
                 <Route path="questionbank/questions/edit" element={<AppOP />}>
                   <Route index element={<HostCategoriesQuestionsEdit />} />
                 </Route>
@@ -237,7 +305,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <Route path="users/edit/:id" element={<AppOP />}>
                   <Route index element={<HostUsersEdit />} />
                 </Route>
-               </Route>
+              </Route>
 
               {/* 404 Error Route */}
               <Route path="/error" element={<Error />} />
@@ -247,7 +315,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </Routes>
           </MessageProvider>
         </BrowserRouter>
-       </AuthProvider>
+      </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

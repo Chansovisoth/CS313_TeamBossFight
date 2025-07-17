@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 // ===== LIBRARIES ===== //
-import { useMemo, useState, useEffect, useCallback } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useMemo, useState, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Sun,
   Moon,
@@ -18,7 +18,7 @@ import {
   Users,
   BarChart3,
   Shield,
-} from "lucide-react"
+} from "lucide-react";
 
 // ===== COMPONENTS ===== //
 import {
@@ -33,9 +33,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,18 +43,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import AlertLogout from "./AlertLogout"
+} from "@/components/ui/dropdown-menu";
+import AlertLogout from "./AlertLogout";
 
 // ===== CONTEXTS ===== //
-import { useThemeColor } from "@/theme/theme-provider"
+import { useThemeColor } from "@/theme/theme-provider";
 import { useAuth } from "@/context/useAuth";
 import { getProfileImageUrl } from "@/utils/imageUtils";
+import { isGuestUser } from "@/utils/guestUtils";
 
 export function NavSidebar({ ...props }) {
-  const { colorScheme, toggleColorScheme } = useThemeColor()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const { colorScheme, toggleColorScheme } = useThemeColor();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
@@ -98,7 +99,7 @@ export function NavSidebar({ ...props }) {
             url: "/qr",
             icon: QrCode,
             isActive: location.pathname === "/qr",
-          },  
+          },
         ],
       },
       // {
@@ -113,8 +114,8 @@ export function NavSidebar({ ...props }) {
       //   ],
       // },
     ],
-    [location.pathname],
-  )
+    [location.pathname]
+  );
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -128,12 +129,18 @@ export function NavSidebar({ ...props }) {
               onClick={() => navigate("/")}
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-sidebar-primary-foreground">
-                <img src="/src/assets/Swords.png" alt="UniRAID" className="size-6 object-contain" />
+                <img
+                  src="/src/assets/Swords.png"
+                  alt="UniRAID"
+                  className="size-6 object-contain"
+                />
               </div>
               {/* LOGO */}
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">UniRAID</span>
-                <span className="truncate text-xs text-muted-foreground">Group Boss Battle</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  Group Boss Battle
+                </span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -149,8 +156,15 @@ export function NavSidebar({ ...props }) {
               <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive} tooltip={item.title}>
-                      <button onClick={() => navigate(item.url)} className="flex items-center gap-2 w-full">
+                    <SidebarMenuButton
+                      asChild
+                      isActive={item.isActive}
+                      tooltip={item.title}
+                    >
+                      <button
+                        onClick={() => navigate(item.url)}
+                        className="flex items-center gap-2 w-full"
+                      >
                         <item.icon className="size-4" />
                         <span>{item.title}</span>
                       </button>
@@ -170,10 +184,18 @@ export function NavSidebar({ ...props }) {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={toggleColorScheme}
-              tooltip={`Switch to ${colorScheme === "light" ? "dark" : "light"} mode`}
+              tooltip={`Switch to ${
+                colorScheme === "light" ? "dark" : "light"
+              } mode`}
             >
-              {colorScheme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
-              <span>{colorScheme === "light" ? "Dark Mode" : "Light Mode"}</span>
+              {colorScheme === "light" ? (
+                <Moon className="size-4" />
+              ) : (
+                <Sun className="size-4" />
+              )}
+              <span>
+                {colorScheme === "light" ? "Dark Mode" : "Light Mode"}
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -190,21 +212,30 @@ export function NavSidebar({ ...props }) {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage 
-                      src={getProfileImageUrl(user?.profileImage)} 
+                    <AvatarImage
+                      src={getProfileImageUrl(user?.profileImage)}
                       alt={user?.username || user?.name || "User"}
                       onError={(e) => {
-                        console.log("Avatar image failed to load:", e.target.src);
-                        e.target.style.display = 'none';
+                        console.log(
+                          "Avatar image failed to load:",
+                          e.target.src
+                        );
+                        e.target.style.display = "none";
                       }}
                     />
                     <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-white">
-                      {(user?.username || user?.name || 'BF').charAt(0).toUpperCase()}
+                      {(user?.username || user?.name || "BF")
+                        .charAt(0)
+                        .toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user?.username || user?.name || "User"}</span>
-                    <span className="truncate text-xs text-muted-foreground">{user?.email || ""}</span>
+                    <span className="truncate font-semibold">
+                      {user?.username || user?.name || "User"}
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {user?.email || ""}
+                    </span>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -217,33 +248,47 @@ export function NavSidebar({ ...props }) {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage 
-                        src={getProfileImageUrl(user?.profileImage)} 
+                      <AvatarImage
+                        src={getProfileImageUrl(user?.profileImage)}
                         alt={user?.username || user?.name || "User"}
                         onError={(e) => {
-                          console.log("Dropdown avatar image failed to load:", e.target.src);
-                          e.target.style.display = 'none';
+                          console.log(
+                            "Dropdown avatar image failed to load:",
+                            e.target.src
+                          );
+                          e.target.style.display = "none";
                         }}
                       />
                       <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-white">
-                        {(user?.username || user?.name || 'BF').charAt(0).toUpperCase()}
+                        {(user?.username || user?.name || "BF")
+                          .charAt(0)
+                          .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{user?.username || user?.name || "User"}</span>
-                      <span className="truncate text-xs text-muted-foreground">{user?.email || ""}</span>
+                      <span className="truncate font-semibold">
+                        {user?.username || user?.name || "User"}
+                      </span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {user?.email || ""}
+                      </span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem onClick={() => navigate("/profile")}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
+                {/* Profile - only show for non-guest users */}
+                {!isGuestUser() && (
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                )}
                 {/* User Management for admin/host only */}
                 {(user?.role === "admin" || user?.role === "host") && (
-                  <DropdownMenuItem onClick={() => navigate("/host/events/view")}>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/host/events/view")}
+                  >
                     <Users className="mr-2 h-4 w-4" />
                     <span>View as Host</span>
                   </DropdownMenuItem>
@@ -271,8 +316,8 @@ export function NavSidebar({ ...props }) {
 
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
 
 // Default export for compatibility with existing imports
-export default NavSidebar
+export default NavSidebar;

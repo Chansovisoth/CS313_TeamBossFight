@@ -5,7 +5,13 @@ import { Eye, EyeOff, User, Mail, Lock, VenetianMask } from "lucide-react";
 import { toast } from "sonner";
 
 // ===== COMPONENTS ===== //
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +19,6 @@ import { Label } from "@/components/ui/label";
 // ===== CONTEXTS ===== //
 import { useAuth } from "@/context/useAuth";
 import { apiClient } from "@/api";
-
 
 const Authentication = () => {
   const { login } = useAuth();
@@ -81,15 +86,19 @@ const Authentication = () => {
       return;
     }
     try {
-      const response = await apiClient.post("/auth/signup", {
+      await apiClient.post("/auth/signup", {
         username: registerData.username,
         email: registerData.email,
         password: registerData.password,
       });
-      const data = response.data;
       toast.success("Account created! You can now sign in.");
       handleFormTransition(true);
-      setRegisterData({ username: "", email: "", password: "", confirmPassword: "" });
+      setRegisterData({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
     } catch (err) {
       let message = "Signup failed";
       if (err.response && err.response.data && err.response.data.message) {
@@ -113,15 +122,38 @@ const Authentication = () => {
         throw new Error("Invalid login response from server");
       }
       login({ accessToken: data.token, user: data.user });
-      
+
       // Redirect based on user role
-      if (data.user.role === 'admin' || data.user.role === 'host') {
+      if (data.user.role === "admin" || data.user.role === "host") {
         navigate("/host/events/view");
       } else {
         navigate("/");
       }
     } catch (err) {
       let message = "Login failed";
+      if (err.response && err.response.data && err.response.data.message) {
+        message = err.response.data.message;
+      } else if (err.message) {
+        message = err.message;
+      }
+      toast.error(message);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    try {
+      // Call backend to create a guest session
+      const response = await apiClient.post("/auth/guest-login");
+      const { token, user } = response.data;
+
+      // Store guest token and user data in localStorage
+      localStorage.setItem("guestToken", token);
+      localStorage.setItem("guestUser", JSON.stringify(user));
+
+      toast.success("Logging in as guest...");
+      setTimeout(() => navigate("/"), 1000);
+    } catch (err) {
+      let message = "Failed to create guest session";
       if (err.response && err.response.data && err.response.data.message) {
         message = err.response.data.message;
       } else if (err.message) {
@@ -167,9 +199,7 @@ const Authentication = () => {
             <div className="flex-1 bg-white dark:bg-zinc-900 p-8 flex flex-col justify-center">
               <div className="max-w-md mx-auto w-full">
                 <CardHeader className="text-center pb-6">
-                  <CardTitle className="text-2xl font-bold">
-                    Register
-                  </CardTitle>
+                  <CardTitle className="text-2xl font-bold">Register</CardTitle>
                   <CardDescription>
                     Create your account to participate in boss battles
                   </CardDescription>
@@ -282,10 +312,7 @@ const Authentication = () => {
                         type="button"
                         variant="outline"
                         className="flex-1 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        onClick={() => {
-                          toast.success("Logging in as guest...");
-                          setTimeout(() => navigate("/"), 1000);
-                        }}
+                        onClick={handleGuestLogin}
                       >
                         <VenetianMask className="w-4 h-4 mr-0" />
                         Login as Guest
@@ -348,9 +375,7 @@ const Authentication = () => {
             <div className="flex-1 bg-white dark:bg-zinc-900 p-8 flex flex-col justify-center">
               <div className="max-w-md mx-auto w-full">
                 <CardHeader className="text-center pb-6">
-                  <CardTitle className="text-2xl font-bold">
-                    Login
-                  </CardTitle>
+                  <CardTitle className="text-2xl font-bold">Login</CardTitle>
                   <CardDescription>
                     Sign in to continue your boss battle adventures
                   </CardDescription>
@@ -360,7 +385,9 @@ const Authentication = () => {
                   <form onSubmit={handleLoginSubmit} className="space-y-4">
                     {/* Email or Username */}
                     <div className="space-y-2">
-                      <Label htmlFor="login-emailOrUsername">Email / Username</Label>
+                      <Label htmlFor="login-emailOrUsername">
+                        Email / Username
+                      </Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                         <Input
@@ -419,10 +446,7 @@ const Authentication = () => {
                         type="button"
                         variant="outline"
                         className="flex-1 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        onClick={() => {
-                          toast.success("Logging in as guest...");
-                          setTimeout(() => navigate("/"), 1000);
-                        }}
+                        onClick={handleGuestLogin}
                       >
                         <VenetianMask className="w-4 h-4 mr-0" />
                         Login as Guest

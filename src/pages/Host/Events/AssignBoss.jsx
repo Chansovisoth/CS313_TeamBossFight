@@ -36,7 +36,7 @@ const AssignBoss = () => {
   const eventId = searchParams.get('eventId');
   
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, bossId: null, bossName: '' });
-  const [qrDialog, setQrDialog] = useState({ isOpen: false, bossName: '', qrUrl: '' });
+  const [qrDialog, setQrDialog] = useState({ isOpen: false, bossName: '', qrUrl: '', qrCode: null, loading: false });
   const [copied, setCopied] = useState(false);
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -78,21 +78,42 @@ const AssignBoss = () => {
     }
   };
 
-  const handleShowQR = (boss) => {
-    const qrUrl = `${window.location.origin}/player/join?code=${boss.joinCode}`;
-    setQrDialog({
-      isOpen: true,
-      bossName: boss.name,
-      qrUrl: qrUrl
-    });
+  const handleShowQR = async (boss) => {
+    try {
+      const joinUrl = `${window.location.origin}/join?code=${boss.joinCode}`;
+      setQrDialog({
+        isOpen: true,
+        bossName: boss.name,
+        qrUrl: joinUrl,
+        qrCode: null,
+        loading: true
+      });
+
+      // Fetch the actual QR code from the API
+      const response = await apiClient.get(`/events/${eventId}/bosses/${boss.id}/qr`);
+      
+      setQrDialog(prev => ({
+        ...prev,
+        qrCode: response.data.qrCode,
+        loading: false
+      }));
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      toast.error('Failed to generate QR code');
+      setQrDialog(prev => ({
+        ...prev,
+        loading: false
+      }));
+    }
   };
 
   const handleDownloadQR = () => {
-    // Create a temporary link to download the placeholder image
-    const link = document.createElement('a');
-    link.download = `${qrDialog.bossName.replace(/\s+/g, '_')}_QR.webp`;
-    link.href = '/src/assets/Placeholder/placeholder_image.webp';
-    link.click();
+    if (qrDialog.qrCode) {
+      const link = document.createElement('a');
+      link.download = `${qrDialog.bossName.replace(/\s+/g, '_')}_QR.png`;
+      link.href = qrDialog.qrCode;
+      link.click();
+    }
   };
 
   const handleCopyUrl = async () => {
@@ -450,11 +471,21 @@ const AssignBoss = () => {
             <div className="flex flex-col items-center space-y-4 py-4">
               {/* QR Code Image */}
               <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
-                <img
-                  src="/src/assets/Placeholder/placeholder_image.webp"
-                  alt="QR Code"
-                  className="w-48 h-48 sm:w-56 sm:h-56 object-contain"
-                />
+                {qrDialog.loading ? (
+                  <div className="w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  </div>
+                ) : qrDialog.qrCode ? (
+                  <img
+                    src={qrDialog.qrCode}
+                    alt="QR Code"
+                    className="w-48 h-48 sm:w-56 sm:h-56 object-contain"
+                  />
+                ) : (
+                  <div className="w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center text-gray-500">
+                    Failed to load QR code
+                  </div>
+                )}
               </div>
               
               {/* URL Display */}
@@ -494,6 +525,7 @@ const AssignBoss = () => {
               <Button
                 onClick={handleDownloadQR}
                 className="w-full sm:w-auto"
+                disabled={!qrDialog.qrCode || qrDialog.loading}
               >
                 <Download className="w-4 h-4 mr-2" />
                 Download QR

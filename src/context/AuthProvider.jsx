@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { apiClient } from "../api";
+import { clearGuestData } from "../utils/guestUtils";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -19,6 +20,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("user");
       localStorage.removeItem("accessToken");
       delete apiClient.defaults.headers.common["Authorization"];
+
+      // Clear guest data as well
+      clearGuestData();
     }
   };
 
@@ -26,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       const storedToken = localStorage.getItem("accessToken");
       const storedUser = localStorage.getItem("user");
-      
+
       if (!storedToken || !storedUser) {
         setIsLoading(false);
         return;
@@ -34,10 +38,11 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // Set token in Axios headers
-        apiClient.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
-        
+        apiClient.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${storedToken}`;
+
         const response = await apiClient.get("/auth/me");
-        const parsedStoredUser = JSON.parse(storedUser);
         setUser({ ...response.data, accessToken: storedToken });
       } catch (error) {
         console.error("Failed to fetch user:", error);
@@ -60,18 +65,22 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("user", JSON.stringify(user));
-    apiClient.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+    apiClient.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${accessToken}`;
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      setUser, 
-      login, 
-      logout, 
-      isLoading, 
-      isAuthenticated: !!user
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        login,
+        logout,
+        isLoading,
+        isAuthenticated: !!user,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
