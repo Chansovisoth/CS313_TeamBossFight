@@ -1,14 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, FileText, Type, Save, Trash2, AlertTriangle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { 
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  FileText,
+  Type,
+  Save,
+  Trash2,
+  AlertTriangle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -17,25 +32,23 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { apiClient } from '@/api';
-import { useAuth } from '@/context/useAuth';
-import { toast } from 'sonner';
+} from "@/components/ui/alert-dialog";
+import { apiClient } from "@/api";
+import { toast } from "sonner";
 
 const EditEvent = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [searchParams] = useSearchParams();
-  const eventId = searchParams.get('eventId');
-  
+  const eventId = searchParams.get("eventId");
+
   const [eventData, setEventData] = useState({
-    name: '',
-    description: '',
-    startTime: '',
-    endTime: '',
-    status: ''
+    name: "",
+    description: "",
+    startTime: "",
+    endTime: "",
+    status: "",
   });
-  
+
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -43,82 +56,71 @@ const EditEvent = () => {
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
+    const fetchEventData = async () => {
+      try {
+        setLoading(true);
+        const response = await apiClient.get(`/events/${eventId}`);
+        const event = response.data;
+
+        // Format datetime for input fields (convert from API format to datetime-local format)
+        const formatForInput = (dateTime) => {
+          if (!dateTime) return "";
+          const date = new Date(dateTime);
+          return date.toISOString().slice(0, 16);
+        };
+
+        setEventData({
+          name: event.name || "",
+          description: event.description || "",
+          startTime: formatForInput(event.startTime),
+          endTime: formatForInput(event.endTime),
+          status: event.status || "upcoming",
+        });
+      } catch (error) {
+        console.error("Error fetching event:", error);
+        toast.error("Failed to fetch event details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (eventId) {
       fetchEventData();
     }
   }, [eventId]);
 
-  const fetchEventData = async () => {
-    try {
-      setLoading(true);
-      const response = await apiClient.get(`/events/${eventId}`);
-      const event = response.data;
-      
-      // Format datetime for input fields (convert from API format to datetime-local format)
-      const formatForInput = (dateTime) => {
-        if (!dateTime) return '';
-        const date = new Date(dateTime);
-        // Add 7 hours for GMT+7 timezone display
-        const gmt7Date = new Date(date.getTime() + (7 * 60 * 60 * 1000));
-        return gmt7Date.toISOString().slice(0, 16);
-      };
-
-      setEventData({
-        name: event.name || '',
-        description: event.description || '',
-        startTime: formatForInput(event.startTime),
-        endTime: formatForInput(event.endTime),
-        status: event.status || 'upcoming'
-      });
-    } catch (error) {
-      console.error('Error fetching event:', error);
-      toast.error('Failed to fetch event details');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleInputChange = (field, value) => {
-    setEventData(prev => ({
+    setEventData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
     setHasChanges(true);
-  };
-
-  // Format datetime for backend (convert from GMT+7 to UTC)
-  const formatDateTimeForBackend = (dateTime) => {
-    if (!dateTime) return null;
-    const date = new Date(dateTime);
-    // Subtract 7 hours for UTC storage
-    const utcDate = new Date(date.getTime() - (7 * 60 * 60 * 1000));
-    return utcDate.toISOString();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!eventData.name || !eventData.startTime || !eventData.endTime) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
 
     try {
       setIsSubmitting(true);
-      
+
       const updateData = {
         name: eventData.name,
         description: eventData.description,
-        startTime: formatDateTimeForBackend(eventData.startTime),
-        endTime: formatDateTimeForBackend(eventData.endTime)
+        startTime: eventData.startTime, // Send raw datetime-local value
+        endTime: eventData.endTime, // Send raw datetime-local value
       };
 
       await apiClient.put(`/events/${eventId}`, updateData);
-      toast.success('Event updated successfully');
+      toast.success("Event updated successfully");
       setHasChanges(false);
       navigate(`/host/events/assign_boss?eventId=${eventId}`);
     } catch (error) {
-      console.error('Error updating event:', error);
-      toast.error(error.response?.data?.message || 'Failed to update event');
+      console.error("Error updating event:", error);
+      toast.error(error.response?.data?.message || "Failed to update event");
     } finally {
       setIsSubmitting(false);
     }
@@ -128,11 +130,11 @@ const EditEvent = () => {
     try {
       setIsDeleting(true);
       await apiClient.delete(`/events/${eventId}`);
-      toast.success('Event deleted successfully');
-      navigate('/host/events/view');
+      toast.success("Event deleted successfully");
+      navigate("/host/events/view");
     } catch (error) {
-      console.error('Error deleting event:', error);
-      toast.error(error.response?.data?.message || 'Failed to delete event');
+      console.error("Error deleting event:", error);
+      toast.error(error.response?.data?.message || "Failed to delete event");
     } finally {
       setIsDeleting(false);
       setShowDeleteDialog(false);
@@ -142,7 +144,9 @@ const EditEvent = () => {
   const handleCancel = () => {
     if (hasChanges) {
       // Show confirmation dialog for unsaved changes
-      const confirmed = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+      const confirmed = window.confirm(
+        "You have unsaved changes. Are you sure you want to leave?"
+      );
       if (!confirmed) return;
     }
     navigate(`/host/events/assign_boss?eventId=${eventId}`);
@@ -159,7 +163,6 @@ const EditEvent = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -185,7 +188,7 @@ const EditEvent = () => {
                 </div>
               </div>
             </div>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -200,32 +203,39 @@ const EditEvent = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="max-w-2xl mx-auto space-y-6">
-            
             {/* Event Information Card */}
             <Card className="border-0 shadow-lg">
               <CardContent className="p-6 space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="event-name" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <Label
+                    htmlFor="event-name"
+                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
+                  >
                     Event Name *
                   </Label>
                   <Input
                     id="event-name"
                     value={eventData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
                     placeholder="Enter event name..."
                     className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <Label
+                    htmlFor="description"
+                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
+                  >
                     Description
                   </Label>
                   <Textarea
                     id="description"
                     value={eventData.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("description", e.target.value)
+                    }
                     placeholder="Describe your event..."
                     rows={4}
                     className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
@@ -234,28 +244,38 @@ const EditEvent = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="start-datetime" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <Label
+                      htmlFor="start-datetime"
+                      className="text-sm font-medium text-gray-900 dark:text-gray-100"
+                    >
                       Start Date & Time *
                     </Label>
                     <Input
                       id="start-datetime"
                       type="datetime-local"
                       value={eventData.startTime}
-                      onChange={(e) => handleInputChange('startTime', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("startTime", e.target.value)
+                      }
                       className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                       required
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <Label htmlFor="end-datetime" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <Label
+                      htmlFor="end-datetime"
+                      className="text-sm font-medium text-gray-900 dark:text-gray-100"
+                    >
                       End Date & Time *
                     </Label>
                     <Input
                       id="end-datetime"
                       type="datetime-local"
                       value={eventData.endTime}
-                      onChange={(e) => handleInputChange('endTime', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("endTime", e.target.value)
+                      }
                       className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                       required
                     />
@@ -268,19 +288,25 @@ const EditEvent = () => {
             <Card className="border-0 shadow-lg">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button 
+                  <Button
                     type="button"
-                    variant="outline" 
+                    variant="outline"
                     onClick={handleCancel}
                     className="flex-1 h-11 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </Button>
-                  <Button 
+                  <Button
                     type="submit"
                     className="flex-1 h-11 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 shadow-lg"
-                    disabled={isSubmitting || !eventData.name.trim() || !eventData.startTime || !eventData.endTime || !hasChanges}
+                    disabled={
+                      isSubmitting ||
+                      !eventData.name.trim() ||
+                      !eventData.startTime ||
+                      !eventData.endTime ||
+                      !hasChanges
+                    }
                   >
                     {isSubmitting ? (
                       <>
@@ -288,7 +314,7 @@ const EditEvent = () => {
                         Saving...
                       </>
                     ) : (
-                      'Save Changes'
+                      "Save Changes"
                     )}
                   </Button>
                 </div>
@@ -307,8 +333,12 @@ const EditEvent = () => {
               Delete Event
             </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-              Are you sure you want to delete <span className="font-semibold text-gray-900 dark:text-white">"{eventData.name}"</span>? 
-              This action cannot be undone and will remove all associated data.
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-gray-900 dark:text-white">
+                "{eventData.name}"
+              </span>
+              ? This action cannot be undone and will remove all associated
+              data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
