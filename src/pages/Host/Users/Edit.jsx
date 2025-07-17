@@ -28,7 +28,6 @@ const Edit = () => {
   
   const [form, setForm] = useState({ 
     username: '', 
-    email: '', 
     role: 'player' 
   });
   const [loading, setLoading] = useState(true);
@@ -47,7 +46,6 @@ const Edit = () => {
         const res = await apiClient.get(`/users/${id}`);
         setForm({
           username: res.data.username || '',
-          email: res.data.email || '',
           role: res.data.role || 'player',
         });
       } catch (err) {
@@ -72,12 +70,6 @@ const Edit = () => {
       errors.username = 'Username is required';
     } else if (form.username.trim().length < 3) {
       errors.username = 'Username must be at least 3 characters';
-    }
-
-    if (!form.email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errors.email = 'Please enter a valid email address';
     }
 
     if (!form.role) {
@@ -152,7 +144,6 @@ const Edit = () => {
     try {
       await apiClient.put(`/users/${id}`, {
         username: form.username.trim(),
-        email: form.email.trim(),
         role: form.role
       });
       
@@ -288,26 +279,6 @@ const Edit = () => {
                 />
                 {validationErrors.username && (
                   <p className="text-xs text-red-600 dark:text-red-400">{validationErrors.username}</p>
-                )}
-              </div>
-
-              {/* Email Field */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white">
-                  Email Address <span className="text-red-500 dark:text-red-400">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className={`bg-white dark:bg-black dark:text-white ${
-                    validationErrors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'
-                  }`}
-                  placeholder="Enter email address"
-                />
-                {validationErrors.email && (
-                  <p className="text-xs text-red-600 dark:text-red-400">{validationErrors.email}</p>
                 )}
               </div>
 
