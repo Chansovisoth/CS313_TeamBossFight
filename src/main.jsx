@@ -143,14 +143,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <Route index element={<PlayerProfile />} />
               </Route>
 
-              <Route
-                path="/boss-preview"
-                element={
-                  <AuthenticationCheck>
-                    <App />
-                  </AuthenticationCheck>
-                }
-              >
+              <Route path="/boss-preview" element={<App />}>
                 <Route index element={<PlayerBossPreview />} />
               </Route>
 
@@ -257,8 +250,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 >
                   <Route index element={<HostCategoriesCreate />} />
                 </Route>
-                
-                <Route path="questionbank/categories/edit/:id" element={<AppOP />}>
+
+                <Route
+                  path="questionbank/categories/edit/:id"
+                  element={<AppOP />}
+                >
                   <Route index element={<HostCategoriesEdit />} />
                 </Route>
 
