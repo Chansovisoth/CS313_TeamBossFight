@@ -152,7 +152,7 @@ const EditCategory = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -161,7 +161,7 @@ const EditCategory = () => {
               variant="ghost" 
               size="sm" 
               onClick={handleCancel}
-              className="p-2 hover:bg-white/50 dark:hover:bg-gray-800/50"
+              className="p-2 hover:bg-white/50 dark:hover:bg-background/50"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -184,7 +184,7 @@ const EditCategory = () => {
         </div>
 
         {/* Main Form Card */}
-        <Card className="shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+        <Card className="shadow-lg border-0 bg-card backdrop-blur-sm">
           <CardHeader className="border-b border-gray-200 dark:border-gray-600">
             <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <Save className="h-5 w-5" />
@@ -209,7 +209,7 @@ const EditCategory = () => {
                 }}
                 placeholder="e.g., Computer Science, Art, Business"
                 maxLength={50}
-                className={`${errors.categoryName ? 'border-red-500 focus:border-red-500' : isFormValid ? 'border-green-500 focus:border-green-500' : ''} dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors`}
+                className={`${errors.categoryName ? 'border-red-500 focus:border-red-500' : isFormValid ? 'border-green-500 focus:border-green-500' : ''} dark:bg-background dark:border-gray-600 dark:text-white transition-colors`}
               />
               {errors.categoryName && (
                 <p className="text-sm text-red-500 dark:text-red-400">{errors.categoryName}</p>

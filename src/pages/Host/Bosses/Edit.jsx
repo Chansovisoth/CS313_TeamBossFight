@@ -383,7 +383,7 @@ const EditBoss = () => {
                 <div className="relative">
                   {/* Category Display Bar with Tags and Dropdown Arrow */}
                   <div 
-                    className="border border-gray-300 dark:border-gray-600 rounded-md p-3 min-h-[40px] flex flex-wrap gap-2 items-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-700"
+                    className="border border-gray-300 dark:border-gray-600 rounded-md p-3 min-h-[40px] flex flex-wrap gap-2 items-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-background"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   >
                     {/* Selected Category Tags */}
@@ -414,7 +414,7 @@ const EditBoss = () => {
 
                   {/* Dropdown Options */}
                   {isDropdownOpen && unselectedCategories.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-10">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-background border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-10">
                       {unselectedCategories.map((category) => (
                         <div
                           key={category.id}

@@ -157,7 +157,7 @@ const EditEvent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         
         {/* Header */}
@@ -202,7 +202,7 @@ const EditEvent = () => {
           <div className="max-w-2xl mx-auto space-y-6">
             
             {/* Event Information Card */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-card">
               <CardContent className="p-6 space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="event-name" className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -213,7 +213,7 @@ const EditEvent = () => {
                     value={eventData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     placeholder="Enter event name..."
-                    className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                    className="h-11 bg-background border-gray-200 dark:border-gray-700"
                     required
                   />
                 </div>
@@ -228,7 +228,7 @@ const EditEvent = () => {
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     placeholder="Describe your event..."
                     rows={4}
-                    className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                    className="bg-background border-gray-200 dark:border-gray-700"
                   />
                 </div>
 
@@ -242,7 +242,7 @@ const EditEvent = () => {
                       type="datetime-local"
                       value={eventData.startTime}
                       onChange={(e) => handleInputChange('startTime', e.target.value)}
-                      className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                      className="h-11 bg-background border-gray-200 dark:border-gray-700"
                       required
                     />
                   </div>
@@ -256,7 +256,7 @@ const EditEvent = () => {
                       type="datetime-local"
                       value={eventData.endTime}
                       onChange={(e) => handleInputChange('endTime', e.target.value)}
-                      className="h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                      className="h-11 bg-background border-gray-200 dark:border-gray-700"
                       required
                     />
                   </div>
@@ -265,7 +265,7 @@ const EditEvent = () => {
             </Card>
 
             {/* Action Buttons */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-card">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
