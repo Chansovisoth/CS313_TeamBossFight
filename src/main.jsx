@@ -30,6 +30,7 @@ import Authentication from "./pages/Authentication";
 // ===== PLAYER PAGES ===== //
 import Error from "./pages/Error";
 import PlayerHome from "./pages/Player/Home";
+import PlayerEventBosses from "./pages/Player/EventBosses";
 import PlayerBadges from "./pages/Player/Badges";
 import PlayerLeaderboard from "./pages/Player/Leaderboard";
 import PlayerProfile from "./pages/Player/Profile";
@@ -102,6 +103,17 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 }
               >
                 <Route index element={<PlayerHome />} />
+              </Route>
+
+              <Route
+                path="/event-bosses"
+                element={
+                  <AuthenticationCheck>
+                    <App />
+                  </AuthenticationCheck>
+                }
+              >
+                <Route index element={<PlayerEventBosses />} />
               </Route>
 
               <Route
