@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth.jsx";
 import { isGuestUser, getGuestToken } from "../utils/guestUtils.js";
 
@@ -6,7 +6,7 @@ import { isGuestUser, getGuestToken } from "../utils/guestUtils.js";
  * Component that prevents authenticated users (both regular users and guests)
  * from accessing the authentication page
  */
-const PreventAuthenticatedAccess = () => {
+const PreventAuthenticatedAccess = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
 
   // Show loading while checking authentication state
@@ -34,7 +34,7 @@ const PreventAuthenticatedAccess = () => {
   }
 
   // User is not authenticated, allow access to auth page
-  return <Outlet />;
+  return children;
 };
 
 export default PreventAuthenticatedAccess;

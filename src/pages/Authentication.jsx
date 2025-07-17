@@ -19,45 +19,11 @@ import { Label } from "@/components/ui/label";
 // ===== CONTEXTS ===== //
 import { useAuth } from "@/context/useAuth";
 import { apiClient } from "@/api";
-import { isGuestUser, getGuestToken } from "@/utils/guestUtils";
 
 const Authentication = () => {
-  const { login, isAuthenticated, user, isLoading } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Check if user is already authenticated (either as regular user or guest)
-  useEffect(() => {
-    if (isLoading) return; // Wait for auth state to load
-
-    const hasGuestAuth = isGuestUser() && getGuestToken();
-    const hasUserAuth = isAuthenticated && user;
-
-    if (hasGuestAuth || hasUserAuth) {
-      // User is already logged in, redirect to appropriate page
-      if (hasGuestAuth) {
-        toast.info("You are already logged in as a guest. Please logout first to access authentication.");
-        navigate("/player/home");
-      } else if (hasUserAuth) {
-        const redirectPath = user.role === 'admin' ? '/host/events/view' : '/host/events/view';
-        toast.info("You are already logged in. Please logout first to access authentication.");
-        navigate(redirectPath);
-      }
-      return;
-    }
-  }, [isLoading, isAuthenticated, user, navigate]);
-
-  // Show loading while checking authentication
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-lg">Checking authentication...</p>
-        </div>
-      </div>
-    );
-  }
 
   // Determine initial form state from URL
   const params = new URLSearchParams(location.search);
