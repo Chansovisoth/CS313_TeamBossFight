@@ -176,7 +176,7 @@ const CreateBoss = () => {
                           setSelectedImage(null);
                         }}
                       >
-                        Remove Image
+                        Change Image
                       </Button>
                     </div>
                   ) : (
